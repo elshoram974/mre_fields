@@ -29,6 +29,8 @@ Flag public API removals explicitly (exported class, constructor param, theme to
 - Scope cleanup to the enclosing unit + its direct helpers — not a drive-by rewrite of the package.
 - Structural leftover problem → fix what you touched, then **say at the end** what is still wrong and how to fix it.
 - Before done: `flutter analyze` — new infos/warnings are regressions. `dart format` only on files you edited.
+- UI/field changes also need the size + regression rules (`test-field-sizes`, `full-regression`).
+- No FVM in this package — plain `flutter` / `dart` on PATH.
 
 ## 3. Package boundaries (hard)
 

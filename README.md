@@ -54,8 +54,13 @@ dependencies:
 
 ## Development
 
+No FVM — use the Flutter SDK on your PATH (stable, 3.38+):
+
 ```bash
 flutter pub get
 flutter analyze
 flutter test
+flutter widget-preview start   # IDE: Flutter Widget Preview panel
 ```
+
+Regression expectations: `.cursor/rules/full-regression.mdc` and `test-field-sizes.mdc`.

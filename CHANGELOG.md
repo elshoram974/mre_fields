@@ -10,3 +10,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Project agent docs: `CLAUDE.md`, Cursor rules, and skills for porting fields from CashBook.
+- Regression + field-size rules; Widget Preview harness + skills (no FVM — use PATH Flutter).

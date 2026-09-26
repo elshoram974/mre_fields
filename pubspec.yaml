@@ -4,8 +4,10 @@ version: 0.0.1
 homepage:
 
 environment:
-  sdk: ^3.13.4
-  flutter: ">=1.17.0"
+  # No FVM. Lower bound keeps CashBook (3.44) able to path-depend;
+  # Widget Previewer needs 3.38+.
+  sdk: ^3.12.0
+  flutter: ">=3.38.0"
 
 dependencies:
   flutter:

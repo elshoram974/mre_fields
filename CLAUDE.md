@@ -111,13 +111,36 @@ CashBook `AdaptiveOverlays`. Host can wrap later if it wants glass.
 - Report every deletion of working behaviour under **⚠️ Removed**
   (Replaced / Dropped / Dead) — same bar as CashBook.
 
-## Tests
+## Flutter SDK
+
+- **No FVM.** Use `flutter` / `dart` on PATH (stable).
+- Widget Previewer needs 3.38+; developing on latest stable (e.g. 3.47.x) is fine.
+- Rule: `.cursor/rules/flutter-version.mdc`.
+
+## Tests & regression
+
+Gate before done / release (skill: `full-regression-test`):
+
+```bash
+flutter pub get
+flutter analyze
+flutter test
+```
 
 - Unit: phone parse/format, BIDI helpers, validators.
 - Widget: `MreTextField` direction flip while typing, suggestions, clear,
   `MrePhoneField` dial + local.
+- Sizes / RTL / text scale / dark: `.cursor/rules/test-field-sizes.mdc`.
+- Full gate notes: `.cursor/rules/full-regression.mdc`.
 - Mirror `lib/` under `test/`.
-- Run `flutter test` before declaring a feature done.
+
+## Widget Preview
+
+- Flutter Widget Previewer (`@Preview` from `package:flutter/widget_previews.dart`).
+- Shared harness: `lib/src/previews/preview_harness.dart`.
+- Skill: `add-widget-preview`.
+- Launch: `flutter widget-preview start` or IDE **Flutter Widget Preview** panel.
+- Do not export preview files from the public barrel.
 
 ## Versioning & changelog
 
@@ -169,3 +192,6 @@ into this package.
 | Add a new field type | `.cursor/skills/add-field-widget` |
 | Version bump + changelog | `.cursor/skills/bump-package-version` |
 | Commit trailer | `.cursor/skills/commit-with-coauthor` |
+| Full test gate | `.cursor/skills/full-regression-test` |
+| Widget previews | `.cursor/skills/add-widget-preview` |
+| Flutter SDK | `.cursor/rules/flutter-version.mdc` (no FVM) |
