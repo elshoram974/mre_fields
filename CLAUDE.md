@@ -199,20 +199,54 @@ Then replace `AppTextField` call sites gradually with `MreTextField` (or a thin
 CashBook wrapper that forwards `.tr()` hints). Do not move `CustomFieldRegistry`
 into this package.
 
+## How agents pick this up
+
+Open **`mre_fields` as the Cursor workspace** (File → Open Folder). Then:
+
+- `AGENTS.md` + `CLAUDE.md` are the entrypoint
+- Always-on rules load (`project-standards`, `extensibility`, `flutter-version`, …)
+- Skills apply when the task matches (port, preview, publish, example, …)
+- Follow **`ROADMAP.md`** step order unless the user overrides
+
+If the chat is still rooted on **CashBook (`ledger`)**, those package rules do **not** auto-apply — open `mre_fields` or `@` the files you need.
+
+## Trying widgets (preview + example)
+
+| Way | Command / UI | Best for |
+|---|---|---|
+| **Widget Preview** | IDE **Flutter Widget Preview** panel, or `flutter widget-preview start` | Fast look at `@Preview` cards under `lib/src/previews/` |
+| **Example app** | `example/` via skill `add-example-app`, then `cd example && flutter run` | Real keyboard, theme toggle, phone flow |
+| **Tests** | `flutter test` | Behaviour lock (BIDI, parse, sizes) |
+
+Previews ship with the package sources; they are **not** exported from the public barrel. Example app is optional until Step 3+ but recommended before pub.dev.
+
+## Publishing to pub.dev
+
+Skill: `.cursor/skills/publish-to-pub-dev`.
+
+Short path:
+
+1. Fill `homepage` / `repository` in `pubspec.yaml`
+2. `flutter analyze` + `flutter test` + `flutter pub publish --dry-run`
+3. User confirms → `flutter pub publish`
+4. Optionally switch CashBook from `path:` to `mre_fields: ^x.y.z`
+
+Do not publish unprompted.
+
 ## Agent map
 
 | Need | Open |
 |---|---|
 | Always-on standards | `.cursor/rules/project-standards.mdc` |
-| Extensibility (host theme, overrides, pieces) | `.cursor/rules/extensibility.mdc` |
-| Public API / barrel / naming | `.cursor/rules/package-api.mdc` |
-| Theme + no app colors | `.cursor/rules/theming.mdc` |
-| What to copy from ledger | `.cursor/rules/port-from-ledger.mdc` |
-| Port a widget step-by-step | `.cursor/skills/port-field-from-ledger` |
-| Add a new field type | `.cursor/skills/add-field-widget` |
-| Version bump + changelog | `.cursor/skills/bump-package-version` |
+| Extensibility | `.cursor/rules/extensibility.mdc` |
+| Public API | `.cursor/rules/package-api.mdc` |
+| Theming | `.cursor/rules/theming.mdc` |
+| Port from ledger | `.cursor/skills/port-field-from-ledger` |
+| Add field | `.cursor/skills/add-field-widget` |
+| Previews | `.cursor/skills/add-widget-preview` |
+| Example app | `.cursor/skills/add-example-app` |
+| Full tests | `.cursor/skills/full-regression-test` |
+| Version bump | `.cursor/skills/bump-package-version` |
+| Publish pub.dev | `.cursor/skills/publish-to-pub-dev` |
 | Commit trailer | `.cursor/skills/commit-with-coauthor` |
-| Full test gate | `.cursor/skills/full-regression-test` |
-| Widget previews | `.cursor/skills/add-widget-preview` |
-| Flutter SDK | `.cursor/rules/flutter-version.mdc` (no FVM) |
-| Step-by-step build plan | [`ROADMAP.md`](./ROADMAP.md) |
+| Roadmap | [`ROADMAP.md`](./ROADMAP.md) |

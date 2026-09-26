@@ -12,6 +12,13 @@ Early (`0.x`). Public API may change; see `CHANGELOG.md`.
 
 **What to build next:** see [`ROADMAP.md`](./ROADMAP.md) (steps 1→8 with a plan for each).
 
+Open this folder as the Cursor workspace so agents load `CLAUDE.md` / rules automatically.
+
+### Try widgets
+- **Preview:** Flutter Widget Preview panel, or `flutter widget-preview start`
+- **Example app:** (after it exists) `cd example && flutter run` — skill `add-example-app`
+- **Publish:** skill `publish-to-pub-dev` → `flutter pub publish --dry-run` then publish
+
 ## Planned surface
 
 | Widget / type | Role |

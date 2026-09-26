@@ -212,21 +212,23 @@ CashBook uses the package without a big-bang rewrite.
 
 ---
 
-## Step 8 — Harden & release hygiene `[ ]`
+## Step 8 — Harden, example app & pub.dev `[ ]`
 
 ### Goal
-Package feels shippable for internal path use (and later pub if you want).
+Package feels shippable: regression green, runnable example, optional pub.dev publish.
 
 ### Plan
-1. Full regression skill: `flutter analyze` + `flutter test` + spot-check previews.
-2. Size/RTL/dark pass on text + phone (`test-field-sizes` rule).
-3. Trim public barrel to intentional exports only.
-4. README: features, theming, phone, migration note from `AppTextField`.
-5. SemVer tag when ready (`0.1.0` text, `0.2.0` phone, …).
-6. Optional: example app under `example/` — only if previews aren’t enough.
+1. Full regression: `flutter analyze` + `flutter test` + spot-check previews.
+2. Size/RTL/dark pass on text + phone (`test-field-sizes`).
+3. Create/update **`example/`** (skill `add-example-app`) — theme toggle, text, phone, overrides.
+4. Trim public barrel to intentional exports; README matches API.
+5. Fill `homepage` / `repository` in `pubspec.yaml`.
+6. SemVer bump + `CHANGELOG`; `flutter pub publish --dry-run`.
+7. Publish only when user asks (skill `publish-to-pub-dev`).
+8. Optional: git tag `vX.Y.Z`; CashBook switches from path to `^version`.
 
 ### Done when
-- Regression green; README matches API; version bumped with `CHANGELOG`.
+- Regression green; example runs; dry-run clean (publish optional).
 
 ---
 
