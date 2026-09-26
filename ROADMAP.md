@@ -146,13 +146,15 @@ Pure phone dial/local parsing and country dial list — no UI yet.
 Searchable dial-code sheet owned by the package (Material), no CashBook overlays/glass/router.
 
 ### Plan
-1. Read ledger `app_country_code_picker.dart`; keep: search, list, select callback, optional custom builder.
-2. Rewrite sheet with `showModalBottomSheet` / dialog — **not** `AdaptiveOverlays`.
-3. All copy as params: `title`, `searchHint`, empty state, etc.
-4. Use `MreTextField` for the search box if ready; else Material `TextField` temporarily then swap.
-5. Widget tests: filter list, select calls `onChanged`.
-6. Preview: open picker / selected dial chip.
-7. Export + `CHANGELOG`.
+2. Read ledger `app_country_code_picker.dart`; keep: search, list, select callback, optional custom builder.
+3. Rewrite presentation:
+   - **Compact:** Material bottom sheet
+   - **Expanded / desktop:** centered dialog with max width — not a phone sheet on a large monitor
+4. All copy as params: `title`, `searchHint`, empty state, etc.
+5. Use `MreTextField` for search when ready.
+6. Widget tests: filter, select, compact + expanded host size.
+7. Preview both presentations if practical.
+8. Export + `CHANGELOG`.
 
 ### Done when
 - Picker works phone + tablet-ish size in tests/preview; no ledger UI deps.
@@ -169,12 +171,14 @@ One composed field: dial control + local number, using parse helpers + picker.
 
 ### Plan
 1. `lib/src/phone/mre_phone_field.dart` composing `MreTextField` + dial affordance + `MreCountryCodePicker`.
-2. Constructor: initial dial/local or full E.164 string; `onChanged` with structured value (dial + local ± formatted).
-3. Paste `+…` → parse and update dial/local without layout jump.
-4. Theme tokens only if shared (≥2 call sites); else constructor.
-5. Widget tests: paste, dial change, narrow width (no overflow).
-6. Previews: empty, EG dial, Arabic locale host strings (literals).
-7. Export + `CHANGELOG`; consider version `0.2.0`.
+3. **Compact vs expanded layout** for phone field and picker (see `responsive-adaptive.mdc`) —
+   stack/tight row on narrow; single row / centered dialog on wide.
+4. Constructor: initial dial/local or full E.164 string; `onChanged` with structured value (dial + local ± formatted).
+5. Paste `+…` → parse and update dial/local without layout jump or overflow.
+6. Theme tokens for density/padding if shared; else constructor.
+7. Widget tests: paste, dial change, **compact + expanded** width, textScale 1.3.
+8. Previews: empty, EG dial, compact card + expanded card, dark.
+9. Export + `CHANGELOG`; consider version `0.2.0`.
 
 ### Done when
 - Phone happy path + paste + size test green; documented in README Features.

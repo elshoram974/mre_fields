@@ -83,6 +83,9 @@ Hosts must be able to **adopt**, **override**, or **use a piece** of this packag
    or build their own field from exported pieces.
 4. **No hard cross-feature deps** — `MreTextField` must not require phone/country
    code to compile or run.
+5. **Responsive / adaptive** — layout from constraints (compact / expanded), not
+   `Platform.isX`. Desktop gets dialogs/density; phone gets touch targets and
+   sheets. Rule: `.cursor/rules/responsive-adaptive.mdc`.
 
 Rule: `.cursor/rules/extensibility.mdc` (always apply). Also `theming.mdc`,
 `package-api.mdc`.
@@ -239,6 +242,7 @@ Do not publish unprompted.
 |---|---|
 | Always-on standards | `.cursor/rules/project-standards.mdc` |
 | Extensibility | `.cursor/rules/extensibility.mdc` |
+| Responsive / adaptive | `.cursor/rules/responsive-adaptive.mdc` |
 | Public API | `.cursor/rules/package-api.mdc` |
 | Theming | `.cursor/rules/theming.mdc` |
 | Port from ledger | `.cursor/skills/port-field-from-ledger` |

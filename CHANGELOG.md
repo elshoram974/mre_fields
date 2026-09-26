@@ -14,3 +14,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ROADMAP.md` — ordered steps 1–8 with a concrete plan per step.
 - Extensibility rules: host theme colors, overridable params, small composable widgets/helpers.
 - Skills: `add-example-app`, `publish-to-pub-dev`; CLAUDE sections for preview / pub.dev / opening the workspace.
+- Responsive/adaptive rules for phone–desktop field layouts (constraints, not Platform).
