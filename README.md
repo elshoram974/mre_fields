@@ -10,6 +10,8 @@ navigation; this package owns **input behaviour**.
 
 Early (`0.x`). Public API may change; see `CHANGELOG.md`.
 
+**What to build next:** see [`ROADMAP.md`](./ROADMAP.md) (steps 1→8 with a plan for each).
+
 ## Planned surface
 
 | Widget / type | Role |

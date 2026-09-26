@@ -7,6 +7,8 @@ This file is the source of truth for agents and humans. Cursor rules under
 `.cursor/rules/` reinforce the parts that break most often. Skills under
 `.cursor/skills/` are step-by-step workflows.
 
+**Implementation plan (steps + per-step checklist):** [`ROADMAP.md`](./ROADMAP.md)
+
 ## What this package is
 
 | In scope | Out of scope |
@@ -195,3 +197,4 @@ into this package.
 | Full test gate | `.cursor/skills/full-regression-test` |
 | Widget previews | `.cursor/skills/add-widget-preview` |
 | Flutter SDK | `.cursor/rules/flutter-version.mdc` (no FVM) |
+| Step-by-step build plan | [`ROADMAP.md`](./ROADMAP.md) |
