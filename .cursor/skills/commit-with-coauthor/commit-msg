@@ -1,0 +1,23 @@
+#!/bin/sh
+# Append the repo owner's Co-Authored-By trailer to every commit message.
+#
+# Install (hooks are not tracked, so this is once per clone):
+#   cp .cursor/skills/commit-with-coauthor/commit-msg .git/hooks/
+#   chmod +x .git/hooks/commit-msg
+#
+# commit-msg, not prepare-commit-msg: prepare runs *before* the editor, so on
+# an interactive commit it would drop the trailer into an empty file and the
+# subject would end up typed underneath it. This one runs once the message is
+# final, whether it came from -m, an editor, or --amend.
+#
+# $1 = path to the commit message file
+
+set -e
+
+TRAILER='Co-Authored-By: Mohammed El Shora <riyadm2001@gmail.com>'
+
+# addIfDifferent keeps a co-author that is already there and never writes this
+# one twice, so an amend stays idempotent. git finds the trailer block itself,
+# which is what gets the blank-line separation and comment stripping right.
+git interpret-trailers --in-place --if-exists addIfDifferent \
+	--trailer "$TRAILER" "$1"

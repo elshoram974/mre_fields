@@ -1,39 +1,61 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# mre_fields
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
+Reusable Flutter **form field widgets** for MRE apps — bidirectional text, phone
+with country code, and suggestion chips.
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
+First consumer: [MRE CashBook](../ledger). Host apps own branding, copy, and
+navigation; this package owns **input behaviour**.
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+## Status
 
-## Features
+Early (`0.x`). Public API may change; see `CHANGELOG.md`.
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+## Planned surface
 
-## Getting started
+| Widget / type | Role |
+|---|---|
+| `MreTextField` | Text field with live BIDI, clear, select-on-focus, suggestions |
+| `MrePhoneField` | Dial code + local number |
+| `MreCountryCodePicker` | Searchable dial-code sheet |
+| `MreFieldsTheme` | `ThemeExtension` for radii / paddings / shared tokens |
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
+## Theming
 
 ```dart
-const like = 'sample';
+MaterialApp(
+  theme: ThemeData(
+    extensions: const [
+      MreFieldsTheme(
+        // fieldBorderRadius, contentPadding, …
+      ),
+    ],
+  ),
+  home: /* … */,
+);
 ```
 
-## Additional information
+Colors and typography come from Material `Theme`. Pass already-translated
+strings into `hintText` / `labelText` — the package does not ship `.tr()`.
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+## Use from CashBook (path)
+
+```yaml
+# ledger/pubspec.yaml
+dependencies:
+  mre_fields:
+    path: ../mre_fields
+```
+
+## Agents / contributors
+
+- **Source of truth:** [`CLAUDE.md`](./CLAUDE.md)
+- **Cursor rules:** `.cursor/rules/`
+- **Skills:** `.cursor/skills/` (port from ledger, add field, tests, release, co-author commits)
+
+## Development
+
+```bash
+flutter pub get
+flutter analyze
+flutter test
+```

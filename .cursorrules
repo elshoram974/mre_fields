@@ -1,0 +1,20 @@
+Git Commit Message Generation Rules
+
+When generating a Git commit message using the Source Control (SCM) AI button, you MUST strictly adhere to the following logic and format. No exceptions are allowed.
+
+Context & Scope Analysis (CRITICAL):
+1. Target Staged Changes First: analyze ONLY currently staged changes. Ignore unstaged files if staged files exist.
+2. Fallback: if and only if there are NO staged changes, analyze all pending changes.
+3. Base the message strictly on the actual code diff — do not hallucinate features.
+
+Format Structure:
+- A single Conventional Commit title (e.g. feat(text): …, fix(phone): …, chore(release): …).
+- A single mandatory blank line.
+- A detailed bulleted list of technical what + why.
+- End with a blank line and exactly:
+  Co-Authored-By: Mohammed El Shora <riyadm2001@gmail.com>
+
+Constraints:
+- Output ONLY the commit message — no conversational wrapper.
+- Title under 72 characters, imperative mood, present tense.
+- Focus on architectural intent and the problem solved.
