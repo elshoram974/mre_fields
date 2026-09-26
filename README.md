@@ -23,9 +23,13 @@ Early (`0.x`). Public API may change; see `CHANGELOG.md`.
 
 ## Theming
 
+Plug into the **host** theme — we take their colors; they add field tokens:
+
 ```dart
 MaterialApp(
   theme: ThemeData(
+    colorScheme: hostScheme,
+    inputDecorationTheme: hostInputs,
     extensions: const [
       MreFieldsTheme(
         // fieldBorderRadius, contentPadding, …
@@ -36,8 +40,9 @@ MaterialApp(
 );
 ```
 
-Colors and typography come from Material `Theme`. Pass already-translated
-strings into `hintText` / `labelText` — the package does not ship `.tr()`.
+Per-widget constructor params override the extension. Pieces (helpers, bars,
+pickers) can be used without taking the full field widgets — see
+`.cursor/rules/extensibility.mdc`.
 
 ## Use from CashBook (path)
 

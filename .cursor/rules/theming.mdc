@@ -1,31 +1,37 @@
 ---
-description: MreFieldsTheme + Material Theme — no AppColors / AppSizes / global initialize
+description: MreFieldsTheme + host Material Theme — colors from the app, tokens from extension, params override
 globs: "lib/**/*.dart"
 alwaysApply: false
 ---
 # Theming
 
+See also **extensibility.mdc** (always on).
+
 ## Rules
 
-- Read sizes/radii/paddings from `MreFieldsTheme` (`ThemeExtension`).
-- Read colors/typography from `Theme.of(context)` (`colorScheme`, `textTheme`, `inputDecorationTheme`).
-- Widget params override theme for that instance.
-- **Do not** add `MreFields.initialize(...)` mutable globals — hosts wire theme once on `MaterialApp`.
-- **Do not** import CashBook `AppSizes`, `AppColorsExtension`, or `context.colors`.
+- **Colors / type / input chrome:** `Theme.of(context)` — `colorScheme`, `textTheme`, `inputDecorationTheme`. Host “inits” by using their normal `ThemeData`; we inherit it.
+- **Field tokens (radius, padding, gaps):** `MreFieldsTheme` as `ThemeExtension`, registered next to the host theme:
+  ```dart
+  theme: ThemeData(
+    colorScheme: hostScheme,
+    inputDecorationTheme: hostInputs,
+    extensions: [
+      MreFieldsTheme(
+        fieldBorderRadius: 12,
+        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      ),
+    ],
+  ),
+  ```
+- Widget constructor params **override** `MreFieldsTheme` for that instance.
+- Sensible const defaults when the extension is missing (previews / quick demos).
+- **Do not** add mutable `MreFields.initialize(...)`.
+- **Do not** import CashBook `AppSizes` / `AppColorsExtension` / `context.colors`.
 
-## Host wiring (document in README / dartdoc)
+## Optional helpers
 
-```dart
-theme: ThemeData(
-  extensions: [
-    MreFieldsTheme(
-      fieldBorderRadius: 12,
-      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-    ),
-  ],
-),
-```
+- A factory like `MreFieldsTheme.defaults` or `MreFieldsTheme.fromColorScheme` is fine if it only derives package tokens — never replaces the host `ThemeData`.
 
 ## Optional tokens
 
-Only add a theme field when a second call site needs the same knob. One-off → constructor param.
+Add a theme field when ≥2 widgets share the knob, or when hosts will theme it globally. One-off → constructor param (still prefer exposing it).

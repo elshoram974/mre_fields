@@ -64,18 +64,39 @@ lib/
 ```
 
 - One barrel: `package:mre_fields/mre_fields.dart`.
-- Nothing under `src/` is imported by apps directly.
+- Nothing under `src/` is imported by apps directly (keep `src/` modular for future slim exports).
 - Breaking public API → bump **major** (once past `1.0.0`) or document in
   `CHANGELOG.md` while still `0.x`.
 
-### Theming (not global `initialize`)
+### Extensibility (non-negotiable)
+
+Hosts must be able to **adopt**, **override**, or **use a piece** of this package:
+
+1. **Theme with the host app** — colors/typography/`InputDecoration` from
+   `Theme.of(context)`. Register `MreFieldsTheme` on the same `ThemeData` the
+   app already builds (extensions). No brand colors inside the package. No
+   mutable global `initialize`.
+2. **Override per widget** — constructor params beat theme; theme beats defaults.
+   Expose Material pass-through knobs even when our demos leave them null.
+3. **Small units** — pure helpers, suggestion/clear/dial pieces, picker body, and
+   full fields are separate. A host can take phone parse without `MrePhoneField`,
+   or build their own field from exported pieces.
+4. **No hard cross-feature deps** — `MreTextField` must not require phone/country
+   code to compile or run.
+
+Rule: `.cursor/rules/extensibility.mdc` (always apply). Also `theming.mdc`,
+`package-api.mdc`.
+
+### Theming (host ThemeData + extension)
 
 ```dart
 MaterialApp(
   theme: ThemeData(
+    colorScheme: hostScheme,           // package reads this
+    inputDecorationTheme: hostInputs,  // package reads this
     extensions: const [
       MreFieldsTheme(
-        // radii, contentPadding, suggestion chip style tokens…
+        // radii, contentPadding, suggestion gaps — field tokens only
       ),
     ],
   ),
@@ -83,11 +104,7 @@ MaterialApp(
 );
 ```
 
-Widget constructor params override the theme for that instance. Prefer
-`ThemeExtension` over a mutable static `MreFields.initialize(...)`.
-
-Colors: use `Theme.of(context).colorScheme` / `textTheme` / `InputDecorationTheme`.
-Optional extra tokens go on `MreFieldsTheme` — never import CashBook colors.
+Widget constructor params override the theme for that instance.
 
 ### Localization
 
@@ -187,6 +204,7 @@ into this package.
 | Need | Open |
 |---|---|
 | Always-on standards | `.cursor/rules/project-standards.mdc` |
+| Extensibility (host theme, overrides, pieces) | `.cursor/rules/extensibility.mdc` |
 | Public API / barrel / naming | `.cursor/rules/package-api.mdc` |
 | Theme + no app colors | `.cursor/rules/theming.mdc` |
 | What to copy from ledger | `.cursor/rules/port-from-ledger.mdc` |

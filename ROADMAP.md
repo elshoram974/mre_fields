@@ -29,27 +29,34 @@ Already done: package created, agent docs/rules/skills, preview harness placehol
 ## Step 1 — `MreFieldsTheme` `[ ]`
 
 ### Goal
-Host apps configure radii / paddings / shared field tokens once on `MaterialApp`. Widgets read theme; constructor params override.
+Host apps plug field tokens into **their existing** `ThemeData`. Colors come from
+the host `colorScheme` / `inputDecorationTheme`; we only add radii/paddings/gaps.
+Every later widget must honor: **param → theme → Material default**.
 
 ### Plan
 1. Add `lib/src/theme/mre_fields_theme.dart` as a `ThemeExtension<MreFieldsTheme>`.
 2. Start with a **small** token set only what `MreTextField` will need:
    - `borderRadius` (or `fieldBorderRadius`)
    - `contentPadding`
-   - maybe `suggestionChipHeight` / horizontal gap — **only if** the text field uses them in step 2
-3. Implement `copyWith`, `lerp`, and `MreFieldsTheme.of(context)` with a sensible **const default** when the extension is missing (so demos don’t crash).
-4. Export from `lib/mre_fields.dart`.
-5. Unit-ish / smoke: `of(context)` returns defaults without extension; with extension returns host values.
-6. Wire defaults into `lib/src/previews/preview_harness.dart`.
-7. Document host snippet in README (already sketched) + dartdoc on the class.
-8. `CHANGELOG` under Unreleased.
+   - maybe suggestion chip spacing — **only if** step 3 uses it
+3. Implement `copyWith`, `lerp`, and `MreFieldsTheme.of(context)` with a sensible
+   **const default** when the extension is missing.
+4. Optional factory `MreFieldsTheme.defaults` / derive from `ColorScheme` for
+   tokens only — must not replace host colors.
+5. Export from `lib/mre_fields.dart`.
+6. Smoke: `of(context)` without extension; with extension returns host values.
+7. Wire into `lib/src/previews/preview_harness.dart` using a normal `ThemeData`
+   (prove we inherit `colorScheme`).
+8. Document “register next to your theme” in README + dartdoc (extensibility).
+9. `CHANGELOG` under Unreleased.
 
 ### Done when
-- Analyze clean; theme resolves with/without host registration; README shows one copy-paste example.
+- Analyze clean; theme resolves with/without host registration; README shows
+  copy-paste with host `colorScheme` + `MreFieldsTheme` together.
 
 ### Do not
-- Add CashBook `AppSizes` names or colors.
-- Add a global `initialize(...)`.
+- Ship a package color palette or mutable `initialize`.
+- Name tokens after CashBook `AppSizes`.
 
 ---
 

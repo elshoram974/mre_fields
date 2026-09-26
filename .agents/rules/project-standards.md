@@ -36,5 +36,6 @@ Flag public API removals explicitly (exported class, constructor param, theme to
 
 - No CashBook imports (`app_sizes`, `context.colors`, `.tr()`, `go_router`, blocs, prefs).
 - No `.tr()` / translation maps inside this package — hosts pass strings.
-- Styling via `Theme` + `MreFieldsTheme`, not a mutable global `initialize`.
-- Export only through `lib/mre_fields.dart`.
+- Styling via host `Theme` + `MreFieldsTheme`, not a mutable global `initialize`.
+- Export only through `lib/mre_fields.dart` (keep `src/` composable).
+- Follow **extensibility.mdc**: overridable params, small pieces, host colors.
