@@ -17,6 +17,31 @@ void main() {
       expect(detectTextDirection('ہیلو دنیا'), TextDirection.rtl);
     });
 
+    test('every right to left script is rtl', () {
+      const samples = {
+        'Arabic': 'مرحبا',
+        'Hebrew': 'שלום',
+        'Persian': 'سلام',
+        'Urdu': 'ہیلو',
+        'Pashto': 'سلام ملګریه',
+        'Kurdish Sorani': 'سڵاو',
+        'Syriac': 'ܫܠܡܐ',
+        'Thaana (Dhivehi)': 'ހެލޯ',
+        'NKo': 'ߊߟߎ߫',
+        'Samaritan': 'ࠔࠋࠌ',
+        'Mandaic': 'ࡀࡁࡂ',
+        'Hebrew presentation form': '\uFB2A',
+        'Arabic presentation form': '\uFE8D',
+        'Phoenician (astral)': '\u{10900}',
+        'Adlam (astral)': '\u{1E921}',
+        'Arabic mathematical (astral)': '\u{1EE01}',
+      };
+
+      for (final MapEntry(:key, :value) in samples.entries) {
+        expect(detectTextDirection(value), TextDirection.rtl, reason: key);
+      }
+    });
+
     test('English and other left to right scripts are ltr', () {
       expect(detectTextDirection('Hello'), TextDirection.ltr);
       expect(detectTextDirection('Привет'), TextDirection.ltr);
