@@ -9,11 +9,13 @@
 /// ## Topics
 ///
 ///  * **Theme**: [MREFieldsTheme], [MREFieldsStrings], [MREWindowSize].
-///  * **Text**: [detectTextDirection], [MREAutoText], [MRETextDirection],
+///  * **Text**: [detectTextDirection], [detectStrongTextDirection],
+///    [MREAutoText], [MREAutoDirectionText], [MRETextDirection],
 ///    [MREDirectionalWidget], [safeDisplayText].
 library;
 
 export 'src/text/mre_auto_text.dart';
+export 'src/text/mre_text_extensions.dart';
 export 'src/text/text_direction.dart';
 export 'src/theme/mre_fields_strings.dart';
 export 'src/theme/mre_fields_theme.dart';

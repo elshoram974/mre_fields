@@ -84,7 +84,28 @@ void main() {
     });
   });
 
+  group('detectStrongTextDirection', () {
+    test('returns null without a strong letter', () {
+      expect(detectStrongTextDirection(''), isNull);
+      expect(detectStrongTextDirection('12345 -'), isNull);
+      expect(detectStrongTextDirection('😀'), isNull);
+    });
+
+    test('returns the direction of the first word with a letter', () {
+      expect(detectStrongTextDirection('(#1) مرحبا'), TextDirection.rtl);
+      expect(detectStrongTextDirection('2024 Report مرحبا'), TextDirection.ltr);
+      expect(detectStrongTextDirection('Wi-Fi مرحبا'), TextDirection.ltr);
+    });
+  });
+
   group('MRETextDirection', () {
+    test('autoTextAlign is the side the content starts on', () {
+      expect('مرحبا'.autoTextAlign, TextAlign.right);
+      expect('Hello'.autoTextAlign, TextAlign.left);
+      expect('12345'.autoTextAlign, TextAlign.start);
+      expect(''.autoTextAlign, TextAlign.start);
+    });
+
     test('getters follow detectTextDirection', () {
       expect('مرحبا'.textDirection, TextDirection.rtl);
       expect('مرحبا'.isRtl, isTrue);

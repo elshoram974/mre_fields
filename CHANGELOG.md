@@ -11,5 +11,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `MREFieldsTheme` theme extension: field border radius, content padding (compact and expanded), window-size breakpoints, and `MREWindowSize` classification. Works without registration through `MREFieldsTheme.defaults`.
 - `MREFieldsStrings`: one immutable set of user-visible texts with English defaults, so every field text can be localized.
-- Text direction: `detectTextDirection` (first strong letter, constant cost), `String` getters `textDirection`, `isRtl`, `directionOr`, the `MREAutoText` widget (also `MREAutoText.rich`), `Widget.withTextDirection`, and `safeDisplayText` for unpaired surrogates.
+- Text direction: `detectTextDirection` and `detectStrongTextDirection` (first word with a letter decides, constant cost), `String` getters `textDirection`, `isRtl`, `directionOr`, `autoTextAlign`, the `MREAutoText` widget (every `Text` parameter, plus `autoAlign`; also `MREAutoText.rich`), `Text.autoDirection()` and `Text.autoAlign()`, `Widget.withTextDirection`, and `safeDisplayText` for unpaired surrogates.
 - `@MREPreview()` annotation to preview any widget in light, dark, right to left, large text, narrow and wide layouts.

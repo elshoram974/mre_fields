@@ -28,7 +28,35 @@ void main() {
       TextDirection.ltr,
       TextDirection.rtl,
       TextDirection.rtl,
+      TextDirection.rtl,
     ]);
+  });
+
+  testWidgets('styled: keeps the style and pins the alignment', (tester) async {
+    await tester.pumpWidget(_host(styledAutoText()));
+
+    final text = tester.widget<Text>(find.byType(Text));
+    expect(text.style?.fontSize, 20);
+    expect(text.maxLines, 1);
+    expect(text.textDirection, TextDirection.rtl);
+    expect(text.textAlign, TextAlign.right);
+  });
+
+  testWidgets('text_extension: Arabic and English names', (tester) async {
+    await tester.pumpWidget(_host(textExtension('محمد')));
+    var text = tester.widget<Text>(find.byType(Text));
+    expect(text.textDirection, TextDirection.rtl);
+    expect(text.textAlign, TextAlign.right);
+    expect(text.style?.fontSize, 20);
+
+    await tester.pumpWidget(_host(textExtension('Mohamed')));
+    text = tester.widget<Text>(find.byType(Text));
+    expect(text.textDirection, TextDirection.ltr);
+    expect(text.textAlign, TextAlign.left);
+  });
+
+  test('align_getter: matches the comments in the example', () {
+    expect(alignExamples(), [TextAlign.right, TextAlign.left, TextAlign.start]);
   });
 
   test('extension_getters: matches the comments in the example', () {

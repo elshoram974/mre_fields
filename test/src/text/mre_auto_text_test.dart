@@ -6,8 +6,11 @@ Widget _app(Widget child, {TextDirection ambient = TextDirection.ltr}) {
   return Directionality(textDirection: ambient, child: child);
 }
 
-TextDirection? _directionOf(WidgetTester tester) {
-  return tester.widget<RichText>(find.byType(RichText)).textDirection;
+/// The direction the text really lays out with, own or inherited.
+TextDirection _directionOf(WidgetTester tester) {
+  final rich = tester.widget<RichText>(find.byType(RichText));
+  return rich.textDirection ??
+      Directionality.of(tester.element(find.byType(RichText)));
 }
 
 void main() {
@@ -70,6 +73,62 @@ void main() {
       expect(text.overflow, TextOverflow.ellipsis);
       expect(text.textAlign, TextAlign.center);
       expect(text.semanticsLabel, 'greeting');
+    });
+
+    testWidgets('passes the remaining Text parameters through', (tester) async {
+      await tester.pumpWidget(
+        _app(
+          const MREAutoText(
+            'Hello',
+            style: TextStyle(fontSize: 30),
+            locale: Locale('en'),
+            textWidthBasis: TextWidthBasis.longestLine,
+            textHeightBehavior: TextHeightBehavior(
+              applyHeightToFirstAscent: false,
+            ),
+            selectionColor: Colors.red,
+            semanticsIdentifier: 'greeting-id',
+          ),
+        ),
+      );
+
+      final text = tester.widget<Text>(find.byType(Text));
+      expect(text.style?.fontSize, 30);
+      expect(text.locale, const Locale('en'));
+      expect(text.textWidthBasis, TextWidthBasis.longestLine);
+      expect(text.selectionColor, Colors.red);
+      expect(text.semanticsIdentifier, 'greeting-id');
+    });
+
+    testWidgets('autoAlign pins Arabic to the right and English to the left', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _app(const MREAutoText('مرحبا', autoAlign: true)),
+      );
+      expect(tester.widget<Text>(find.byType(Text)).textAlign, TextAlign.right);
+
+      await tester.pumpWidget(
+        _app(const MREAutoText('Hello', autoAlign: true)),
+      );
+      expect(tester.widget<Text>(find.byType(Text)).textAlign, TextAlign.left);
+    });
+
+    testWidgets('textAlign wins over autoAlign', (tester) async {
+      await tester.pumpWidget(
+        _app(
+          const MREAutoText(
+            'مرحبا',
+            autoAlign: true,
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+
+      expect(
+        tester.widget<Text>(find.byType(Text)).textAlign,
+        TextAlign.center,
+      );
     });
 
     testWidgets('rich text follows the plain text of its spans', (

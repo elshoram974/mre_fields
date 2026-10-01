@@ -16,6 +16,8 @@ Widget previewAutoText() {
       MREAutoText('hello مرحبا'),
       MREAutoText('12345'),
       MREAutoText('مرحبا', textDirection: TextDirection.ltr),
+      MREAutoText('مرحبا', autoAlign: true, style: TextStyle(fontSize: 20)),
+      MREAutoText('Hello', autoAlign: true, style: TextStyle(fontSize: 20)),
     ],
   );
 }
