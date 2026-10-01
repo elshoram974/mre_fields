@@ -3,8 +3,10 @@ dartdoc:
   categories:
     "Theme":
       markdown: doc/theme.md
-    # Add "Text", "Phone" and "Attachments" here, each with its own
-    # doc/<name>.md guide, in the same change that ships their widgets.
+    "Text":
+      markdown: doc/text.md
+    # Add "Phone" and "Attachments" here, each with its own doc/<name>.md
+    # guide, in the same change that ships their widgets.
   showUndocumentedCategories: false
   linkTo:
     url: "https://pub.dev/documentation/mre_fields/%v%/"

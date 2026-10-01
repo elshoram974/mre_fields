@@ -5,6 +5,7 @@ values Material does not have: corner radius, padding, breakpoints and texts.
 
 Register the extension on your theme. Every field below it uses these values.
 
+<!-- snippet: global -->
 ```dart
 final app = MaterialApp(
   theme: ThemeData(
@@ -23,6 +24,7 @@ final app = MaterialApp(
 
 Start from the defaults and replace only what you need.
 
+<!-- snippet: copy_with -->
 ```dart
 final tokens = MREFieldsTheme.defaults.copyWith(fieldBorderRadius: 4);
 ```
@@ -32,6 +34,7 @@ final tokens = MREFieldsTheme.defaults.copyWith(fieldBorderRadius: 4);
 Register the extension on **both** themes. A theme without it falls back to the
 defaults.
 
+<!-- snippet: light_dark -->
 ```dart
 const fields = MREFieldsTheme(fieldBorderRadius: 16);
 
@@ -57,6 +60,7 @@ A field measures the width it really gets and picks a size.
 
 Move the limits:
 
+<!-- snippet: breakpoints -->
 ```dart
 const tokens = MREFieldsTheme(
   compactBreakpoint: 480,
@@ -66,6 +70,7 @@ const tokens = MREFieldsTheme(
 
 ## Use the tokens in your own widget
 
+<!-- snippet: read_tokens -->
 ```dart
 /// A custom widget that follows the same tokens and breakpoints as the fields.
 class AdaptiveBox extends StatelessWidget {
@@ -95,6 +100,7 @@ class AdaptiveBox extends StatelessWidget {
 Every text a field shows is in `MREFieldsStrings`, in English by default. Swap
 it when the app locale changes:
 
+<!-- snippet: strings -->
 ```dart
 /// Returns the field texts for [locale]. English is the fallback.
 MREFieldsStrings stringsFor(Locale locale) {

@@ -63,7 +63,7 @@ Shipped: `MREFieldsTheme` (radius, two paddings, two breakpoints, `strings`), `M
 
 ---
 
-## Step 2 — Text direction layer (BIDI + safe UTF-16) `[ ]`
+## Step 2 — Text direction layer (BIDI + safe UTF-16) `[x]`
 
 ### Goal
 Pure helpers the field needs, stripped of PDF / CashBook extras — and the same
@@ -83,6 +83,9 @@ widget extension (see `.cursor/rules/text-direction.mdc`, skill
 5. Unit tests: empty string, Arabic → RTL, English → LTR, unpaired surrogates → U+FFFD.
 6. Export helpers only if hosts need them; otherwise keep library-private and export later if CashBook asks.
 7. `CHANGELOG`.
+
+### Result
+Shipped without `intl`: own first-strong detection (Closure ranges, Arabic-Indic digits and emoji neutral, 256-unit scan cap), `MRETextDirection` getters, `MREAutoText`, `withTextDirection`, `safeDisplayText`. Guide `doc/text.md`, previews via `@MREPreview()`.
 
 ### Done when
 - Tests green for direction + safe text; no PDF imports; `rg pdfReshaped lib/` empty.

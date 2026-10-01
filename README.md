@@ -1,58 +1,54 @@
 # mre_fields
 
-Reusable Flutter **form field widgets** for MRE apps — bidirectional text, phone
-with country code, and suggestion chips.
+Form field widgets for Flutter: text that follows its language, phone numbers
+with country codes, and suggestions. Fields use your `ThemeData`, and every
+value can be changed globally or per field.
 
-First consumer: [MRE CashBook](../ledger). Host apps own branding, copy, and
-navigation; this package owns **input behaviour**.
+> Early release (`0.x`). The public API can change; see
+> [CHANGELOG.md](CHANGELOG.md).
 
 ## Contents
 
-- [Status](#status)
-- [Planned surface](#planned-surface)
+- [Available now](#available-now)
+- [Install](#install)
 - [Theming](#theming) — guide: [doc/theme.md](doc/theme.md)
-- [Use from CashBook](#use-from-cashbook-path)
+- [Text direction](#text-direction) — guide: [doc/text.md](doc/text.md)
+- [Planned](#planned)
 - [Development](#development)
 
-## Status
+## Available now
 
-Early (`0.x`). Public API may change; see `CHANGELOG.md`.
-
-**What to build next:** see [`ROADMAP.md`](./ROADMAP.md) (steps 1→8 with a plan for each).
-
-Open this folder as the Cursor workspace so agents load `CLAUDE.md` / rules automatically.
-
-### Try widgets
-- **Preview:** Flutter Widget Preview panel, or `flutter widget-preview start`
-- **Example app:** (after it exists) `cd example && flutter run` — skill `add-example-app`
-- **Publish:** skill `publish-to-pub-dev` → `flutter pub publish --dry-run` then publish
-
-## Planned surface
-
-| Widget / type | Role |
+| Piece | What it does |
 |---|---|
-| `MRETextField` | Text field with live BIDI, clear, select-on-focus, suggestions |
-| `MREPhoneField` | Dial code + local number |
-| `MRECountryCodePicker` | Searchable dial-code sheet |
-| `MREFieldsTheme` | `ThemeExtension` for radii / paddings / shared tokens |
+| `MREFieldsTheme` | Radius, padding, breakpoints and texts, set once on your `ThemeData` |
+| `MREFieldsStrings` | Every text a field shows, ready for translation |
+| `MREAutoText` | `Text` that reads right to left or left to right from its content |
+| `detectTextDirection`, `MRETextDirection` | Direction of a string, as a function or as getters |
+| `MREDirectionalWidget.withTextDirection` | Gives any widget the direction of a text |
+| `safeDisplayText` | Removes broken characters that make Flutter throw |
+
+## Install
+
+```yaml
+dependencies:
+  mre_fields: ^0.1.0
+```
+
+```dart
+import 'package:mre_fields/mre_fields.dart';
+```
 
 ## Theming
 
-Fields take colors, typography and input chrome from your own `ThemeData`.
-Register `MREFieldsTheme` on the same theme to tune radius, padding,
-breakpoints and texts:
+Colors and fonts come from your `ThemeData`. Register the field values on it:
 
 ```dart
 MaterialApp(
   theme: ThemeData(
-    colorScheme: hostScheme,
-    inputDecorationTheme: hostInputs,
     extensions: const [
       MREFieldsTheme(
         fieldBorderRadius: 16,
         contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        expandedContentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        strings: MREFieldsStrings(clearTooltip: 'Clear'),
       ),
     ],
   ),
@@ -60,36 +56,37 @@ MaterialApp(
 );
 ```
 
-Precedence: widget parameter, then `MREFieldsTheme`, then the built-in default.
-Without a registered extension, `MREFieldsTheme.defaults` applies.
+Order of priority: a widget parameter, then `MREFieldsTheme`, then the default.
+Dark mode, breakpoints and translated texts are in [doc/theme.md](doc/theme.md).
 
-Localization: pass your translated texts through `MREFieldsStrings`. The
-package ships English defaults only.
+## Text direction
 
-## Use from CashBook (path)
+```dart
+const MREAutoText('مرحبا بالعالم'); // right to left
+const MREAutoText('Hello world'); // left to right
 
-```yaml
-# ledger/pubspec.yaml
-dependencies:
-  mre_fields:
-    path: ../mre_fields
+detectTextDirection('123 مرحبا'); // TextDirection.rtl
 ```
 
-## Agents / contributors
+More in [doc/text.md](doc/text.md).
 
-- **Source of truth:** [`CLAUDE.md`](./CLAUDE.md)
-- **Cursor rules:** `.cursor/rules/`
-- **Skills:** `.cursor/skills/` (port from ledger, add field, tests, release, co-author commits)
+## Planned
+
+| Piece | Role |
+|---|---|
+| `MRETextField` | Text field with live direction, clear button, suggestions, optional image paste |
+| `MREPhoneField` | Dial code and local number, validation for every country |
+| `MRECountryCodePicker` | Searchable country list |
 
 ## Development
-
-No FVM — use the Flutter SDK on your PATH (stable, 3.38+):
 
 ```bash
 flutter pub get
 flutter analyze
 flutter test
-flutter widget-preview start   # IDE: Flutter Widget Preview panel
+flutter widget-preview start
 ```
 
-Regression expectations: `.cursor/rules/full-regression.mdc` and `test-field-sizes.mdc`.
+Every widget can be previewed. Add `@MREPreview()` to a top-level function that
+returns the widget, and the previewer shows it in light, dark, right to left,
+large text, narrow and wide.

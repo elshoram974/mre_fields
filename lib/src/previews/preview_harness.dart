@@ -1,33 +1,102 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widget_previews.dart';
 
 import '../theme/mre_fields_theme.dart';
 
-/// Shared wrapper for Widget Previewer and local sandbox screens.
+/// Space around a previewed widget, like a form row.
+const double _previewPadding = 16;
+
+/// Wraps a previewed widget in a themed surface.
 ///
-/// Builds a plain Material theme with [MREFieldsTheme] registered, to show
-/// that the fields inherit the host color scheme.
-ThemeData mreFieldsPreviewTheme({Brightness brightness = Brightness.light}) {
-  final base = ThemeData(
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: const Color(0xFF005F73),
-      brightness: brightness,
-    ),
-    useMaterial3: true,
-    extensions: const [MREFieldsTheme()],
+/// Keeps the color scheme and brightness the previewer chose and registers
+/// [MREFieldsTheme] on it, so a preview shows what a host app would see.
+/// Use it as `@Preview(wrapper: mrePreviewWrapper)`, or through
+/// [MREPreview], which already does.
+Widget mrePreviewWrapper(Widget child) {
+  return Builder(
+    builder: (context) {
+      final theme = Theme.of(context);
+      return Theme(
+        data: theme.copyWith(
+          extensions: [
+            ...theme.extensions.values.where((e) => e is! MREFieldsTheme),
+            MREFieldsTheme.of(context),
+          ],
+        ),
+        child: Material(
+          color: theme.colorScheme.surface,
+          child: Padding(
+            padding: const EdgeInsets.all(_previewPadding),
+            child: Align(
+              alignment: AlignmentDirectional.topStart,
+              child: child,
+            ),
+          ),
+        ),
+      );
+    },
   );
-  return base;
 }
 
-/// Pads [child] like a form row so unconstrained fields don't fill the preview.
-Widget mreFieldsPreviewScaffold(Widget child) {
-  return MaterialApp(
-    debugShowCheckedModeBanner: false,
-    theme: mreFieldsPreviewTheme(),
-    darkTheme: mreFieldsPreviewTheme(brightness: Brightness.dark),
-    home: Scaffold(
-      body: SafeArea(
-        child: Padding(padding: const EdgeInsets.all(16), child: child),
-      ),
-    ),
+/// Like [mrePreviewWrapper], with right-to-left layout.
+Widget mrePreviewRtlWrapper(Widget child) {
+  return Directionality(
+    textDirection: TextDirection.rtl,
+    child: mrePreviewWrapper(child),
   );
+}
+
+/// Previews one widget in every state a field must survive.
+///
+/// Put it on any top-level function that takes no arguments and returns a
+/// [Widget]:
+///
+/// ```dart
+/// @MREPreview()
+/// Widget previewMyField() => const MyField();
+/// ```
+///
+/// The previewer shows six cards: light, dark, right to left, text scale 1.3,
+/// a narrow window (390) and a wide window (1024).
+final class MREPreview extends MultiPreview {
+  /// Creates the annotation.
+  const MREPreview({this.group = 'mre_fields'});
+
+  /// The previewer group the cards appear in.
+  final String group;
+
+  @override
+  List<Preview> get previews => [
+    Preview(
+      group: group,
+      name: 'Light',
+      brightness: Brightness.light,
+      wrapper: mrePreviewWrapper,
+    ),
+    Preview(
+      group: group,
+      name: 'Dark',
+      brightness: Brightness.dark,
+      wrapper: mrePreviewWrapper,
+    ),
+    Preview(group: group, name: 'RTL', wrapper: mrePreviewRtlWrapper),
+    Preview(
+      group: group,
+      name: 'Text scale 1.3',
+      textScaleFactor: 1.3,
+      wrapper: mrePreviewWrapper,
+    ),
+    Preview(
+      group: group,
+      name: 'Narrow 390',
+      size: const Size.fromWidth(390),
+      wrapper: mrePreviewWrapper,
+    ),
+    Preview(
+      group: group,
+      name: 'Wide 1024',
+      size: const Size.fromWidth(1024),
+      wrapper: mrePreviewWrapper,
+    ),
+  ];
 }
