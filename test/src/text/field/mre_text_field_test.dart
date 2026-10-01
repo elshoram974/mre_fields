@@ -120,7 +120,7 @@ void main() {
         var rebuilds = 0;
         // The field rebuilds through a ValueListenableBuilder over its flags.
         debugOnRebuildDirtyWidget = (element, builtOnce) {
-          if (element.widget.runtimeType.toString().contains('_FieldFlags')) {
+          if (element.widget.runtimeType.toString().contains('hasText')) {
             rebuilds++;
           }
         };

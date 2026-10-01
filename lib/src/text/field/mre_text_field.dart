@@ -1,40 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../attachments/mre_image_paste_behavior.dart';
-import '../attachments/mre_image_paste_scope.dart';
-import '../theme/mre_fields_theme.dart';
-import 'mre_field_clear_button.dart';
+import '../../attachments/paste/mre_image_paste_behavior.dart';
+import '../../attachments/paste/mre_image_paste_scope.dart';
+import '../../theme/mre_fields_theme.dart';
+import '../../theme/mre_window_size.dart';
+import '../../internal/mre_owned.dart';
 import 'mre_safe_text_editing_controller.dart';
-import 'mre_suggestion_bar.dart';
 import 'mre_text_field_decoration.dart';
-import 'text_direction.dart';
-
-/// Space between the field and its suggestions.
-const double _suggestionGap = 6;
-
-/// What the field shows that depends on its text. The field rebuilds only when
-/// this changes, not on every keystroke.
-@immutable
-class _FieldFlags {
-  const _FieldFlags({required this.direction, required this.hasText});
-
-  /// Direction of the first strong letter, or null when there is none.
-  final TextDirection? direction;
-
-  /// Whether the text is not empty.
-  final bool hasText;
-
-  @override
-  bool operator ==(Object other) {
-    return other is _FieldFlags &&
-        other.direction == direction &&
-        other.hasText == hasText;
-  }
-
-  @override
-  int get hashCode => Object.hash(direction, hasText);
-}
+import 'mre_text_field_flags.dart';
+import 'mre_text_field_suggestions.dart';
 
 /// A text field that follows the language of what the user types.
 ///
@@ -290,23 +265,20 @@ class MRETextField extends StatefulWidget {
 }
 
 class _MRETextFieldState extends State<MRETextField> {
-  late TextEditingController _controller;
-  late bool _ownsController;
-  late FocusNode _focusNode;
-  late bool _ownsFocusNode;
-  late final ValueNotifier<_FieldFlags> _flags;
+  late MREOwned<TextEditingController> _controller;
+  late MREOwned<FocusNode> _focus;
+  late final MRETextFieldFlagsTracker _flags;
+
+  TextEditingController get _text => _controller.value;
+
+  FocusNode get _focusNode => _focus.value;
 
   @override
   void initState() {
     super.initState();
-    _ownsController = widget.controller == null;
-    _controller =
-        widget.controller ??
-        MRESafeTextEditingController(text: widget.initialValue);
-    _ownsFocusNode = widget.focusNode == null;
-    _focusNode = widget.focusNode ?? FocusNode();
-    _flags = ValueNotifier(_flagsFor(_controller.text));
-    _controller.addListener(_onTextChanged);
+    _controller = _adoptController();
+    _focus = MREOwned(widget.focusNode, FocusNode.new);
+    _flags = MRETextFieldFlagsTracker(_text);
     _focusNode.addListener(_onFocusChanged);
   }
 
@@ -315,54 +287,38 @@ class _MRETextFieldState extends State<MRETextField> {
     super.didUpdateWidget(oldWidget);
 
     if (widget.controller != oldWidget.controller) {
-      _controller.removeListener(_onTextChanged);
-      _disposeLater(_ownsController ? _controller : null);
-      _ownsController = widget.controller == null;
-      _controller =
-          widget.controller ??
-          MRESafeTextEditingController(text: widget.initialValue);
-      _controller.addListener(_onTextChanged);
-      _onTextChanged();
-    } else if (_ownsController &&
+      final old = _controller;
+      _controller = _adoptController();
+      _flags.follow(_text);
+      old.disposeAfterFrame();
+    } else if (_controller.isCreated &&
         widget.initialValue != oldWidget.initialValue) {
-      _setInitialValueAfterBuild(widget.initialValue ?? '');
+      _setTextAfterBuild(widget.initialValue ?? '');
     }
 
     if (widget.focusNode != oldWidget.focusNode) {
       _focusNode.removeListener(_onFocusChanged);
-      _disposeLater(_ownsFocusNode ? _focusNode : null);
-      _ownsFocusNode = widget.focusNode == null;
-      _focusNode = widget.focusNode ?? FocusNode();
+      final old = _focus;
+      _focus = MREOwned(widget.focusNode, FocusNode.new);
       _focusNode.addListener(_onFocusChanged);
+      old.disposeAfterFrame();
     }
   }
 
   @override
   void dispose() {
-    _controller.removeListener(_onTextChanged);
     _focusNode.removeListener(_onFocusChanged);
     _flags.dispose();
-    if (_ownsController) {
-      _controller.dispose();
-    }
-    if (_ownsFocusNode) {
-      _focusNode.dispose();
-    }
+    _controller.dispose();
+    _focus.dispose();
     super.dispose();
   }
 
-  _FieldFlags _flagsFor(String text) {
-    return _FieldFlags(
-      direction: detectStrongTextDirection(text),
-      hasText: text.isNotEmpty,
+  MREOwned<TextEditingController> _adoptController() {
+    return MREOwned(
+      widget.controller,
+      () => MRESafeTextEditingController(text: widget.initialValue),
     );
-  }
-
-  /// Runs on every text or selection change. Updating the notifier is a no-op
-  /// while the flags stay equal, so the field rebuilds only when the direction
-  /// or the empty state changes.
-  void _onTextChanged() {
-    _flags.value = _flagsFor(_controller.text);
   }
 
   void _onFocusChanged() {
@@ -371,44 +327,39 @@ class _MRETextFieldState extends State<MRETextField> {
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && _focusNode.hasFocus) {
-        _controller.selection = TextSelection(
+        _text.selection = TextSelection(
           baseOffset: 0,
-          extentOffset: _controller.text.length,
+          extentOffset: _text.text.length,
         );
       }
     });
   }
 
-  /// Disposes a replaced object after the frame, once the [TextFormField] has
-  /// stopped listening to it.
-  void _disposeLater(ChangeNotifier? notifier) {
-    if (notifier == null) {
-      return;
-    }
-    WidgetsBinding.instance.addPostFrameCallback((_) => notifier.dispose());
-  }
-
-  void _setInitialValueAfterBuild(String text) {
+  /// Sets the text once the frame is built, because the controller notifies
+  /// listeners and the field may be building right now.
+  void _setTextAfterBuild(String text) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && _controller.text != text) {
-        _controller.value = TextEditingValue(
-          text: text,
-          selection: TextSelection.collapsed(offset: text.length),
-        );
+      if (mounted && _text.text != text) {
+        _setText(text);
       }
     });
+  }
+
+  /// Replaces the text and puts the cursor at its end.
+  void _setText(String text) {
+    _text.value = TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(offset: text.length),
+    );
   }
 
   void _clear() {
-    _controller.clear();
+    _text.clear();
     widget.onChanged?.call('');
   }
 
   void _pick(String suggestion) {
-    _controller.value = TextEditingValue(
-      text: suggestion,
-      selection: TextSelection.collapsed(offset: suggestion.length),
-    );
+    _setText(suggestion);
     widget.onChanged?.call(suggestion);
     widget.onSuggestionSelected?.call(suggestion);
   }
@@ -423,20 +374,31 @@ class _MRETextFieldState extends State<MRETextField> {
         final size = tokens.windowSizeFor(constraints.maxWidth);
         final field = MREImagePasteScope(
           behavior: widget.imagePaste,
-          builder: (context, hooks) => ValueListenableBuilder<_FieldFlags>(
-            valueListenable: _flags,
-            builder: (context, flags, _) =>
-                _buildField(theme, tokens, size, flags, hooks),
-          ),
+          builder: (context, hooks) =>
+              ValueListenableBuilder<MRETextFieldFlags>(
+                valueListenable: _flags,
+                builder: (context, flags, _) =>
+                    _buildField(theme, tokens, size, flags, hooks),
+              ),
         );
 
-        if (widget.suggestions == null) {
+        final suggestions = widget.suggestions;
+        if (suggestions == null) {
           return field;
         }
         return Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [field, _buildSuggestions()],
+          children: [
+            field,
+            MRETextFieldSuggestions(
+              controller: _text,
+              focusNode: _focusNode,
+              suggestions: suggestions,
+              limit: widget.maxSuggestions,
+              onSelected: _pick,
+            ),
+          ],
         );
       },
     );
@@ -446,14 +408,14 @@ class _MRETextFieldState extends State<MRETextField> {
     ThemeData theme,
     MREFieldsTheme tokens,
     MREWindowSize size,
-    _FieldFlags flags,
+    MRETextFieldFlags flags,
     MREImagePasteHooks hooks,
   ) {
     final multiline = widget.maxLines == null || widget.maxLines! > 1;
 
     return TextFormField(
       key: widget.fieldKey,
-      controller: _controller,
+      controller: _text,
       focusNode: _focusNode,
       decoration: _decoration(theme, tokens, size, flags),
       style: widget.style,
@@ -495,7 +457,7 @@ class _MRETextFieldState extends State<MRETextField> {
     ThemeData theme,
     MREFieldsTheme tokens,
     MREWindowSize size,
-    _FieldFlags flags,
+    MRETextFieldFlags flags,
   ) {
     final base = widget.decoration ?? const InputDecoration();
     final decoration = base.copyWith(
@@ -519,54 +481,16 @@ class _MRETextFieldState extends State<MRETextField> {
     );
   }
 
-  Widget? _suffixIcon(MREFieldsTheme tokens, _FieldFlags flags) {
-    final showClear =
-        widget.showClearButton &&
-        flags.hasText &&
-        widget.enabled &&
-        !widget.readOnly;
-    if (!showClear) {
-      return widget.suffixIcon;
-    }
-
-    final clear = MREFieldClearButton(
-      onPressed: _clear,
-      tooltip: widget.clearTooltip ?? tokens.strings.clearTooltip,
-    );
-    final suffix = widget.suffixIcon;
-    if (suffix == null) {
-      return clear;
-    }
-    return Row(mainAxisSize: MainAxisSize.min, children: [clear, suffix]);
-  }
-
-  /// The suggestions rebuild on text and focus changes only, and only when the
-  /// field has suggestions.
-  Widget _buildSuggestions() {
-    return ListenableBuilder(
-      listenable: Listenable.merge([_controller, _focusNode]),
-      builder: (context, _) {
-        if (!_focusNode.hasFocus) {
-          return const SizedBox.shrink();
-        }
-        final matches = mreFilterSuggestions(
-          widget.suggestions!,
-          _controller.text,
-          limit: widget.maxSuggestions,
-        );
-        if (matches.isEmpty) {
-          return const SizedBox.shrink();
-        }
-        // A tap on a suggestion is a tap inside the field. Without the tap
-        // region it would count as a tap outside, unfocus the field, and hide
-        // the suggestion before the tap ends.
-        return TextFieldTapRegion(
-          child: Padding(
-            padding: const EdgeInsets.only(top: _suggestionGap),
-            child: MRESuggestionBar(suggestions: matches, onSelected: _pick),
-          ),
-        );
-      },
+  Widget? _suffixIcon(MREFieldsTheme tokens, MRETextFieldFlags flags) {
+    return composeMRETextFieldSuffix(
+      suffixIcon: widget.suffixIcon,
+      showClear:
+          widget.showClearButton &&
+          flags.hasText &&
+          widget.enabled &&
+          !widget.readOnly,
+      onClear: _clear,
+      clearTooltip: widget.clearTooltip ?? tokens.strings.clearTooltip,
     );
   }
 }

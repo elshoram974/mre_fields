@@ -6,10 +6,10 @@ import 'dart:js_interop';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mre_fields/mre_fields.dart';
-import 'package:mre_fields/src/attachments/paste_events_web.dart';
+import 'package:mre_fields/src/attachments/paste/paste_events_web.dart';
 import 'package:web/web.dart' as web;
 
-import '../../support/images.dart';
+import '../../../support/images.dart';
 
 /// Fires a `paste` event like the browser does, with [text] and an image file.
 web.ClipboardEvent _firePaste({String? text, bool withImage = true}) {

@@ -44,7 +44,7 @@ void main() {
         .widget<MRETextField>(find.byType(MRETextField))
         .imagePaste;
     expect(behavior, isA<MREImageAttachmentPaste>());
-    expect(behavior.maxImages, 4);
+    expect(behavior.attachments!.maxImages, 4);
     expect(behavior.maxBytes, 5 * 1024 * 1024);
   });
 

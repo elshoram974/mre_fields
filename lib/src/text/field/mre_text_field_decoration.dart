@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:meta/meta.dart';
 
-import '../theme/mre_fields_theme.dart';
+import '../../theme/mre_fields_theme.dart';
+import '../../theme/mre_window_size.dart';
+import 'mre_field_clear_button.dart';
 
 /// Returns [border] with [radius] when it is an outline border; any other
 /// border is returned unchanged.
@@ -17,6 +20,7 @@ InputBorder? _withRadius(InputBorder? border, BorderRadius radius) {
 /// `InputDecorationTheme`, then the package default. Without a radius from the
 /// parameter or a registered [MREFieldsTheme], borders stay as the host theme
 /// defines them.
+@internal
 InputDecoration resolveMRETextFieldDecoration({
   required InputDecoration base,
   required ThemeData theme,
@@ -65,4 +69,23 @@ InputDecoration resolveMRETextFieldDecoration({
       corners,
     ),
   );
+}
+
+/// The widget after the input: the host's [suffixIcon], with a clear button in
+/// front of it while [showClear] is true.
+@internal
+Widget? composeMRETextFieldSuffix({
+  required Widget? suffixIcon,
+  required bool showClear,
+  required VoidCallback onClear,
+  required String clearTooltip,
+}) {
+  if (!showClear) {
+    return suffixIcon;
+  }
+  final clear = MREFieldClearButton(onPressed: onClear, tooltip: clearTooltip);
+  if (suffixIcon == null) {
+    return clear;
+  }
+  return Row(mainAxisSize: MainAxisSize.min, children: [clear, suffixIcon]);
 }

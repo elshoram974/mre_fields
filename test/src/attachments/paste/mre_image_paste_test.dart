@@ -3,26 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mre_fields/mre_fields.dart';
 
-import '../../support/images.dart';
+import '../../../support/clipboard.dart';
+import '../../../support/images.dart';
 
-/// What the system clipboard holds as text during a test.
-void _setClipboardText(WidgetTester tester, String? text) {
-  tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-    SystemChannels.platform,
-    (call) async {
-      if (call.method == 'Clipboard.getData') {
-        return text == null ? null : {'text': text};
-      }
-      return null;
-    },
-  );
-  addTearDown(
-    () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-      SystemChannels.platform,
-      null,
-    ),
-  );
-}
+void _setClipboardText(WidgetTester tester, String? text) =>
+    mockClipboardText(tester, text);
 
 Future<void> _pump(
   WidgetTester tester,

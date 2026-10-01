@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../text/mre_text_field.dart';
+import '../text/field/mre_text_field.dart';
 import 'preview_harness.dart';
 
 /// An empty field with a label and a hint.

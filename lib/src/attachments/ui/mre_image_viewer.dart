@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../theme/mre_fields_theme.dart';
-import 'mre_pasted_image.dart';
+import '../../theme/mre_fields_theme.dart';
+import '../model/mre_pasted_image.dart';
 
 /// Space between the screen edge and the close button.
 const double _viewerButtonInset = 8;

@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-import 'text_direction.dart';
+import '../direction/safe_display_text.dart';
 
 /// A [TextEditingController] that cannot crash the text layout.
 ///

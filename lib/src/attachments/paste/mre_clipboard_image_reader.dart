@@ -1,6 +1,6 @@
 import 'package:pasteboard/pasteboard.dart';
 
-import 'mre_pasted_image.dart';
+import '../model/mre_pasted_image.dart';
 
 /// Reads an image from the system clipboard.
 ///

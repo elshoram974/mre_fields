@@ -75,7 +75,7 @@ widget extension (see `.cursor/rules/text-direction.mdc`, skill
 1. Port from ledger `lib/core/utils/extensions/string_extension.dart`:
    - `uiTextDirection` / string `textDirection`
    - `safeDisplayText` (and any private UTF-16 helpers it needs)
-2. Place under `lib/src/text/text_direction.dart` (and split file if `safeDisplayText` is large).
+2. Place under `lib/src/text/direction/text_direction.dart` (and split file if `safeDisplayText` is large).
    Re-implement detection as **first-strong-character with early exit** (ledger scans the whole string via `Bidi`).
 2a. Add `String.textDirection` / `isRtl` / `autoTextAlign`, `MREAutoText` (Text helper) and `Widget.withTextDirection(sample)`.
 3. **Do not** port `pdfReshaped` / arabic_reshaper.
@@ -107,11 +107,11 @@ Port CashBook `AppTextField` behaviour into a host-agnostic widget.
    - select-on-focus
    - suggestion chips row
    - external/internal controller, `fieldKey`, validators, formatters, etc.
-2. Create `lib/src/text/mre_text_field.dart` (`MRETextField`).
+2. Create `lib/src/text/field/mre_text_field.dart` (`MRETextField`).
 3. Strip: `AppSizes`, `AppDecorations`, `context.colors`, `.tr()`, any CashBook-only imports.
 4. Style from `Theme.of(context).inputDecorationTheme` + `MREFieldsTheme` + optional constructor overrides.
 5. All user-visible strings = constructor params (`hintText`, `labelText`, …).
-6. Port `SafeTextController` only if still required (`lib/src/text/safe_text_controller.dart`).
+6. Port `SafeTextController` only if still required (`lib/src/text/field/mre_safe_text_editing_controller.dart`).
 7. Export `MRETextField` from barrel.
 8. Replace placeholder in preview files with real `MRETextField` cards (empty, filled English, Arabic, dark).
 9. Widget tests (skill `add-widget-test` + rule `test-field-sizes`):

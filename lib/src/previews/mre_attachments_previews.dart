@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../attachments/mre_attachment_strip.dart';
-import '../attachments/mre_attachments_controller.dart';
-import '../attachments/mre_image_paste_behavior.dart';
-import '../text/mre_text_field.dart';
+import '../attachments/ui/mre_attachment_strip.dart';
+import '../attachments/model/mre_attachments_controller.dart';
+import '../attachments/paste/mre_image_paste_behavior.dart';
+import '../text/field/mre_text_field.dart';
 import 'preview_harness.dart';
 import 'preview_images.dart';
 

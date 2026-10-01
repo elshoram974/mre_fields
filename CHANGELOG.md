@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-10-01
+
 ### Added
 
 - `MREFieldsTheme` theme extension: field border radius, content padding (compact and expanded), window-size breakpoints, and `MREWindowSize` classification. Works without registration through `MREFieldsTheme.defaults`.

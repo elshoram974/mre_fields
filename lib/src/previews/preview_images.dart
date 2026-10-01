@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import '../attachments/mre_pasted_image.dart';
+import '../attachments/model/mre_pasted_image.dart';
 
 /// Small gradient images for previews, so a card shows attachments without a
 /// clipboard.

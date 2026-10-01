@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/foundation.dart';
 
 import 'mre_pasted_image.dart';
@@ -19,8 +21,15 @@ class MREAttachmentsController extends ChangeNotifier {
 
   final List<MREPastedImage> _images;
 
-  /// The attached images, in order. The list cannot be changed.
-  List<MREPastedImage> get images => List.unmodifiable(_images);
+  late final UnmodifiableListView<MREPastedImage> _view = UnmodifiableListView(
+    _images,
+  );
+
+  /// The attached images, in order.
+  ///
+  /// A read-only view of the controller's own list: it costs nothing to get and
+  /// follows later changes. Copy it with `List.of` to keep a snapshot.
+  List<MREPastedImage> get images => _view;
 
   /// How many images are attached.
   int get count => _images.length;

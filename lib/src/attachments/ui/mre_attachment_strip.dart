@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../theme/mre_fields_theme.dart';
-import 'mre_attachments_controller.dart';
+import '../../theme/mre_fields_theme.dart';
+import '../../theme/mre_window_size.dart';
+import '../model/mre_attachments_controller.dart';
 import 'mre_image_viewer.dart';
-import 'mre_pasted_image.dart';
+import '../model/mre_pasted_image.dart';
 
 /// Thumbnail edge on compact and medium widths. Two 40 px buttons fit in it
 /// and leave room to tap the image.

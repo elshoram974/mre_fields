@@ -3,7 +3,7 @@ import 'dart:js_interop';
 import 'package:flutter/foundation.dart';
 import 'package:web/web.dart' as web;
 
-import 'mre_pasted_image.dart';
+import '../model/mre_pasted_image.dart';
 
 /// Starts listening for images pasted into the page.
 ///

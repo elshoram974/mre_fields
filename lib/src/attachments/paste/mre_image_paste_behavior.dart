@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 
-import 'mre_attachments_controller.dart';
+import '../model/mre_attachments_controller.dart';
+import '../model/mre_pasted_image.dart';
 import 'mre_clipboard_image_reader.dart';
-import 'mre_pasted_image.dart';
 
 /// Largest image accepted by default: 10 MiB.
 const int mreDefaultMaxImageBytes = 10 * 1024 * 1024;
@@ -19,6 +19,36 @@ const List<String> mreDefaultImageMimeTypes = [
   'image/bmp',
 ];
 
+/// How a field keeps and shows the images it accepts.
+///
+/// A behaviour that returns one from [MREImagePasteBehavior.attachments] gets
+/// thumbnails under the field. One that returns null keeps no images.
+///
+/// {@category Attachments}
+@immutable
+final class MREAttachmentsConfig {
+  /// Creates a configuration.
+  const MREAttachmentsConfig({
+    this.controller,
+    this.maxImages = mreDefaultMaxImages,
+    this.allowReplace = true,
+    this.onChanged,
+  });
+
+  /// Holds the images. The field keeps its own when null.
+  final MREAttachmentsController? controller;
+
+  /// The most images the field holds.
+  final int maxImages;
+
+  /// Whether each thumbnail has a replace button.
+  final bool allowReplace;
+
+  /// Called with a snapshot of the images after one is added, removed or
+  /// replaced.
+  final ValueChanged<List<MREPastedImage>>? onChanged;
+}
+
 /// What a field does when the user pastes an image.
 ///
 /// A field takes one of three behaviours:
@@ -31,23 +61,19 @@ const List<String> mreDefaultImageMimeTypes = [
 ///
 /// {@example /doc/snippets/attachments.dart#behaviors}
 ///
-/// Extend this class to add your own behaviour.
+/// Extend this class to add your own behaviour. Return an
+/// [MREAttachmentsConfig] from [attachments] to keep and show images.
 ///
 /// {@category Attachments}
 abstract class MREImagePasteBehavior {
   /// Creates a behaviour with the shared limits and callbacks.
   const MREImagePasteBehavior({
-    this.maxImages = mreDefaultMaxImages,
     this.maxBytes = mreDefaultMaxImageBytes,
     this.allowedMimeTypes = mreDefaultImageMimeTypes,
     this.onImagePasted,
     this.onImageRejected,
     this.reader = const MREPasteboardImageReader(),
   });
-
-  /// The most images the field holds. Ignored by behaviours that keep no
-  /// images.
-  final int maxImages;
 
   /// The largest image accepted, in bytes.
   final int maxBytes;
@@ -68,21 +94,15 @@ abstract class MREImagePasteBehavior {
   /// Whether the field listens for images at all.
   bool get acceptsImages;
 
-  /// Whether the field shows the images under itself.
-  bool get showsAttachments => false;
-
-  /// The controller that holds the images, or null to let the field keep its
-  /// own.
-  MREAttachmentsController? get controller => null;
-
-  /// Whether the replace button is shown on an image.
-  bool get allowsReplace => false;
+  /// How the field keeps and shows images, or null to keep none.
+  MREAttachmentsConfig? get attachments => null;
 
   /// Returns why [image] is not accepted, or null when it is.
   ///
   /// [count] is how many images the field already holds.
   MREImageRejection? check(MREPastedImage image, {required int count}) {
-    if (showsAttachments && count >= maxImages) {
+    final maxImages = attachments?.maxImages;
+    if (maxImages != null && count >= maxImages) {
       return MREImageRejection.tooMany;
     }
     if (image.length > maxBytes) {
@@ -94,11 +114,8 @@ abstract class MREImagePasteBehavior {
     return null;
   }
 
-  /// Called after the field changed its images. [images] is the full list.
-  void imagesChanged(List<MREPastedImage> images) {}
-
   /// Makes an image from bytes that arrived with a [mimeType], for example from
-  /// a keyboard.
+  /// a keyboard. The bytes decide the type when they are recognized.
   MREPastedImage imageFromBytes(Uint8List bytes, String mimeType) {
     return MREPastedImage(
       bytes: bytes,
@@ -151,7 +168,7 @@ class MREImageAttachmentPaste extends MREImagePasteBehavior {
     this.controller,
     this.onImagesChanged,
     this.allowReplace = true,
-    super.maxImages,
+    this.maxImages = mreDefaultMaxImages,
     super.maxBytes,
     super.allowedMimeTypes,
     super.onImagePasted,
@@ -159,26 +176,27 @@ class MREImageAttachmentPaste extends MREImagePasteBehavior {
     super.reader,
   });
 
-  @override
+  /// Holds the images. The field keeps its own when null.
   final MREAttachmentsController? controller;
 
-  /// Called with the full list after an image is added, removed or replaced.
+  /// Called with a snapshot of the images after one is added, removed or
+  /// replaced.
   final ValueChanged<List<MREPastedImage>>? onImagesChanged;
 
-  /// Whether to show the replace button.
+  /// Whether each thumbnail has a replace button.
   final bool allowReplace;
+
+  /// The most images the field holds.
+  final int maxImages;
 
   @override
   bool get acceptsImages => true;
 
   @override
-  bool get showsAttachments => true;
-
-  @override
-  bool get allowsReplace => allowReplace;
-
-  @override
-  void imagesChanged(List<MREPastedImage> images) {
-    onImagesChanged?.call(images);
-  }
+  MREAttachmentsConfig get attachments => MREAttachmentsConfig(
+    controller: controller,
+    maxImages: maxImages,
+    allowReplace: allowReplace,
+    onChanged: onImagesChanged,
+  );
 }

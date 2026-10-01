@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../text/mre_auto_text.dart';
+import '../text/direction/mre_auto_text.dart';
 import 'preview_harness.dart';
 
 /// Arabic, English, mixed and digit-only text, each in its own direction.

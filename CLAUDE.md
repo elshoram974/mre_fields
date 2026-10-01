@@ -198,8 +198,10 @@ flutter test
 Full rules: [`.cursorrules`](./.cursorrules) (root) and
 `.cursor/rules/commit-messages.mdc`. Short version:
 
-- Staged changes exist → message covers **only** staged changes. Nothing staged
-  → message covers **all** pending changes (including untracked files).
+- Run `git diff --cached --name-only`. Output present → the message covers
+  **only** `git diff --cached` (never unstaged or untracked files, never chat
+  history). Output empty → it covers **all** pending changes, untracked
+  files included.
 - Conventional Commits: `type(scope): imperative summary` ≤ 72 chars, blank
   line, body that explains what and why per logical change with real symbol
   names from the diff, `BREAKING CHANGE:` when the public API breaks.

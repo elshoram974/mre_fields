@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mre_fields/mre_fields.dart';
 
-import '../../support/images.dart';
+import '../../../support/images.dart';
 
 Uint8List _bytes(List<int> start, [int length = 16]) {
   final bytes = Uint8List(length);
@@ -164,40 +164,57 @@ void main() {
   });
 
   group('behaviours', () {
-    test('MRENoImagePaste accepts nothing', () {
+    test('MRENoImagePaste accepts nothing and keeps nothing', () {
       const behavior = MRENoImagePaste();
 
       expect(behavior.acceptsImages, isFalse);
-      expect(behavior.showsAttachments, isFalse);
+      expect(behavior.attachments, isNull);
     });
 
-    test('MREImageCallbackPaste accepts images and shows nothing', () {
+    test('MREImageCallbackPaste accepts images and keeps nothing', () {
       final behavior = MREImageCallbackPaste(onImagePasted: (_) {});
 
       expect(behavior.acceptsImages, isTrue);
-      expect(behavior.showsAttachments, isFalse);
-      expect(behavior.controller, isNull);
+      expect(behavior.attachments, isNull);
     });
 
     test(
-      'MREImageAttachmentPaste shows attachments and allows replace by default',
+      'MREImageAttachmentPaste keeps images, and allows replace by default',
       () {
         const behavior = MREImageAttachmentPaste();
 
         expect(behavior.acceptsImages, isTrue);
-        expect(behavior.showsAttachments, isTrue);
-        expect(behavior.allowsReplace, isTrue);
+        expect(behavior.attachments.allowReplace, isTrue);
+        expect(behavior.attachments.controller, isNull);
         expect(
-          const MREImageAttachmentPaste(allowReplace: false).allowsReplace,
+          const MREImageAttachmentPaste(
+            allowReplace: false,
+          ).attachments.allowReplace,
           isFalse,
         );
       },
     );
 
+    test('MREImageAttachmentPaste passes its options to the configuration', () {
+      final controller = MREAttachmentsController();
+      addTearDown(controller.dispose);
+      void changed(List<MREPastedImage> images) {}
+
+      final config = MREImageAttachmentPaste(
+        controller: controller,
+        maxImages: 7,
+        onImagesChanged: changed,
+      ).attachments;
+
+      expect(config.controller, same(controller));
+      expect(config.maxImages, 7);
+      expect(config.onChanged, same(changed));
+    });
+
     test('the defaults are documented values', () {
       const behavior = MREImageAttachmentPaste();
 
-      expect(behavior.maxImages, mreDefaultMaxImages);
+      expect(behavior.attachments.maxImages, mreDefaultMaxImages);
       expect(behavior.maxBytes, mreDefaultMaxImageBytes);
       expect(behavior.allowedMimeTypes, mreDefaultImageMimeTypes);
       expect(behavior.reader, isA<MREPasteboardImageReader>());
@@ -256,8 +273,11 @@ void main() {
       );
     });
 
-    test('a subclass can add its own behaviour', () {
-      expect(_CustomBehavior().check(png(), count: 0), isNull);
+    test('a subclass can keep images through its own configuration', () {
+      final behavior = _KeepingBehavior();
+
+      expect(behavior.check(png(), count: 1), MREImageRejection.tooMany);
+      expect(behavior.check(png(), count: 0), isNull);
     });
   });
 
@@ -303,7 +323,11 @@ void main() {
   });
 }
 
-class _CustomBehavior extends MREImagePasteBehavior {
+class _KeepingBehavior extends MREImagePasteBehavior {
   @override
   bool get acceptsImages => true;
+
+  @override
+  MREAttachmentsConfig get attachments =>
+      const MREAttachmentsConfig(maxImages: 1);
 }
