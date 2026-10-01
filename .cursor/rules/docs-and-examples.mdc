@@ -19,6 +19,10 @@ pub.dev readers see only what ships in the package. Write for a Flutter develope
 - **Barrel library doc** (`lib/mre_fields.dart`): overview, quick start, one bullet per topic listing its public types with `[Type]` links.
 - **Categories**: every public type carries `{@category Name}`; each category has a guide `doc/<name>.md` registered in `dartdoc_options.yaml` (`categoryOrder` keeps the order). Add the category and its guide in the same change that ships the feature.
 - **Guides** (`doc/*.md`): task-oriented text. `[Type]` references do not resolve there, so use backticked names; the category page lists the linked members below the guide.
+- **Examples are real code.** Every example lives in `doc/snippets/<topic>.dart` between `#region name` / `#endregion name`, is analyzed with the package, and is run by a widget test in `test/doc/`. Class dartdoc embeds it with `{@example /doc/snippets/<topic>.dart#name}`.
+- `{@example}` is **not** expanded inside `doc/*.md` guides. Their code blocks are copies; `test/doc/<topic>_guide_sync_test.dart` fails when a copy differs from its snippet. Regenerate the blocks from the snippet file, never edit them by hand.
+- Show the change a user would make (global theme, one value, dark mode, per widget, localization), not a description of it. One short sentence of text per example; no background talk.
+- Do not document a parameter or widget that does not exist yet.
 - **Class docs** end with `See also:` bullets linking related types, and point back to the guide topic when one exists.
 - **README** has a Contents list, short snippets per feature, and links to `doc/` guides, `example/`, and (after the first release) the pub.dev API reference. Do not ship the API link before the package is published.
 - **CHANGELOG** entries name the public symbols they touch, in backticks.

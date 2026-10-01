@@ -21,37 +21,23 @@ enum MREWindowSize {
   expanded,
 }
 
-/// Field-level tokens that sit next to the host theme.
+/// Field-only tokens: corner radius, padding, breakpoints and texts.
 ///
-/// Colors, typography and input chrome come from the host [ThemeData]
-/// (`colorScheme`, `textTheme`, `inputDecorationTheme`). This extension only
-/// adds what Material does not model: radius, padding, breakpoints and
-/// [strings].
+/// Colors and fonts stay in your `ThemeData`. Register this extension on it:
 ///
-/// Register it on the same [ThemeData] the app already builds:
+/// {@example /doc/snippets/theme.dart#global}
 ///
-/// ```dart
-/// MaterialApp(
-///   theme: ThemeData(
-///     colorScheme: hostScheme,
-///     extensions: const [
-///       MREFieldsTheme(
-///         fieldBorderRadius: 16,
-///         contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-///       ),
-///     ],
-///   ),
-/// );
-/// ```
+/// Order of priority: a widget parameter, then this extension, then
+/// [MREFieldsTheme.defaults] when nothing is registered.
 ///
-/// Precedence, highest first: a widget parameter, this extension, the
-/// defaults below. Without a registered extension every widget uses
-/// [MREFieldsTheme.defaults], so previews and quick demos work unthemed.
+/// Change one value and keep the rest with [copyWith]:
+///
+/// {@example /doc/snippets/theme.dart#copy_with}
 ///
 /// See also:
 ///
-///  * [MREFieldsStrings], the texts carried in [strings].
-///  * [MREWindowSize], the classes the breakpoints produce.
+///  * [MREFieldsStrings], the texts in [strings].
+///  * [MREWindowSize], the sizes the breakpoints produce.
 ///
 /// {@category Theme}
 @immutable
@@ -117,8 +103,10 @@ class MREFieldsTheme extends ThemeExtension<MREFieldsTheme> {
 
   /// Classifies [width] against [compactBreakpoint] and [expandedBreakpoint].
   ///
-  /// Pass the width a field really has, for example
-  /// `LayoutBuilder` constraints, not the screen width.
+  /// Pass the width the widget really gets, from `LayoutBuilder`, not the
+  /// screen width:
+  ///
+  /// {@example /doc/snippets/theme.dart#read_tokens}
   MREWindowSize windowSizeFor(double width) {
     if (width < compactBreakpoint) {
       return MREWindowSize.compact;

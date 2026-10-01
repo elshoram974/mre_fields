@@ -14,7 +14,7 @@ Read `.cursor/rules/docs-and-examples.mdc`. Companion skills: `dart-write-docume
 ## Steps
 
 1. List the public symbols from `lib/mre_fields.dart`; each needs `///` with summary, behaviour, and a compiling snippet.
-2. Update README sections for any feature touched. Every snippet must be copy-paste runnable and appear in `example/` too (same code, one source of truth).
+2. Write each example as a region in `doc/snippets/<topic>.dart`, test it in `test/doc/`, embed it with `{@example}` in dartdoc and copy it into `doc/<topic>.md` (guard with a sync test). Then update README sections for any feature touched. Every snippet must be copy-paste runnable and appear in `example/` too (same code, one source of truth).
 3. Add or update the example page for the feature: default usage and a customized variant side by side.
 4. Platform notes: record what works where (paste image, keyboard images, desktop shortcuts).
 5. Neutral wording check:

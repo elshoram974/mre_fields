@@ -1,29 +1,14 @@
 import 'package:flutter/foundation.dart';
 
-/// User-visible text used by the field widgets.
+/// Texts shown by the fields. English by default; the package has no
+/// translations.
 ///
-/// Every value defaults to English. Replace any of them to localize the
-/// fields; the package ships no translations of its own.
+/// Replace the texts when the app locale changes:
 ///
-/// Register the strings next to the rest of your theme:
+/// {@example /doc/snippets/theme.dart#strings}
 ///
-/// ```dart
-/// ThemeData(
-///   extensions: [
-///     MREFieldsTheme(
-///       strings: MREFieldsStrings(
-///         clearTooltip: l10n.clear,
-///         countrySearchHint: l10n.searchCountry,
-///       ),
-///     ),
-///   ],
-/// );
-/// ```
-///
-/// A widget parameter always wins over these values, and these values win
-/// over the English defaults.
-///
-/// See also [MREFieldsTheme.strings], where these values are registered.
+/// Order of priority: a widget parameter, then [MREFieldsTheme.strings], then
+/// the English default.
 ///
 /// {@category Theme}
 @immutable

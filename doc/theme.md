@@ -1,38 +1,144 @@
-Colors, typography and input chrome come from your own `ThemeData`. This
-package only adds the tokens Material does not model, and lets you change
-them at three levels.
+Fields take colors and fonts from your `ThemeData`. `MREFieldsTheme` adds the
+values Material does not have: corner radius, padding, breakpoints and texts.
 
-## Levels, highest priority first
+## Change it for the whole app
 
-1. **One field.** Pass the matching constructor parameter to that widget.
-   Only that widget changes.
-2. **Your whole app.** Register `MREFieldsTheme` on `ThemeData.extensions`.
-   Every field below that theme changes.
-3. **Package defaults.** Used when you register nothing. See
-   `MREFieldsTheme.defaults`.
+Register the extension on your theme. Every field below it uses these values.
 
 ```dart
-MaterialApp(
+final app = MaterialApp(
   theme: ThemeData(
-    colorScheme: hostScheme,
     extensions: const [
-      MREFieldsTheme(fieldBorderRadius: 16),
+      MREFieldsTheme(
+        fieldBorderRadius: 16,
+        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      ),
     ],
   ),
+  home: const HomePage(),
 );
 ```
 
-## Responsive tokens
+## Change one value
 
-Fields classify the width they really have (not the screen) with
-`MREFieldsTheme.windowSizeFor` and pick spacing from it:
+Start from the defaults and replace only what you need.
 
-- below `MREFieldsTheme.compactBreakpoint`: `MREWindowSize.compact`
-- up to `MREFieldsTheme.expandedBreakpoint`: `MREWindowSize.medium`
-- from there: `MREWindowSize.expanded`, which uses
-  `MREFieldsTheme.expandedContentPadding`
+```dart
+final tokens = MREFieldsTheme.defaults.copyWith(fieldBorderRadius: 4);
+```
 
-## Localization
+## Dark mode
 
-Every text a field shows lives in `MREFieldsStrings`. Defaults are English.
-Pass your translated values through `MREFieldsTheme.strings`.
+Register the extension on **both** themes. A theme without it falls back to the
+defaults.
+
+```dart
+const fields = MREFieldsTheme(fieldBorderRadius: 16);
+
+final app = MaterialApp(
+  theme: ThemeData(extensions: const [fields]),
+  darkTheme: ThemeData(
+    brightness: Brightness.dark,
+    extensions: const [fields],
+  ),
+  home: const HomePage(),
+);
+```
+
+## Breakpoints
+
+A field measures the width it really gets and picks a size.
+
+| Width | Size | Content padding |
+|---|---|---|
+| below 600 | `MREWindowSize.compact` | `contentPadding` |
+| 600 to 839 | `MREWindowSize.medium` | `contentPadding` |
+| 840 and up | `MREWindowSize.expanded` | `expandedContentPadding` |
+
+Move the limits:
+
+```dart
+const tokens = MREFieldsTheme(
+  compactBreakpoint: 480,
+  expandedBreakpoint: 1024,
+);
+```
+
+## Use the tokens in your own widget
+
+```dart
+/// A custom widget that follows the same tokens and breakpoints as the fields.
+class AdaptiveBox extends StatelessWidget {
+  /// Creates the box.
+  const AdaptiveBox({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final tokens = MREFieldsTheme.of(context);
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final size = tokens.windowSizeFor(constraints.maxWidth);
+
+        return Padding(
+          padding: tokens.contentPaddingFor(size),
+          child: Text('Window size: ${size.name}'),
+        );
+      },
+    );
+  }
+}
+```
+
+## Translate the texts
+
+Every text a field shows is in `MREFieldsStrings`, in English by default. Swap
+it when the app locale changes:
+
+```dart
+/// Returns the field texts for [locale]. English is the fallback.
+MREFieldsStrings stringsFor(Locale locale) {
+  return switch (locale.languageCode) {
+    'ar' => const MREFieldsStrings(
+      clearTooltip: 'مسح',
+      countryPickerTitle: 'اختر الدولة',
+      countrySearchHint: 'ابحث عن دولة أو رمز',
+      noCountriesFound: 'لا توجد دول',
+      removeImageTooltip: 'إزالة الصورة',
+      replaceImageTooltip: 'استبدال الصورة',
+      closeViewerTooltip: 'إغلاق',
+    ),
+    _ => const MREFieldsStrings(),
+  };
+}
+
+/// Swaps the strings whenever the app locale changes.
+Widget localizedFields(BuildContext context, Widget child) {
+  final theme = Theme.of(context);
+  final fields = MREFieldsTheme.of(
+    context,
+  ).copyWith(strings: stringsFor(Localizations.localeOf(context)));
+
+  return Theme(
+    data: theme.copyWith(
+      extensions: [
+        ...theme.extensions.values.where((e) => e is! MREFieldsTheme),
+        fields,
+      ],
+    ),
+    child: child,
+  );
+}
+
+Widget localizedApp() {
+  return MaterialApp(
+    localizationsDelegates: GlobalMaterialLocalizations.delegates,
+    supportedLocales: const [Locale('en'), Locale('ar')],
+    builder: (context, child) => localizedFields(context, child!),
+    home: const HomePage(),
+  );
+}
+```
+
+Add `localizationsDelegates` and `supportedLocales` as in your app. Without a
+supported locale, Flutter resolves back to English.
