@@ -13,6 +13,7 @@ dependencies:
   flutter:
     sdk: flutter
   pasteboard: ^0.5.0
+  web: ^1.1.1
 
 dev_dependencies:
   flutter_test:

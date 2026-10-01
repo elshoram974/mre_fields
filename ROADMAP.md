@@ -167,7 +167,7 @@ Optional paste of images into the text field. Default: nothing changes. Skill `a
 7. Previews + example page; `CHANGELOG`.
 
 ### Result
-Shipped as planned, without the spike: the clipboard is read through the `pasteboard` plugin (all six platforms, 0.5.0, 2026-02) behind `MREClipboardImageReader`. Decision: a normal dependency, not an optional library, because pub packages cannot have optional dependencies; the plugin stays idle unless a behaviour accepts images. Shortcut, selection menu and Android keyboard all work through one accept path. About 60 tests with a fake clipboard; thumbnails checked in the real previewer. Not yet tried on physical devices.
+Shipped as planned, without the spike: the clipboard is read through the `pasteboard` plugin (all six platforms, 0.5.0, 2026-02) behind `MREClipboardImageReader`. Decision: a normal dependency, not an optional library, because pub packages cannot have optional dependencies; the plugin stays idle unless a behaviour accepts images. Shortcut, selection menu and Android keyboard all work through one accept path. About 60 tests with a fake clipboard; thumbnails checked in the real previewer. Found by testing in the real previewer: Flutter disables Ctrl/Cmd+V on the web, so the web path is a DOM `paste` listener instead (browser test + previewer check). Not yet tried on physical devices.
 
 ### Depends on
 - Step 3.

@@ -57,9 +57,13 @@ final field = MRETextField(
 
 | Source | Where it works |
 |---|---|
-| Paste shortcut (Ctrl or Cmd + V) | Desktop and web |
+| Paste shortcut (Ctrl or Cmd + V) | Desktop, and web through the browser `paste` event |
 | Selection menu, "Paste image" | Every platform, when the clipboard holds an image |
 | On-screen keyboard: stickers, GIFs, images | Android |
+
+On the web the browser handles Ctrl or Cmd + V itself and fires a `paste`
+event. The field listens for it while it has focus, and reads the image from the
+event, so no permission prompt appears.
 
 Text on the clipboard always wins. Copying from a document puts text and a
 picture on the clipboard, and the field pastes the text.

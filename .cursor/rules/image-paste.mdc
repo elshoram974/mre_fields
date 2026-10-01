@@ -37,9 +37,14 @@ Pieces hosts can use alone: `MREImagePasteScope` (paste hooks for any text field
 
 ## Where images arrive (all three go through one `_accept`)
 
-- Paste shortcut: ancestor `Actions` overriding `PasteTextIntent` (desktop and web).
+- Paste shortcut: ancestor `Actions` overriding `PasteTextIntent` (desktop). **Not on the web**: Flutter disables Ctrl/Cmd+V there and the browser pastes natively.
+- Web paste: a DOM `paste` listener (`paste_events_web.dart`, `package:web`, chosen by conditional import on `dart.library.js_interop`), active only while the field has focus. It reads `clipboardData.files`; text present means leave the event alone.
 - Selection menu: `contextMenuBuilder` adds "Paste image" when the clipboard holds one.
 - On-screen keyboard: `contentInsertionConfiguration` (Android only, a Flutter limitation).
+
+## Testing the web path
+
+VM tests cannot run `package:web`. `test/src/attachments/paste_events_web_test.dart` is `@TestOn('browser')`; run `flutter test --platform chrome test/src/attachments/paste_events_web_test.dart`. Also paste in the real previewer (a `ClipboardEvent` with a `DataTransfer` file, sent through the DevTools protocol, adds a thumbnail).
 
 ## Clipboard dependency
 

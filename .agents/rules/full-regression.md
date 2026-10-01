@@ -15,6 +15,12 @@ flutter analyze
 flutter test
 ```
 
+Web paste (browser-only test, not part of `flutter test`):
+
+```bash
+flutter test --platform chrome test/src/attachments/paste_events_web_test.dart
+```
+
 Optional when UI changed:
 
 ```bash

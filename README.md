@@ -106,8 +106,8 @@ MRETextField(
 
 Images appear under the field. The user can open, remove and replace them.
 `MREImageCallbackPaste` hands each image to your code and shows nothing. Images
-arrive through the paste shortcut (desktop, web), the selection menu (every
-platform) and the on-screen keyboard (Android). Details in
+arrive through the paste shortcut (desktop), the browser paste event (web), the
+selection menu (every platform) and the on-screen keyboard (Android). Details in
 [doc/attachments.md](doc/attachments.md).
 
 ## Planned

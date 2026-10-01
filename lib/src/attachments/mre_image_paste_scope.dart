@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -6,6 +7,8 @@ import 'mre_attachment_strip.dart';
 import 'mre_attachments_controller.dart';
 import 'mre_image_paste_behavior.dart';
 import 'mre_pasted_image.dart';
+import 'paste_events_stub.dart'
+    if (dart.library.js_interop) 'paste_events_web.dart';
 
 /// Space between the field and the attached images.
 const double _stripGap = 8;
@@ -75,6 +78,9 @@ class _MREImagePasteScopeState extends State<MREImagePasteScope> {
   /// The controller the scope keeps when the behaviour gives none.
   MREAttachmentsController? _ownController;
 
+  /// Stops the web `paste` listener. Null while the field has no focus.
+  VoidCallback? _stopPasteEvents;
+
   MREImagePasteBehavior get _behavior => widget.behavior;
 
   MREAttachmentsController? get _controller =>
@@ -94,8 +100,23 @@ class _MREImagePasteScopeState extends State<MREImagePasteScope> {
 
   @override
   void dispose() {
+    _stopPasteEvents?.call();
     _ownController?.dispose();
     super.dispose();
+  }
+
+  /// On the web the browser handles the paste shortcut, so images arrive in a
+  /// `paste` event. Listen for it only while the field has focus, so two fields
+  /// never both take the same image.
+  void _onFocusChange(bool hasFocus) {
+    _stopPasteEvents?.call();
+    _stopPasteEvents = null;
+    if (hasFocus) {
+      _stopPasteEvents = mreListenForPastedImages(
+        (image) =>
+            _accept(_behavior.imageFromBytes(image.bytes, image.mimeType)),
+      );
+    }
   }
 
   /// Keeps an own controller exactly while the behaviour shows attachments and
@@ -195,6 +216,20 @@ class _MREImagePasteScopeState extends State<MREImagePasteScope> {
     _behavior.imagesChanged(controller.images);
   }
 
+  /// Reports focus entering and leaving the field. Only the web needs it.
+  Widget _focusScope(Widget child) {
+    if (!kIsWeb) {
+      return child;
+    }
+    return Focus(
+      canRequestFocus: false,
+      skipTraversal: true,
+      includeSemantics: false,
+      onFocusChange: _onFocusChange,
+      child: child,
+    );
+  }
+
   Widget _buildContextMenu(BuildContext context, EditableTextState state) {
     return _PasteImageMenu(
       state: state,
@@ -212,14 +247,16 @@ class _MREImagePasteScopeState extends State<MREImagePasteScope> {
 
     final field = Actions(
       actions: {PasteTextIntent: _PasteImageAction(_paste)},
-      child: widget.builder(
-        context,
-        MREImagePasteHooks(
-          contentInsertionConfiguration: ContentInsertionConfiguration(
-            allowedMimeTypes: _behavior.allowedMimeTypes,
-            onContentInserted: _onKeyboardContent,
+      child: _focusScope(
+        widget.builder(
+          context,
+          MREImagePasteHooks(
+            contentInsertionConfiguration: ContentInsertionConfiguration(
+              allowedMimeTypes: _behavior.allowedMimeTypes,
+              onContentInserted: _onKeyboardContent,
+            ),
+            contextMenuBuilder: _buildContextMenu,
           ),
-          contextMenuBuilder: _buildContextMenu,
         ),
       ),
     );
