@@ -174,7 +174,10 @@ Shipped as planned, without the spike: the clipboard is read through the `pasteb
 
 ---
 
-## Step 4 — Phone parse, validation + country data `[ ]`
+## Step 4 — Phone parse, validation + country data `[x]`
+
+### Result
+Shipped: `MREPhoneNumber`, `MREPhoneError`, `MREPhoneValidators`, `MRECountry(ies)`, `MRECountrySelection`, digit normalization. `phone_numbers_parser` stays behind our API. All 245 regions are tested with their own example numbers. Messages are translatable through `MREFieldsStrings`.
 
 ### Goal
 Pure phone parsing, **validation for all countries**, and a country list hosts can narrow (include / exclude / favorites) — no UI yet. Skill `add-phone-validation`, rule `phone-countries.mdc`.
@@ -200,7 +203,10 @@ Wrap `phone_numbers_parser` (pure Dart, libphonenumber metadata) behind `MREPhon
 
 ---
 
-## Step 5 — `MRECountryCodePicker` `[ ]`
+## Step 5 — Country picker `[x]`
+
+### Result
+`showMRECountryPicker` (sheet or dialog by width) and `MRECountryPickerBody` (search by name, ISO and dial code; favorites; names in the host's language).
 
 ### Goal
 Searchable dial-code sheet owned by the package (Material), no CashBook overlays/glass/router.
@@ -224,7 +230,10 @@ Searchable dial-code sheet owned by the package (Material), no CashBook overlays
 
 ---
 
-## Step 6 — `MREPhoneField` `[ ]`
+## Step 6 — `MREPhoneField` `[x]`
+
+### Result
+`MREPhoneField` and `MREPhoneController`. A pasted `+…` number switches the country; a typed one waits until it is valid. Dial button inside the field, so one layout fits every width.
 
 ### Goal
 One composed field: dial control + local number, using parse helpers + picker.
@@ -304,7 +313,7 @@ Package feels shippable: regression green, runnable example, optional pub.dev pu
     → 2 text direction layer (function + extensions)
     → 3 MRETextField (+ tests/previews)
     → 3a image paste behaviours
-    → 4 phone parse / validation / country filters
+    → 4 phone parse / validation / country filters [x]
     → 5 country picker
     → 6 MREPhoneField
     → 7 CashBook path + gradual replace

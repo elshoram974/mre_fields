@@ -15,7 +15,7 @@ This file is the source of truth for agents and humans. Cursor rules under
 |---|---|
 | `MRETextField` — BIDI direction, clear, select-on-focus, suggestion chips, optional image paste | CashBook `CustomFieldRegistry` / book field types |
 | Text direction helpers — `String` / `Text` / widget extensions (usable without the field) | State-management packages (Riverpod, Bloc, …) |
-| `MREPhoneField` — dial code + local number, parse/format/validate for all countries, include/exclude country lists | Contact picker, device contacts DB |
+| `MREPhoneField` — dial code + local number, parse/format/validate for all 245 countries, include/exclude country lists, country picker | Contact picker, device contacts DB |
 | Country dial-code picker UI (package-owned, no app routing) | `go_router`, app routes, `safePop` |
 | `MREFieldsTheme` (`ThemeExtension`) for radii / paddings / defaults | Hard-coded CashBook `AppSizes` / `AppColorsExtension` |
 | Pure validators / formatters the fields need | `.tr()` localization — host app passes already-translated strings |
@@ -61,7 +61,11 @@ lib/
       model/                       # MREPastedImage, MREAttachmentsController
       paste/                       # behaviours, paste handler, scope, reader, web hook
       ui/                          # MREAttachmentStrip, MREImageViewer
-    phone/                         # planned: MREPhoneField, picker, parse, countries
+    phone/
+      model/                       # MRECountry, MRECountrySelection, MREPhoneNumber, digits
+      validation/                  # MREPhoneValidators
+      picker/                      # country picker (sheet or dialog) and its list
+      field/                       # MREPhoneField, MREPhoneController
     previews/                      # @MREPreview cards; nothing imports them
 test/                              # mirrors lib/src; architecture_test.dart enforces layering
 doc/                               # guides (*.md), compiled snippets (snippets/), GIFs (images/)

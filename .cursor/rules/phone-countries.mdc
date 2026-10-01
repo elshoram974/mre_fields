@@ -1,43 +1,52 @@
 ---
-description: Phone numbers — dial codes, include/exclude countries, full validation for all countries, paste parsing
+description: Phone numbers — parsing, validation for all countries, include/exclude lists, picker, field, localization
 globs: "lib/src/phone/**/*.dart,test/src/phone/**/*.dart"
 alwaysApply: true
 ---
 # Phone & countries
 
+## Layout (`lib/src/phone/`)
+
+| Folder | Holds | Imports |
+|---|---|---|
+| `model/` | `MRECountry`, `MRECountries`, `MRECountrySelection`, `MREPhoneNumber`, `MREPhoneError`, `mreNormalizePhoneInput`, `MREPhoneInputFormatter`, the country-name table | nothing else in the package |
+| `validation/` | `MREPhoneValidators`, `MREPhoneErrorText` | model, theme |
+| `picker/` | `MRECountryPickerBody`, `showMRECountryPicker` | model, `text/field`, theme |
+| `field/` | `MREPhoneField`, `MREPhoneController`, `MREDialButton` (internal) | everything above |
+
+`MRETextField` never imports phone code. `test/architecture_test.dart` enforces it.
+
 ## Data and validation
 
-- Validation must cover **every country**, not a hand-typed subset. Do not hand-write per-country regexes. Use a maintained libphonenumber-derived dataset behind our own API (`MREPhoneNumber`, `MRECountry`) so the dependency can be swapped without breaking hosts. Decision on which package lives in `ROADMAP.md` (Step 4).
-- Public pure API (no widgets): `parse(String, {defaultCountry})`, `isValid`, `formatE164`, `formatNational`, `isPossible`, `lookupByDialCode`.
-- Failure is a value: return an invalid / empty result with a reason enum. **No `catch (_) {}`.**
+- The rules come from `phone_numbers_parser` (libphonenumber metadata, MIT, pure Dart, Dart 3.0+). It stays **behind** `MREPhoneNumber` / `MRECountry`: no parser type (`PhoneNumber`, `IsoCode`) in the public API. The only bridge is the internal `mreParserIsoCode`.
+- Country names are the English CLDR names in `mre_country_names.dart` (generated from `Intl.DisplayNames`); regenerate it when the parser's region list changes. A test fails if a region has no name.
+- Validation covers every region the data knows (245). The data-driven test parses each region's own example numbers and expects them valid, and the same numbers with extra digits invalid.
+- Failure is a value (`MREPhoneNumber.error`, an `MREPhoneError`). **No `catch (_) {}`**: the parser's `PhoneNumberException` is turned into a reason (`unknownCountry`, `tooLong`, `invalid`).
+- A dial code is **not** a key (`+1`, `+7`, `+44` are shared). `MRECountry` equality is the ISO code; the parser decides the country from the whole number.
 
-## Country set
+## Country selection
 
-- `MRECountries.all` is the full list. Hosts narrow it with constructor params:
-  - `countries` / `includeCountries` — only these ISO codes.
-  - `excludeCountries` — everything except these.
-  - `favoriteCountries` — pinned at the top of the picker.
-  - `initialCountry`.
-- Include and exclude together is an assert failure (clear message), not silent precedence.
-- Filtering applies to **picker, paste-parse and validation** consistently: a pasted `+972…` with Israel excluded must not silently select it.
-- A dial code is **not** a country key (`+1` US/CA/…, `+7` RU/KZ). Selection state stores the ISO code; the dial code is derived. (Ledger's `firstWhere(dialCode ==)` loses this.)
-- Country names are localizable: `countryNameBuilder: String Function(MRECountry)` (and/or a `Map<String,String>` by ISO code). The package ships ISO code + dial code + English name as fallback only.
+- `MRECountrySelection(include | exclude, favorites, initial)`. Both include and exclude is an assert.
+- One selection feeds the picker list, the paste detection and the validation. A number from a country the selection rejects keeps its country and gets `countryNotAllowed`; the field never switches to it.
+- A new field starts with: `initialCountry`, the selection's `initial`, the device country, the first favorite, the first accepted country.
 
-## Localization (hosts translate, package never does)
+## Typing and paste
 
-- All user-visible text lives in **one immutable value class**, `MREFieldsStrings` (search hint, empty state, picker title, validation messages, image viewer labels/tooltips). Defaults are English; hosts replace any field.
-- Resolution order: widget param → `MREFieldsTheme.strings` → English default. No `.tr()`, no ARB, no bundled translation maps, no dependency on `flutter_localizations`.
-- Validation returns a **reason enum** (`MREPhoneError.empty|tooShort|tooLong|invalidForCountry|countryNotAllowed|…`); message text comes from `MREFieldsStrings` or a host `errorTextBuilder: String Function(MREPhoneError)`.
-- Hosts using gen-l10n pass `AppLocalizations` values into `MREFieldsStrings(...)` once, next to `MREFieldsTheme` in `ThemeData.extensions`.
-- Numerals/RTL: normalize Arabic-Indic digits to ASCII before parsing; keep dial code and number LTR (see `i18n-rtl-l10n` skill).
+- The field accepts digits and a leading `+` only (`MREPhoneInputFormatter`); Arabic, Persian and full-width digits become ASCII.
+- A text that starts with `+` or `00` is read as international. When it **arrives in one piece** (paste) the country switches at once; when it is **typed**, it waits until the number is valid, because `+1` alone is not a country. After switching, only the national digits stay.
+- Digits are always laid out left to right; alignment follows the app direction.
+- `onChanged` fires only when the text changes, not when the cursor moves.
 
-## Paste / typing
+## Localization
 
-- On paste or text starting with `+` or `00`: longest dial-code match, then national-number extraction, then strip the trunk prefix where the country uses one (not blindly every leading `0`).
-- Update dial control + local text in one controller change, keep cursor at end, no layout jump.
-- Digits only in the local field (`FilteringTextInputFormatter`); keep `+` handling in the paste path.
-- Validation runs on change/blur according to a param; never blocks typing.
+- Error messages: `MREFieldsStrings.phone*` through `MREPhoneErrorText.phoneError`, or a validator's `errorText`.
+- Country names and picker texts: `countryNameBuilder`, `pickerTitle`, `pickerSearchHint`, `pickerEmptyText`; English is the fallback.
+
+## Picker
+
+- Narrow window: draggable modal sheet. Wide window (`MREFieldsTheme.windowSizeFor` is `expanded`): centered `Dialog`, max width 440, max height 560 or 85 % of the window.
+- Search keys (name, ISO, dial code, lowercase) are built once per list, not per keystroke. The list is a `ListView.builder`.
 
 ## Tests
 
-`+20…`, `0020…`, leading `0` trunk, `+1` ambiguity, `+971` vs `+97`, excluded country paste, empty, letters, too long, too short, every country has ≥1 valid sample number (data-driven test).
+Parse cases (`+20`, `0020`, national, Arabic digits, `+1` ambiguity, `+971` vs `+97`), selection (include, exclude, favorites, initial), validators and messages, the all-regions data test, picker (sheet vs dialog, search, favorites, names in your language, no overflow at 320/400/1000, scale 1.3, RTL), field (start, typing, paste, picker, validation, controller, selection change, layout).

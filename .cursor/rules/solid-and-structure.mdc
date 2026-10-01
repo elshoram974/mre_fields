@@ -19,10 +19,11 @@ lib/src/
   attachments/model/           value types and the controller
   attachments/paste/           behaviours, paste rules, platform hooks
   attachments/ui/              thumbnails and viewer
+  phone/model|validation|picker|field   numbers, countries, picker, field
   previews/                    previews only; nothing imports them
 ```
 
-Dependency direction, one way: `theme` ← `text/direction` ← `text/field` → `attachments/*`. `attachments` never imports `text`. `text/direction` never imports `text/field`. A new feature gets its own folder and its own entry in the architecture test.
+Dependency direction, one way: `theme` ← `text/direction` ← `text/field` → `attachments/*`, and `phone/model` ← `phone/validation` ← `phone/picker` ← `phone/field`, with `phone/*` using `text/field` and `theme`. `attachments` never imports `text`. `text/direction` never imports `text/field`. A new feature gets its own folder and its own entry in the architecture test.
 
 ## Single responsibility
 
