@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../attachments/mre_image_paste_behavior.dart';
+import '../attachments/mre_image_paste_scope.dart';
 import '../theme/mre_fields_theme.dart';
 import 'mre_field_clear_button.dart';
 import 'mre_safe_text_editing_controller.dart';
@@ -51,6 +53,10 @@ class _FieldFlags {
 ///
 /// Order of priority for [borderRadius] and [contentPadding]: the parameter,
 /// then [MREFieldsTheme], then your `InputDecorationTheme`, then the default.
+///
+/// Paste images with [imagePaste]:
+///
+/// {@example /doc/snippets/attachments.dart#attachments}
 ///
 /// See also:
 ///
@@ -113,6 +119,7 @@ class MRETextField extends StatefulWidget {
     this.suggestions,
     this.maxSuggestions = 20,
     this.onSuggestionSelected,
+    this.imagePaste = const MRENoImagePaste(),
   });
 
   /// Key of the inner [FormField], to validate without a parent [Form].
@@ -274,6 +281,10 @@ class MRETextField extends StatefulWidget {
   /// Called after the user picks a suggestion. [onChanged] is called too.
   final ValueChanged<String>? onSuggestionSelected;
 
+  /// What to do when the user pastes an image. Defaults to nothing: the field
+  /// pastes text only. See [MREImagePasteBehavior].
+  final MREImagePasteBehavior imagePaste;
+
   @override
   State<MRETextField> createState() => _MRETextFieldState();
 }
@@ -410,10 +421,13 @@ class _MRETextFieldState extends State<MRETextField> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final size = tokens.windowSizeFor(constraints.maxWidth);
-        final field = ValueListenableBuilder<_FieldFlags>(
-          valueListenable: _flags,
-          builder: (context, flags, _) =>
-              _buildField(theme, tokens, size, flags),
+        final field = MREImagePasteScope(
+          behavior: widget.imagePaste,
+          builder: (context, hooks) => ValueListenableBuilder<_FieldFlags>(
+            valueListenable: _flags,
+            builder: (context, flags, _) =>
+                _buildField(theme, tokens, size, flags, hooks),
+          ),
         );
 
         if (widget.suggestions == null) {
@@ -433,6 +447,7 @@ class _MRETextFieldState extends State<MRETextField> {
     MREFieldsTheme tokens,
     MREWindowSize size,
     _FieldFlags flags,
+    MREImagePasteHooks hooks,
   ) {
     final multiline = widget.maxLines == null || widget.maxLines! > 1;
 
@@ -471,6 +486,8 @@ class _MRETextFieldState extends State<MRETextField> {
       readOnly: widget.readOnly,
       cursorColor: widget.cursorColor,
       mouseCursor: widget.mouseCursor,
+      contentInsertionConfiguration: hooks.contentInsertionConfiguration,
+      contextMenuBuilder: hooks.contextMenuBuilder,
     );
   }
 

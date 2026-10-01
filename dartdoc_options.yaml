@@ -1,5 +1,5 @@
 dartdoc:
-  categoryOrder: ["Theme", "Text", "Fields", "Phone", "Attachments"]
+  categoryOrder: ["Theme", "Text", "Fields", "Attachments", "Phone"]
   categories:
     "Theme":
       markdown: doc/theme.md
@@ -7,8 +7,10 @@ dartdoc:
       markdown: doc/text.md
     "Fields":
       markdown: doc/text_field.md
-    # Add "Phone" and "Attachments" here, each with its own doc/<name>.md
-    # guide, in the same change that ships their widgets.
+    "Attachments":
+      markdown: doc/attachments.md
+    # Add "Phone" here, with its own doc/<name>.md guide, in the same change
+    # that ships its widgets.
   showUndocumentedCategories: false
   linkTo:
     url: "https://pub.dev/documentation/mre_fields/%v%/"

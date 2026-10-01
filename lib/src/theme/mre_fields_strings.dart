@@ -22,6 +22,8 @@ class MREFieldsStrings {
     this.removeImageTooltip = 'Remove image',
     this.replaceImageTooltip = 'Replace image',
     this.closeViewerTooltip = 'Close',
+    this.pasteImageLabel = 'Paste image',
+    this.attachedImageLabel = 'Attached image',
   });
 
   /// Tooltip and semantics label of the clear button.
@@ -45,6 +47,12 @@ class MREFieldsStrings {
   /// Tooltip and semantics label of the close button in the image viewer.
   final String closeViewerTooltip;
 
+  /// Label of the "paste image" item in the text selection menu.
+  final String pasteImageLabel;
+
+  /// Semantics label of an attached image thumbnail.
+  final String attachedImageLabel;
+
   /// Returns a copy with the given values replaced.
   MREFieldsStrings copyWith({
     String? clearTooltip,
@@ -54,6 +62,8 @@ class MREFieldsStrings {
     String? removeImageTooltip,
     String? replaceImageTooltip,
     String? closeViewerTooltip,
+    String? pasteImageLabel,
+    String? attachedImageLabel,
   }) {
     return MREFieldsStrings(
       clearTooltip: clearTooltip ?? this.clearTooltip,
@@ -63,6 +73,8 @@ class MREFieldsStrings {
       removeImageTooltip: removeImageTooltip ?? this.removeImageTooltip,
       replaceImageTooltip: replaceImageTooltip ?? this.replaceImageTooltip,
       closeViewerTooltip: closeViewerTooltip ?? this.closeViewerTooltip,
+      pasteImageLabel: pasteImageLabel ?? this.pasteImageLabel,
+      attachedImageLabel: attachedImageLabel ?? this.attachedImageLabel,
     );
   }
 
@@ -75,7 +87,9 @@ class MREFieldsStrings {
         other.noCountriesFound == noCountriesFound &&
         other.removeImageTooltip == removeImageTooltip &&
         other.replaceImageTooltip == replaceImageTooltip &&
-        other.closeViewerTooltip == closeViewerTooltip;
+        other.closeViewerTooltip == closeViewerTooltip &&
+        other.pasteImageLabel == pasteImageLabel &&
+        other.attachedImageLabel == attachedImageLabel;
   }
 
   @override
@@ -87,5 +101,7 @@ class MREFieldsStrings {
     removeImageTooltip,
     replaceImageTooltip,
     closeViewerTooltip,
+    pasteImageLabel,
+    attachedImageLabel,
   );
 }

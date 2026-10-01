@@ -151,20 +151,23 @@ Differences from ledger `AppTextField`:
 
 ---
 
-## Step 3a — Image paste behaviours `[ ]`
+## Step 3a — Image paste behaviours `[x]`
 
 ### Goal
 Optional paste of images into the text field. Default: nothing changes. Skill `add-image-paste`, rule `image-paste.mdc`.
 
 ### Plan
-1. Wire paste entry points (mobile keyboard insertion, desktop shortcut, context menu, web) and verify per platform in the example app; keep the matrix in README platform notes.
+1. Wire paste entry points (mobile keyboard insertion, desktop shortcut, context menu, web); keep the platform table in `doc/attachments.md`.
 2. `MREPastedImage`, `MREImagePasteBehavior` (abstract) and three implementations:
    `MRENoImagePaste` (default) · `MREImageCallbackPaste` (callback only, no UI) · `MREImageAttachmentPaste` (thumbnail strip + open / remove / replace + callback).
 3. New `MRETextField(imagePaste: …)` param, default `const MRENoImagePaste()`.
-4. Clipboard reading behind `MREClipboardImageReader`, default implementation in its own library file so text-only users do not pull the plugin. Pick the plugin at implementation time (candidates: `super_clipboard` 0.9.1, last release 2025-06; `pasteboard` 0.5.0, desktop/web) after checking maintenance.
+4. Clipboard reading behind `MREClipboardImageReader`, default implementation on `pasteboard` (checked on pub.dev: Android, iOS, macOS, Windows, Linux, web; `super_clipboard` needs a Rust toolchain and was last released 2025-06).
 5. Limits + `onImageRejected`; viewer widget; semantics labels as params.
 6. Tests: default ignores images, callback payload, limits, remove/replace, text paste unaffected, compact/expanded/RTL/textScale.
 7. Previews + example page; `CHANGELOG`.
+
+### Result
+Shipped as planned, without the spike: the clipboard is read through the `pasteboard` plugin (all six platforms, 0.5.0, 2026-02) behind `MREClipboardImageReader`. Decision: a normal dependency, not an optional library, because pub packages cannot have optional dependencies; the plugin stays idle unless a behaviour accepts images. Shortcut, selection menu and Android keyboard all work through one accept path. About 60 tests with a fake clipboard; thumbnails checked in the real previewer. Not yet tried on physical devices.
 
 ### Depends on
 - Step 3.

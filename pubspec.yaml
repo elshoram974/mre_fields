@@ -12,6 +12,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  pasteboard: ^0.5.0
 
 dev_dependencies:
   flutter_test:

@@ -14,4 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Text direction: `detectTextDirection` and `detectStrongTextDirection` (first word with a letter decides, constant cost), `String` getters `textDirection`, `isRtl`, `directionOr`, `autoTextAlign`, the `MREAutoText` widget (every `Text` parameter, plus `autoAlign`; also `MREAutoText.rich`), `Text.autoDirection()` and `Text.autoAlign()`, `Widget.withTextDirection`, and `safeDisplayText` for unpaired surrogates.
 - `MRETextField`: a form text field with live direction, clear button, select on focus, suggestions, and the parameters of `TextFormField`. Radius and padding come from the parameter, then `MREFieldsTheme`, then your `InputDecorationTheme`.
 - `MRESuggestionBar`, `mreFilterSuggestions`, `MREFieldClearButton` and `MRESafeTextEditingController`, usable without the field.
+- Image paste for `MRETextField` through `imagePaste`: `MRENoImagePaste` (default), `MREImageCallbackPaste` and `MREImageAttachmentPaste`, with limits, rejection reasons, and `onImagePasted` / `onImagesChanged`. Images arrive through the paste shortcut, the selection menu and the Android keyboard.
+- `MREAttachmentStrip` (thumbnails with open, remove and replace), `MREImageViewer`, `MREAttachmentsController`, `MREImagePasteScope` for any text field, `MREClipboardImageReader`, and `mreSniffImageMimeType`.
+- New `MREFieldsStrings` texts: `pasteImageLabel` and `attachedImageLabel`.
+- Depends on `pasteboard` to read images from the clipboard.
 - `@MREPreview()` annotation to preview any widget in light, dark, right to left, large text, narrow and wide layouts.

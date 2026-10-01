@@ -14,6 +14,7 @@ value can be changed globally or per field.
 - [Theming](#theming) — guide: [doc/theme.md](doc/theme.md)
 - [Text direction](#text-direction) — guide: [doc/text.md](doc/text.md)
 - [Text field](#text-field) — guide: [doc/text_field.md](doc/text_field.md)
+- [Image paste](#image-paste) — guide: [doc/attachments.md](doc/attachments.md)
 - [Planned](#planned)
 - [Development](#development)
 
@@ -29,6 +30,8 @@ value can be changed globally or per field.
 | `MREDirectionalWidget.withTextDirection` | Gives any widget the direction of a text |
 | `safeDisplayText`, `MRESafeTextEditingController` | Remove broken characters that make Flutter throw |
 | `MRESuggestionBar`, `MREFieldClearButton` | The field's pieces, usable in any field |
+| `MREImageAttachmentPaste`, `MREImageCallbackPaste` | Paste images into a field: keep them under it, or hand them to your code |
+| `MREAttachmentStrip`, `MREImageViewer`, `MREImagePasteScope` | The image pieces, usable alone |
 
 ## Install
 
@@ -87,11 +90,30 @@ The direction follows the first word with a letter as the user types. Every
 value can be set for one field, through `MREFieldsTheme`, or left to your
 `ThemeData`. More in [doc/text_field.md](doc/text_field.md).
 
+## Image paste
+
+A field pastes text only, unless you give it a behaviour:
+
+```dart
+MRETextField(
+  labelText: 'Message',
+  imagePaste: MREImageAttachmentPaste(
+    maxImages: 4,
+    onImagesChanged: (images) => attached = images,
+  ),
+);
+```
+
+Images appear under the field. The user can open, remove and replace them.
+`MREImageCallbackPaste` hands each image to your code and shows nothing. Images
+arrive through the paste shortcut (desktop, web), the selection menu (every
+platform) and the on-screen keyboard (Android). Details in
+[doc/attachments.md](doc/attachments.md).
+
 ## Planned
 
 | Piece | Role |
 |---|---|
-| Image paste | Optional paste of images into `MRETextField`, with preview, open, remove and replace |
 | `MREPhoneField` | Dial code and local number, validation for every country |
 | `MRECountryCodePicker` | Searchable country list |
 

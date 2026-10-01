@@ -14,8 +14,19 @@
 ///    [MREDirectionalWidget], [safeDisplayText].
 ///  * **Fields**: [MRETextField], [MRESuggestionBar], [MREFieldClearButton],
 ///    [MRESafeTextEditingController], [mreFilterSuggestions].
+///  * **Attachments**: [MREImagePasteBehavior] with [MRENoImagePaste],
+///    [MREImageCallbackPaste] and [MREImageAttachmentPaste]; [MREPastedImage],
+///    [MREAttachmentsController], [MREAttachmentStrip], [MREImageViewer],
+///    [MREImagePasteScope], [MREClipboardImageReader].
 library;
 
+export 'src/attachments/mre_attachment_strip.dart';
+export 'src/attachments/mre_attachments_controller.dart';
+export 'src/attachments/mre_clipboard_image_reader.dart';
+export 'src/attachments/mre_image_paste_behavior.dart';
+export 'src/attachments/mre_image_paste_scope.dart';
+export 'src/attachments/mre_image_viewer.dart';
+export 'src/attachments/mre_pasted_image.dart';
 export 'src/text/mre_auto_text.dart';
 export 'src/text/mre_field_clear_button.dart';
 export 'src/text/mre_safe_text_editing_controller.dart';

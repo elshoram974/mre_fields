@@ -12,6 +12,8 @@ void main() {
       strings.removeImageTooltip,
       strings.replaceImageTooltip,
       strings.closeViewerTooltip,
+      strings.pasteImageLabel,
+      strings.attachedImageLabel,
     ];
 
     expect(values, everyElement(isNotEmpty));

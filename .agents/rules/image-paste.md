@@ -1,5 +1,5 @@
 ---
-description: Optional image paste for text fields — strategy classes, default is no image handling
+description: Optional image paste for text fields — behaviour classes, default is no image handling
 globs: "lib/src/text/**/*.dart,lib/src/attachments/**/*.dart,test/**/*.dart"
 alwaysApply: true
 ---
@@ -19,37 +19,41 @@ MRETextField(
 
 | Class | UI | Does |
 |---|---|---|
-| `MREImagePasteBehavior` (abstract) | — | Contract: limits, `onImagePasted`, how to render. Hosts may extend it. |
-| `MRENoImagePaste` (default) | none | Ignores images; text paste untouched. |
+| `MREImagePasteBehavior` (abstract) | — | Limits (`maxImages`, `maxBytes`, `allowedMimeTypes`), `onImagePasted`, `onImageRejected`, `reader`. Hosts may extend it. |
+| `MRENoImagePaste` (default) | none | `acceptsImages` is false: no hooks, no widgets, no cost. |
 | `MREImageCallbackPaste` | none | Calls `onImagePasted(MREPastedImage)`; host decides everything. |
-| `MREImageAttachmentPaste` | thumbnail strip inside/under the field | Preview, open full-screen, remove, replace, plus the same callback. |
+| `MREImageAttachmentPaste` | thumbnail strip under the field | Keeps the images; open, remove, replace; `onImagesChanged`; optional host `MREAttachmentsController`. |
 
-Every behaviour exposes the callback; only the UI differs.
+Pieces hosts can use alone: `MREImagePasteScope` (paste hooks for any text field), `MREAttachmentStrip`, `MREImageViewer`, `MREAttachmentsController`, `MREPasteboardImageReader`, `mreSniffImageMimeType`.
 
-## Value type
+## Rules the code follows
 
-`MREPastedImage` — `Uint8List bytes`, `String mimeType`, optional `name`, `width`/`height` once decoded. Immutable, `==` by identity of bytes + metadata. No `dart:io` `File` in the public type (web/desktop parity).
+- **Text wins.** The paste shortcut reads the clipboard text first. Only when there is no text does it read an image. A copy from a document (text + picture) pastes as text.
+- **Never replace text paste.** No image → fall back to the field's own paste action (`callingAction` of the overridable `PasteTextIntent`).
+- **Value type:** `MREPastedImage` holds `Uint8List bytes`, `mimeType`, `name`. No `dart:io` `File` (web and desktop parity). Type comes from the bytes (`mreSniffImageMimeType`), not from the claimed type.
+- **Rejections** (`MREImageRejection`): `tooLarge`, `wrongType`, `tooMany`, `unreadable`. The package shows no message of its own; the host passes strings through `MREFieldsStrings`.
+- **Replace** swaps in the image on the clipboard. It ignores the clipboard text and does not count the replaced image against `maxImages`.
+- **Errors:** only `PlatformException` and `MissingPluginException` from the reader are caught, and both become `unreadable`. No other catch.
 
-## Limits (params, validated before the callback)
+## Where images arrive (all three go through one `_accept`)
 
-`maxImages`, `maxBytes`, `allowedMimeTypes`. Rejected images call `onImageRejected(MREImageRejection reason)`; the package shows no text of its own (host passes strings).
+- Paste shortcut: ancestor `Actions` overriding `PasteTextIntent` (desktop and web).
+- Selection menu: `contextMenuBuilder` adds "Paste image" when the clipboard holds one.
+- On-screen keyboard: `contentInsertionConfiguration` (Android only, a Flutter limitation).
 
-## Getting the image
+## Clipboard dependency
 
-- Clipboard reading goes through a small `MREClipboardImageReader` interface (`Future<MREPastedImage?> read()`), so hosts can swap the implementation and text-only users do not pull an image/clipboard plugin. A default reader backed by a maintained plugin ships in its own library file.
-- Android/iOS keyboards (stickers, GIF, images): use `TextField.contentInsertionConfiguration`.
-- Desktop/web `Ctrl/Cmd+V`: intercept in the field's `FocusNode.onKeyEvent` and in `contextMenuBuilder` (paste item). Only claim the event when the clipboard actually has an allowed image — otherwise return `KeyEventResult.ignored` so normal text paste works.
-- Pasting images is a standard, solved flow (web apps and desktop apps do it). Build it directly and verify each platform in the example app; record the support matrix in the README.
+The default reader uses the `pasteboard` plugin (Android, iOS, macOS, Windows, Linux, web). It is a normal dependency of the package, so text-only users also get the plugin; it stays idle unless a behaviour accepts images. Anything else goes through the `MREClipboardImageReader` interface, which tests fake.
 
 ## UI rules
 
-- Thumbnails use `cacheWidth`/`cacheHeight`; list is a lazy `ListView.builder` (horizontal) — no unbounded `Row`.
-- Tap opens a viewer (`InteractiveViewer`, close, dark-safe); remove and replace have ≥ 40 px targets and `Semantics` labels passed as params.
-- Layout adapts by constraints (compact: one strip above the text; expanded: larger thumbs). See `responsive-adaptive.mdc`.
-- Colors from `Theme`; sizes/radii from `MREFieldsTheme`.
+- Thumbnails decode with `cacheWidth`; the list is a lazy horizontal `ListView.builder`, no unbounded `Row`.
+- Thumbnail edge: 96 compact / 120 expanded. Remove and replace buttons are 40 px with `tapTargetSize: shrinkWrap` — the default 48 px hit area would cover the image and block the open tap.
+- A tap on the image opens `MREImageViewer` (full screen, `InteractiveViewer`, close button).
+- Colors from `Theme`; radius from `MREFieldsTheme`; texts from `MREFieldsStrings`.
 
 ## Do not
 
-- Make clipboard/image packages a dependency of users who only want text.
-- Swallow decode errors silently — report via `onImageRejected`.
-- Keep full-size bytes in `State` after the host took ownership.
+- Swallow decode errors silently — `Image.memory` shows a broken-image icon.
+- Keep full-size bytes in `State` after the host took ownership (callback behaviour holds none).
+- Call the clipboard to decide whether to show a menu item more than once per menu open.

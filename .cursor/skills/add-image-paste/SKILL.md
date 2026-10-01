@@ -13,16 +13,15 @@ Read `.cursor/rules/image-paste.mdc`, `performance.mdc`, `responsive-adaptive.md
 
 ## Steps
 
-1. **Wire the paste entry points**: `contentInsertionConfiguration` (mobile keyboards), `FocusNode.onKeyEvent` for Ctrl/Cmd+V, `contextMenuBuilder` paste item. Verify each platform in the example app and record the matrix in the README "Platform notes".
-2. **Types** under `lib/src/attachments/`: `MREPastedImage`, `MREImageRejection` (enum: tooLarge, wrongType, tooMany, undecodable), `MREImagePasteBehavior` (abstract).
-3. **Behaviours**: `MRENoImagePaste` (const default), `MREImageCallbackPaste`, `MREImageAttachmentPaste`. Shared validation lives in the base class, not copied.
-4. **Clipboard reader**: `MREClipboardImageReader` interface + a default implementation on a maintained plugin (check pub.dev release date first), in its own library file so text-only imports stay plugin-free.
-5. **Hook into `MRETextField`**: new param `imagePaste` (default `const MRENoImagePaste()`). Intercept only when the clipboard has an allowed image; otherwise let text paste run.
-6. **Attachment UI** (`MREAttachmentStrip`, exported): lazy horizontal list, thumbnails with `cacheWidth`, remove button, replace action, tap → `MREImageViewer` (full-screen, `InteractiveViewer`). Semantics labels and tooltips are params.
-7. **State**: attachments owned by a small `MREAttachmentsController` (`ChangeNotifier`) the host can pass in or let the field create. Callback fires on add/remove/replace.
-8. **Tests**: default behaviour ignores images; callback receives bytes + mime; limits reject with the right reason; remove/replace update the controller; text paste still works; compact + expanded + RTL + textScale 1.3.
-9. **Previews/example**: three cards — none, callback (shows host-side usage), attachments.
-10. `CHANGELOG`, dartdoc with one snippet per behaviour.
+1. **Types** under `lib/src/attachments/`: `MREPastedImage`, `MREImageRejection` (`tooLarge`, `wrongType`, `tooMany`, `unreadable`), `mreSniffImageMimeType`, `MREImagePasteBehavior` (abstract) with `MRENoImagePaste`, `MREImageCallbackPaste`, `MREImageAttachmentPaste`. Shared validation lives in the base `check`.
+2. **Reader**: `MREClipboardImageReader` interface and `MREPasteboardImageReader` (plugin `pasteboard`). Check pub.dev for the plugin's release date and platform tags before changing it.
+3. **State**: `MREAttachmentsController` (`ChangeNotifier`). The scope keeps its own when the behaviour gives none, and never disposes one the host passed.
+4. **Scope**: `MREImagePasteScope` wraps any text field. With a behaviour that accepts nothing it adds nothing. Otherwise it overrides `PasteTextIntent` through `Actions`, builds `contentInsertionConfiguration`, builds the selection menu item, and shows the strip.
+5. **UI**: `MREAttachmentStrip` (lazy list, thumbnails with `cacheWidth`, remove and replace buttons, open) and `MREImageViewer`. Texts come from `MREFieldsStrings`.
+6. **Field**: `MRETextField(imagePaste: ...)`, default `const MRENoImagePaste()`.
+7. **Tests**: drive paste with `Actions.invoke(FocusManager.instance.primaryFocus!.context!, PasteTextIntent(...))` — the focused node's context, like a key press, so the overridable action chain works. Mock `Clipboard.getData` on `SystemChannels.platform`. Fake the reader. Cover: text wins, image to callback, limits, unreadable, attachments add/remove/replace/open, host controller, keyboard content, menu item, layout at compact and expanded with text scale 1.3 and both directions.
+8. **Docs and previews**: snippets in `doc/snippets/attachments.dart`, guide `doc/attachments.md`, previews in `lib/src/previews/mre_attachments_previews.dart` (images from `preview_images.dart`).
+9. `CHANGELOG`; verify in the real previewer (see `add-widget-preview`).
 
 ## Check
 
