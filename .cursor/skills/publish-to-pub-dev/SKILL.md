@@ -47,7 +47,7 @@ Account and ownership
 - [ ] A first publish is permanent for that version: a version can be retracted within 7 days, never deleted. Run the dry-run and read the file list first.
 
 Legal and repository
-- [ ] `LICENSE` is a real OSI-approved license (BSD-3-Clause, MIT, or Apache-2.0). A placeholder file fails validation and costs score.
+- [x] `LICENSE` is BSD-3-Clause, Copyright (c) 2026 Mohammed Riyad El Shora (done). Keep the year and holder in sync if either changes.
 - [ ] Public GitHub repository; `pubspec.yaml` has `repository:` and `issue_tracker:` (homepage optional). `origin` currently points at github.com/elshoram974/mre_fields.
 - [ ] Push a tag per release (`v0.1.0`). Optional: automated publishing from GitHub Actions (pub.dev package → Admin → Automated publishing, tag pattern `v{{version}}`), which removes the need for a local token.
 

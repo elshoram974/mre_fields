@@ -154,3 +154,7 @@ flutter widget-preview start
 Every widget can be previewed. Add `@MREPreview()` to a top-level function that
 returns the widget, and the previewer shows it in light, dark, right to left,
 large text, narrow and wide.
+
+## License
+
+BSD 3-Clause. See [LICENSE](LICENSE).
