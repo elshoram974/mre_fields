@@ -6,6 +6,9 @@
 ///
 /// {@example /doc/snippets/theme.dart#global}
 ///
+/// Every rule is also a plain function or class, so you can use it without any
+/// widget on screen: see the functions guide in the repository (`doc/functions.md`).
+///
 /// ## Topics
 ///
 ///  * **Theme**: [MREFieldsTheme], [MREFieldsStrings], [MREWindowSize].

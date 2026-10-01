@@ -9,7 +9,7 @@
 import 'dart:io';
 
 /// Guides that carry snippet blocks.
-const guideTopics = ['theme', 'text', 'text_field', 'attachments'];
+const guideTopics = ['theme', 'text', 'text_field', 'attachments', 'functions'];
 
 /// Returns region [name] of [source], formatted like dartdoc's `{@example}`:
 /// shared indentation removed and `#hide` lines dropped.

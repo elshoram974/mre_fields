@@ -18,7 +18,8 @@ flutter run   # any device: phone, desktop or web
 
 ## Contents
 
-- [Available now](#available-now)
+- [What is inside](#what-is-inside)
+- [Use the functions without a widget](#use-the-functions-without-a-widget)
 - [Install](#install)
 - [Theming](#theming) — guide: [doc/theme.md](doc/theme.md)
 - [Text direction](#text-direction) — guide: [doc/text.md](doc/text.md)
@@ -27,20 +28,33 @@ flutter run   # any device: phone, desktop or web
 - [Planned](#planned)
 - [Development](#development)
 
-## Available now
+## What is inside
 
-| Piece | What it does |
-|---|---|
-| `MRETextField` | Text field that follows the language typed: live direction, clear button, suggestions, select on focus |
-| `MREFieldsTheme` | Radius, padding, breakpoints and texts, set once on your `ThemeData` |
-| `MREFieldsStrings` | Every text a field shows, ready for translation |
-| `MREAutoText` | `Text` that reads right to left or left to right from its content |
-| `detectTextDirection`, `MRETextDirection` | Direction of a string, as a function or as getters |
-| `MREDirectionalWidget.withTextDirection` | Gives any widget the direction of a text |
-| `safeDisplayText`, `MRESafeTextEditingController` | Remove broken characters that make Flutter throw |
-| `MRESuggestionBar`, `MREFieldClearButton` | The field's pieces, usable in any field |
-| `MREImageAttachmentPaste`, `MREImageCallbackPaste` | Paste images into a field: keep them under it, or hand them to your code |
-| `MREAttachmentStrip`, `MREImageViewer`, `MREImagePasteScope` | The image pieces, usable alone |
+| Name | Kind | Use it for |
+|---|---|---|
+| `MRETextField` | widget | A form field that follows the language typed, with clear button, suggestions, select on focus and image paste |
+| `MREAutoText` | widget | A `Text` that reads right to left or left to right from its content |
+| `MREFieldsTheme`, `MREFieldsStrings` | theme classes | Radius, padding, breakpoints and every text, set once on your `ThemeData` |
+| `MREImageAttachmentPaste`, `MREImageCallbackPaste`, `MRENoImagePaste` | behaviours | What a field does with a pasted image |
+| `MREAttachmentStrip`, `MREImageViewer`, `MRESuggestionBar`, `MREFieldClearButton` | widgets | The field's pieces, usable in any field |
+| `MREImagePasteScope` | widget | Image paste for any `TextField` |
+| `Text.autoDirection()`, `Text.autoAlign()`, `Widget.withTextDirection()` | extensions | Direction and alignment on widgets you already have |
+| `detectTextDirection`, `detectStrongTextDirection`, `String.isRtl` and friends | functions | The direction of a string, in code with no widget |
+| `safeDisplayText`, `MRESafeTextEditingController` | function, class | Remove broken characters that make Flutter throw |
+| `mreFilterSuggestions`, `mreSniffImageMimeType` | functions | Filter suggestions, and tell an image type from its bytes |
+| `MREAttachmentsController`, `MREPastedImage`, `MREClipboardImageReader` | classes | Hold and read images from your own code |
+
+The functions and classes need no widget on screen. See
+[doc/functions.md](doc/functions.md) for the full list with examples.
+
+## Use the functions without a widget
+
+```dart
+detectTextDirection('مرحبا');            // TextDirection.rtl
+'123 hello'.isRtl;                       // false, the first word with a letter is English
+mreFilterSuggestions(cities, 'al');      // the cities that contain "al"
+mreSniffImageMimeType(bytes);            // 'image/png', 'image/jpeg', ... or null
+```
 
 ## Install
 
