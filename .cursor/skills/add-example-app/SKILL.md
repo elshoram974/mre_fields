@@ -13,35 +13,32 @@ description: >-
 - Widget Previewer = quick cards in IDE.
 - **`example/`** = real app you run on simulator/device (theme toggle, phone flow, overrides).
 
-## Create (once)
+## What exists
 
-```bash
-cd /path/to/mre_fields
-flutter create example --template=app --org net.mrecode
+`example/` is a Flutter app for every platform (`flutter create example --org net.mrecode --project-name mre_fields_example`), depending on the package by `path: ../`.
+
+```text
+example/lib/
+  main.dart, app.dart          # registers MREFieldsTheme on light and dark, like a host app
+  example_settings.dart        # theme mode, language, radius (ChangeNotifier)
+  pages/home_page.dart         # one card per feature
+  sections/                    # direction, field, image paste, theme sections
+  demos/                       # clean pages for the GIFs (?demo=text, ?demo=paste)
+example/test/example_test.dart # smoke tests
 ```
 
-In `example/pubspec.yaml`:
+## Add a feature to the example
 
-```yaml
-dependencies:
-  mre_fields:
-    path: ../
-```
-
-## What to show (minimum)
-
-1. Host `ThemeData` + `MREFieldsTheme` (light/dark toggle).
-2. `MRETextField` — empty, suggestions, Arabic BIDI.
-3. Constructor overrides (custom padding / decoration) vs theme defaults.
-4. When ready: `MREPhoneField` + country picker.
-5. Optional screen: compose pieces only (suggestion bar / clear) without full field — proves extensibility.
+1. Add `sections/<feature>_section.dart` (a `SectionCard` with default and customized usage) and list it in `home_page.dart`.
+2. Plain English literals; no ARB. A language toggle already swaps `MREFieldsStrings`.
+3. If the feature deserves a GIF, add a demo page (skill `record-demo-gifs`).
+4. `cd example && flutter analyze && flutter test`.
 
 ## Rules
 
-- Example strings can be English literals (package has no `.tr()`).
-- Do not import CashBook.
-- Keep example thin — no copy of package internals.
-- After adding: note in README “Run the example” section.
+- Example code follows the same clean-code and structure rules as `lib/`.
+- Every platform must build (`flutter build web|apk|ios|macos|linux|windows`); CI does all of them.
+- Do not import CashBook or anything outside `package:mre_fields/mre_fields.dart`.
 
 ## Run
 
