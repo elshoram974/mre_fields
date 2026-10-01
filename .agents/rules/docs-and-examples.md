@@ -14,6 +14,17 @@ pub.dev readers see only what ships in the package. Write for a Flutter develope
 - State precedence where it matters: parameter → `MREFieldsTheme` → Material default.
 - No internal process talk in dartdoc, README, CHANGELOG or example code (no tool names, no agent/workflow notes, no TODO addressed to a tool).
 
+## How the docs link together
+
+- **Barrel library doc** (`lib/mre_fields.dart`): overview, quick start, one bullet per topic listing its public types with `[Type]` links.
+- **Categories**: every public type carries `{@category Name}`; each category has a guide `doc/<name>.md` registered in `dartdoc_options.yaml` (`categoryOrder` keeps the order). Add the category and its guide in the same change that ships the feature.
+- **Guides** (`doc/*.md`): task-oriented text. `[Type]` references do not resolve there, so use backticked names; the category page lists the linked members below the guide.
+- **Class docs** end with `See also:` bullets linking related types, and point back to the guide topic when one exists.
+- **README** has a Contents list, short snippets per feature, and links to `doc/` guides, `example/`, and (after the first release) the pub.dev API reference. Do not ship the API link before the package is published.
+- **CHANGELOG** entries name the public symbols they touch, in backticks.
+- `public_member_api_docs` is enabled: an undocumented public member fails `flutter analyze`.
+- Gate: `dart doc .` must finish with 0 warnings.
+
 ## README (package root)
 
 Sections, in order: what it is · install · 30-second quick start · feature list with one runnable snippet each (BIDI field, clear/suggestions, phone + country include/exclude, image paste behaviours, text direction extensions, theming) · customization (theme extension, overrides, using single pieces) · platform notes (paste support matrix) · FAQ · contributing.

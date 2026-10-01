@@ -23,4 +23,5 @@ Read `.cursor/rules/docs-and-examples.mdc`. Companion skills: `dart-write-docume
    ```
    Matches must be only legitimate product meaning, never tooling notes.
 6. Archive check: `flutter pub publish --dry-run` — confirm `.pubignore` excludes `.cursor/`, `.claude/`, `.agents/`, `AGENTS.md`, `CLAUDE.md`, `ROADMAP.md`.
-7. `dart doc` runs clean (no unresolved references).
+7. Linking: new public types get `{@category Name}` and a `See also:` list. New topic → add `doc/<name>.md` and register it in `dartdoc_options.yaml` (`categories` and `categoryOrder`). Add the type to the barrel library doc's topic list.
+8. Gate: `dart doc .` ends with `Found 0 warnings and 0 errors`, then delete the generated `doc/api/`.

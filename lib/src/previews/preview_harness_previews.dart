@@ -21,6 +21,7 @@ Widget previewHarnessLight() {
   );
 }
 
+/// Dark counterpart of [previewHarnessLight].
 @Preview(
   name: 'Harness / dark',
   group: 'mre_fields',

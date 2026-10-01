@@ -6,6 +6,14 @@ with country code, and suggestion chips.
 First consumer: [MRE CashBook](../ledger). Host apps own branding, copy, and
 navigation; this package owns **input behaviour**.
 
+## Contents
+
+- [Status](#status)
+- [Planned surface](#planned-surface)
+- [Theming](#theming) — guide: [doc/theme.md](doc/theme.md)
+- [Use from CashBook](#use-from-cashbook-path)
+- [Development](#development)
+
 ## Status
 
 Early (`0.x`). Public API may change; see `CHANGELOG.md`.
@@ -30,7 +38,9 @@ Open this folder as the Cursor workspace so agents load `CLAUDE.md` / rules auto
 
 ## Theming
 
-Plug into the **host** theme — we take their colors; they add field tokens:
+Fields take colors, typography and input chrome from your own `ThemeData`.
+Register `MREFieldsTheme` on the same theme to tune radius, padding,
+breakpoints and texts:
 
 ```dart
 MaterialApp(
@@ -39,17 +49,22 @@ MaterialApp(
     inputDecorationTheme: hostInputs,
     extensions: const [
       MREFieldsTheme(
-        // fieldBorderRadius, contentPadding, …
+        fieldBorderRadius: 16,
+        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        expandedContentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        strings: MREFieldsStrings(clearTooltip: 'Clear'),
       ),
     ],
   ),
-  home: /* … */,
+  home: const HomePage(),
 );
 ```
 
-Per-widget constructor params override the extension. Pieces (helpers, bars,
-pickers) can be used without taking the full field widgets — see
-`.cursor/rules/extensibility.mdc`.
+Precedence: widget parameter, then `MREFieldsTheme`, then the built-in default.
+Without a registered extension, `MREFieldsTheme.defaults` applies.
+
+Localization: pass your translated texts through `MREFieldsStrings`. The
+package ships English defaults only.
 
 ## Use from CashBook (path)
 

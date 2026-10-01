@@ -26,7 +26,7 @@ Already done: package created, agent docs/rules/skills, preview harness placehol
 
 ---
 
-## Step 1 — `MREFieldsTheme` `[ ]`
+## Step 1 — `MREFieldsTheme` `[x]`
 
 ### Goal
 Host apps plug field tokens into **their existing** `ThemeData`. Colors come from
@@ -53,6 +53,9 @@ Every later widget must honor: **param → theme → Material default**.
 ### Done when
 - Analyze clean; theme resolves with/without host registration; README shows
   copy-paste with host `colorScheme` + `MREFieldsTheme` together.
+
+### Result
+Shipped: `MREFieldsTheme` (radius, two paddings, two breakpoints, `strings`), `MREWindowSize`, `MREFieldsStrings`. Suggestion-chip tokens wait for Step 3. 14 tests, analyze clean.
 
 ### Do not
 - Ship a package color palette or mutable `initialize`.
