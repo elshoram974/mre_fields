@@ -95,7 +95,7 @@ Shipped without `intl`: own first-strong detection (Closure ranges, Arabic-Indic
 
 ---
 
-## Step 3 — `MRETextField` `[ ]`
+## Step 3 — `MRETextField` `[x]`
 
 ### Goal
 Port CashBook `AppTextField` behaviour into a host-agnostic widget.
@@ -121,6 +121,17 @@ Port CashBook `AppTextField` behaviour into a host-agnostic widget.
    - explicit `textDirection` override
    - at least one wide / textScale case
 10. `CHANGELOG`; bump toward `0.1.0` when this step is the first usable release.
+
+### Result
+Shipped: `MRETextField` (about 45 pass-through parameters), `MRESuggestionBar`, `mreFilterSuggestions`, `MREFieldClearButton`, `MRESafeTextEditingController`. Rebuilds only when the direction or the empty state changes (tested). 7 preview cards, checked in the real previewer. Image paste moves to Step 3a.
+
+Differences from ledger `AppTextField`:
+- `isFilled` dropped: pass `decoration: InputDecoration(filled: true)`; fill and borders come from the host theme.
+- `textCapitalization` defaults to `none` (ledger: `sentences`).
+- `textAlign` defaults to `TextAlign.start`, which follows the detected direction (ledger set left/right by hand).
+- Select-on-focus uses one post-frame callback instead of a 50 ms delay.
+- Suggestions scroll sideways at their natural height (ledger: fixed 32 px list, clips at large text) and sit in a `TextFieldTapRegion`.
+- No `try/catch (_)`; the safe controller checks the composing range instead.
 
 ### Fix while porting (found in review of ledger `AppTextField` and the mtgr `CustomTextFieldWidget`)
 - `setState` on every controller tick and post-frame `setState` for direction → scoped `ValueNotifier` + `ValueListenableBuilder` (rule `performance.mdc`).

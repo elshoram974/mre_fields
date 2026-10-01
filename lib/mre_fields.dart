@@ -12,9 +12,15 @@
 ///  * **Text**: [detectTextDirection], [detectStrongTextDirection],
 ///    [MREAutoText], [MREAutoDirectionText], [MRETextDirection],
 ///    [MREDirectionalWidget], [safeDisplayText].
+///  * **Fields**: [MRETextField], [MRESuggestionBar], [MREFieldClearButton],
+///    [MRESafeTextEditingController], [mreFilterSuggestions].
 library;
 
 export 'src/text/mre_auto_text.dart';
+export 'src/text/mre_field_clear_button.dart';
+export 'src/text/mre_safe_text_editing_controller.dart';
+export 'src/text/mre_suggestion_bar.dart';
+export 'src/text/mre_text_field.dart';
 export 'src/text/mre_text_extensions.dart';
 export 'src/text/text_direction.dart';
 export 'src/theme/mre_fields_strings.dart';

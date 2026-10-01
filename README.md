@@ -13,6 +13,7 @@ value can be changed globally or per field.
 - [Install](#install)
 - [Theming](#theming) — guide: [doc/theme.md](doc/theme.md)
 - [Text direction](#text-direction) — guide: [doc/text.md](doc/text.md)
+- [Text field](#text-field) — guide: [doc/text_field.md](doc/text_field.md)
 - [Planned](#planned)
 - [Development](#development)
 
@@ -20,12 +21,14 @@ value can be changed globally or per field.
 
 | Piece | What it does |
 |---|---|
+| `MRETextField` | Text field that follows the language typed: live direction, clear button, suggestions, select on focus |
 | `MREFieldsTheme` | Radius, padding, breakpoints and texts, set once on your `ThemeData` |
 | `MREFieldsStrings` | Every text a field shows, ready for translation |
 | `MREAutoText` | `Text` that reads right to left or left to right from its content |
 | `detectTextDirection`, `MRETextDirection` | Direction of a string, as a function or as getters |
 | `MREDirectionalWidget.withTextDirection` | Gives any widget the direction of a text |
-| `safeDisplayText` | Removes broken characters that make Flutter throw |
+| `safeDisplayText`, `MRESafeTextEditingController` | Remove broken characters that make Flutter throw |
+| `MRESuggestionBar`, `MREFieldClearButton` | The field's pieces, usable in any field |
 
 ## Install
 
@@ -70,11 +73,25 @@ detectTextDirection('123 مرحبا'); // TextDirection.rtl
 
 More in [doc/text.md](doc/text.md).
 
+## Text field
+
+```dart
+MRETextField(
+  labelText: 'Name',
+  showClearButton: true,
+  suggestions: const ['Cairo', 'Alexandria', 'القاهرة'],
+);
+```
+
+The direction follows the first word with a letter as the user types. Every
+value can be set for one field, through `MREFieldsTheme`, or left to your
+`ThemeData`. More in [doc/text_field.md](doc/text_field.md).
+
 ## Planned
 
 | Piece | Role |
 |---|---|
-| `MRETextField` | Text field with live direction, clear button, suggestions, optional image paste |
+| Image paste | Optional paste of images into `MRETextField`, with preview, open, remove and replace |
 | `MREPhoneField` | Dial code and local number, validation for every country |
 | `MRECountryCodePicker` | Searchable country list |
 

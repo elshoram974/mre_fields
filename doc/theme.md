@@ -29,6 +29,19 @@ Start from the defaults and replace only what you need.
 final tokens = MREFieldsTheme.defaults.copyWith(fieldBorderRadius: 4);
 ```
 
+## Change one field
+
+A parameter on the widget beats the theme for that field only.
+
+<!-- snippet: one_field -->
+```dart
+final field = MRETextField(
+  labelText: 'Search',
+  borderRadius: 28, // this field only; the theme keeps its own radius
+  contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+);
+```
+
 ## Dark mode
 
 Register the extension on **both** themes. A theme without it falls back to the

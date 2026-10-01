@@ -40,6 +40,14 @@ flutter widget-preview start --web-server
 rg -l previewMyField .widget_preview/lib
 ```
 
+## Previewer facts (learned the hard way)
+
+- A card **without `size`** gives the widget **unbounded width**. A `Column(crossAxisAlignment: stretch)` or any widget that fills its parent then throws "BoxConstraints forces an infinite width" and the card stays blank. `MREPreview` gives the first four cards a 480 width; custom previews must set `size: Size.fromWidth(...)` or use `mrePreviewWrapper` (it bounds the width).
+- The previewer sets card brightness through `MediaQuery.platformBrightness`, not through a theme. A wrapper must build its theme from `MediaQuery.platformBrightnessOf(context)`; copying `Theme.of(context)` keeps the previewer's own theme.
+- `test/src/previews/mre_preview_test.dart` reproduces both cases (unbounded width, brightness through `MediaQuery`). Add each new preview function to it.
+
+Visual check without the IDE: run `flutter widget-preview start --web-server`, read the printed `http://localhost:<port>`, open it in Chrome (headless works through the DevTools protocol), and look for `EXCEPTION CAUGHT` in the console and for blank cards.
+
 ## Checklist
 
 - [ ] Uses `@MREPreview()` (wraps the previewer theme and registers `MREFieldsTheme`)

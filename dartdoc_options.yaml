@@ -1,10 +1,12 @@
 dartdoc:
-  categoryOrder: ["Theme", "Text", "Phone", "Attachments"]
+  categoryOrder: ["Theme", "Text", "Fields", "Phone", "Attachments"]
   categories:
     "Theme":
       markdown: doc/theme.md
     "Text":
       markdown: doc/text.md
+    "Fields":
+      markdown: doc/text_field.md
     # Add "Phone" and "Attachments" here, each with its own doc/<name>.md
     # guide, in the same change that ships their widgets.
   showUndocumentedCategories: false

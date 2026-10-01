@@ -23,6 +23,19 @@ Widget globalTheme() {
   return app;
 }
 
+/// Changes one field and leaves the theme as it is.
+Widget oneFieldOverride() {
+  // #region one_field
+  final field = MRETextField(
+    labelText: 'Search',
+    borderRadius: 28, // this field only; the theme keeps its own radius
+    contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+  );
+  // #endregion one_field
+
+  return field;
+}
+
 /// Changes one token and keeps every other default.
 MREFieldsTheme squarerFields() {
   // #region copy_with
