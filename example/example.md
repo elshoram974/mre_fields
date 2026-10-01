@@ -133,7 +133,71 @@ final field = MRETextField(
 );
 ```
 
-## 7. Paste images
+## 7. A phone number field
+
+It checks the number for every country, switches the country when a number with
+its dial code is pasted, and opens a searchable picker.
+
+![Typing, pasting and picking a phone number](https://raw.githubusercontent.com/elshoram974/mre_fields/main/doc/images/phone-field.gif)
+
+<!-- snippet: phone/basic -->
+```dart
+final field = MREPhoneField(
+  labelText: 'Phone number',
+  onChanged: (number) {
+    if (number.isValid) {
+      saveNumber(number.e164!); // '+201012345678'
+    }
+  },
+);
+```
+
+Accept only some countries, with favorites on top:
+
+<!-- snippet: phone/selection -->
+```dart
+const selection = MRECountrySelection(
+  include: {'SA', 'AE', 'KW', 'QA', 'BH', 'OM'},
+  favorites: ['SA', 'AE'],
+  initial: 'SA',
+);
+
+final field = MREPhoneField(selection: selection);
+```
+
+Read a number in code, with no widget:
+
+<!-- snippet: phone/parse -->
+```dart
+final number = MREPhoneNumber.parse('+20 101 234 5678');
+
+final country = number.country!.name; // 'Egypt'
+final e164 = number.e164; // '+201012345678'
+final nice = number.international; // '+20 10 12345678'
+final valid = number.isValid; // true
+```
+
+Translate the picker and the error messages:
+
+<!-- snippet: phone/translate -->
+```dart
+final field = MREPhoneField(
+  labelText: 'رقم الهاتف',
+  countryNameBuilder: (country) =>
+      arabicNames[country.isoCode] ?? country.name,
+  pickerTitle: 'اختر الدولة',
+  pickerSearchHint: 'ابحث عن دولة أو رمز',
+);
+
+// The error messages come from MREFieldsStrings, registered once in the theme:
+const strings = MREFieldsStrings(
+  phoneEmpty: 'اكتب رقم الهاتف',
+  phoneTooShort: 'الرقم قصير',
+  phoneInvalid: 'رقم غير صحيح',
+);
+```
+
+## 8. Paste images
 
 ![Pasting three images into a field](https://raw.githubusercontent.com/elshoram974/mre_fields/main/doc/images/image-paste.gif)
 
@@ -173,7 +237,7 @@ final field = MRETextField(
 // Later: controller.images, controller.removeAt(0), controller.clear().
 ```
 
-## 8. Translate the texts
+## 9. Translate the texts
 
 Every text a field shows is in `MREFieldsStrings`.
 
@@ -223,7 +287,7 @@ Widget localizedApp() {
 }
 ```
 
-## 9. Use the rules without a widget
+## 10. Use the rules without a widget
 
 <!-- snippet: functions/direction_functions -->
 ```dart

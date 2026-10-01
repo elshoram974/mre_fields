@@ -9,8 +9,8 @@ dartdoc:
       markdown: doc/text_field.md
     "Attachments":
       markdown: doc/attachments.md
-    # Add "Phone" here, with its own doc/<name>.md guide, in the same change
-    # that ships its widgets.
+    "Phone":
+      markdown: doc/phone.md
   showUndocumentedCategories: false
   linkTo:
     url: "https://pub.dev/documentation/mre_fields/%v%/"

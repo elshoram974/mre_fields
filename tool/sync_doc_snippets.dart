@@ -21,6 +21,7 @@ const syncedFiles = <String, String?>{
   'doc/text_field.md': 'text_field',
   'doc/attachments.md': 'attachments',
   'doc/functions.md': 'functions',
+  'doc/phone.md': 'phone',
   'README.md': null,
   'example/example.md': null,
 };

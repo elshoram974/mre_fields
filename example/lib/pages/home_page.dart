@@ -4,6 +4,7 @@ import '../example_settings.dart';
 import '../sections/direction_section.dart';
 import '../sections/field_section.dart';
 import '../sections/image_paste_section.dart';
+import '../sections/phone_section.dart';
 import '../sections/theme_section.dart';
 
 /// Widest the page gets, so cards stay readable on a desktop window.
@@ -45,6 +46,7 @@ class HomePage extends StatelessWidget {
               children: [
                 const DirectionSection(),
                 const FieldSection(),
+                const PhoneSection(),
                 const ImagePasteSection(),
                 ThemeSection(settings: settings),
               ],

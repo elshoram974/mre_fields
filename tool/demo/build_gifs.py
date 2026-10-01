@@ -51,3 +51,4 @@ def build(scenario: str, out: str) -> None:
 if __name__ == "__main__":
     build("text", "doc/images/text-direction.gif")
     build("paste", "doc/images/image-paste.gif")
+    build("phone", "doc/images/phone-field.gif")

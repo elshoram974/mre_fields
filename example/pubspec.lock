@@ -171,7 +171,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.1.2"
+    version: "0.2.0"
   pasteboard:
     dependency: transitive
     description:
@@ -188,6 +188,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.9.1"
+  phone_numbers_parser:
+    dependency: transitive
+    description:
+      name: phone_numbers_parser
+      sha256: "3177c2d38ca0a269ed398626535a5082bc08ae27e562b145c2f470a6242fc681"
+      url: "https://pub.dev"
+    source: hosted
+    version: "9.0.27"
   sky_engine:
     dependency: transitive
     description: flutter

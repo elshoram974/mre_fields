@@ -13,7 +13,8 @@ import { writeFileSync, mkdirSync, rmSync } from 'node:fs';
 const [,, scenario, url] = process.argv;
 const outDir = `${process.env.FRAMES_DIR ?? '/tmp/mre_fields_frames'}/${scenario}`;
 rmSync(outDir, { recursive: true, force: true }); mkdirSync(outDir, { recursive: true });
-const W = 640, H = 520, SCALE = 2, CLIP = { x: 64, y: 20, width: 512, height: 340 };
+const W = 640, H = 520, SCALE = 2;
+let CLIP = { x: 64, y: 20, width: 512, height: 340 };
 const t = await (await fetch('http://127.0.0.1:9333/json/new?about:blank', { method: 'PUT' })).json();
 const ws = new WebSocket(t.webSocketDebuggerUrl);
 let id = 0; const pending = new Map();
@@ -62,6 +63,39 @@ if (scenario === 'text') {
     await sleep(300);
     await snap(450);
   }
+} else if (scenario === 'phone') {
+  // The picker opens as a sheet over the page, so this GIF shows the whole viewport.
+  CLIP = { x: 0, y: 0, width: 640, height: 520 };
+  const FIELD = [350, 136], CLEAR = [492, 136], DIAL = [160, 136], SEARCH = [320, 166], FIRST_RESULT = [320, 222];
+  const clearField = async () => { await click(...CLEAR); await away(); await sleep(300); };
+  // A string sent in one piece is what a paste looks like to the field.
+  const paste = async (text, hold) => { await send('Input.insertText', { text }); await sleep(600); await snap(hold); };
+
+  await snap(1200);
+  await click(...FIELD);
+  await snap(400);
+  await type('1012345678', 100);
+  frames[frames.length - 1].ms = 1600;
+  await clearField();
+  await snap(450);
+
+  await paste('+966 50 123 4567', 1900);
+  await clearField();
+  await paste('+20 101', 1900);
+  await clearField();
+
+  await click(...DIAL);
+  await sleep(700);
+  await snap(1000);
+  await click(...SEARCH);
+  await type('united', 90);
+  frames[frames.length - 1].ms = 1100;
+  await click(...FIRST_RESULT);
+  await sleep(900);
+  await snap(900);
+  await click(...FIELD);
+  await type('501234567', 100);
+  frames[frames.length - 1].ms = 1800;
 } else if (scenario === 'paste') {
   const FIELD = [320, 150];
   await snap(1000);

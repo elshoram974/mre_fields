@@ -12,6 +12,7 @@ void main() {
 
     expect(find.text('Text direction'), findsOneWidget);
     expect(find.text('Text field'), findsOneWidget);
+    expect(find.text('Phone number'), findsWidgets);
     expect(find.text('Image paste'), findsOneWidget);
     expect(find.text('Theme'), findsOneWidget);
     expect(tester.takeException(), isNull);
@@ -29,6 +30,21 @@ void main() {
     await tester.pump();
 
     expect(find.text('MREAutoText · rtl'), findsOneWidget);
+  });
+
+  testWidgets('a sample number fills the phone field and shows its country', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(900, 4000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(const ExampleApp());
+
+    await tester.tap(find.widgetWithText(ActionChip, '+966 50 123 4567'));
+    await tester.pump();
+
+    expect(find.text('Country: Saudi Arabia'), findsOneWidget);
+    expect(find.text('Valid'), findsOneWidget);
   });
 
   testWidgets('the language button switches to Arabic', (tester) async {

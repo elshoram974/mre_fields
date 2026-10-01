@@ -18,6 +18,7 @@ sleep 4
 
 node tool/demo/record.mjs text "http://localhost:$PORT/?demo=text"
 node tool/demo/record.mjs paste "http://localhost:$PORT/?demo=paste"
+node tool/demo/record.mjs phone "http://localhost:$PORT/?demo=phone"
 python3 tool/demo/build_gifs.py
 
 pkill -f "http.server $PORT" || true
