@@ -1,0 +1,24 @@
+# Replaces .gitignore for `pub publish` (pub ignores .gitignore when this file exists),
+# so the generic entries are repeated here.
+
+# Tooling / contributor files that must not ship in the package archive
+.cursor/
+.claude/
+.agents/
+.cursorrules
+AGENTS.md
+CLAUDE.md
+ROADMAP.md
+.idea/
+.vscode/
+*.iml
+
+# Generated
+.dart_tool/
+.widget_preview/
+build/
+coverage/
+doc/api/
+pubspec.lock
+.flutter-plugins-dependencies
+.DS_Store

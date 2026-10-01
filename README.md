@@ -23,10 +23,10 @@ Open this folder as the Cursor workspace so agents load `CLAUDE.md` / rules auto
 
 | Widget / type | Role |
 |---|---|
-| `MreTextField` | Text field with live BIDI, clear, select-on-focus, suggestions |
-| `MrePhoneField` | Dial code + local number |
-| `MreCountryCodePicker` | Searchable dial-code sheet |
-| `MreFieldsTheme` | `ThemeExtension` for radii / paddings / shared tokens |
+| `MRETextField` | Text field with live BIDI, clear, select-on-focus, suggestions |
+| `MREPhoneField` | Dial code + local number |
+| `MRECountryCodePicker` | Searchable dial-code sheet |
+| `MREFieldsTheme` | `ThemeExtension` for radii / paddings / shared tokens |
 
 ## Theming
 
@@ -38,7 +38,7 @@ MaterialApp(
     colorScheme: hostScheme,
     inputDecorationTheme: hostInputs,
     extensions: const [
-      MreFieldsTheme(
+      MREFieldsTheme(
         // fieldBorderRadius, contentPadding, …
       ),
     ],

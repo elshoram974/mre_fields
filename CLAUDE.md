@@ -13,10 +13,11 @@ This file is the source of truth for agents and humans. Cursor rules under
 
 | In scope | Out of scope |
 |---|---|
-| `MreTextField` — BIDI direction, clear, select-on-focus, suggestion chips | CashBook `CustomFieldRegistry` / book field types |
-| `MrePhoneField` — dial code + local number, parse/format helpers | Contact picker, device contacts DB |
+| `MRETextField` — BIDI direction, clear, select-on-focus, suggestion chips, optional image paste | CashBook `CustomFieldRegistry` / book field types |
+| Text direction helpers — `String` / `Text` / widget extensions (usable without the field) | State-management packages (Riverpod, Bloc, …) |
+| `MREPhoneField` — dial code + local number, parse/format/validate for all countries, include/exclude country lists | Contact picker, device contacts DB |
 | Country dial-code picker UI (package-owned, no app routing) | `go_router`, app routes, `safePop` |
-| `MreFieldsTheme` (`ThemeExtension`) for radii / paddings / defaults | Hard-coded CashBook `AppSizes` / `AppColorsExtension` |
+| `MREFieldsTheme` (`ThemeExtension`) for radii / paddings / defaults | Hard-coded CashBook `AppSizes` / `AppColorsExtension` |
 | Pure validators / formatters the fields need | `.tr()` localization — host app passes already-translated strings |
 | Widget + unit tests for public behaviour | Glass iOS chrome, adaptive overlays from CashBook |
 
@@ -40,8 +41,8 @@ Ledger path (absolute, for agents working from another workspace):
 
 `/Users/mohammedelshora/Desktop/Shora/projects/mrecode/ledger/`
 
-When porting: copy behaviour and tests of behaviour, rename `App*` → `Mre*`,
-replace theme reads with `MreFieldsTheme.of(context)` + `Theme.of(context)`,
+When porting: copy behaviour and tests of behaviour, rename `App*` → `MRE*`,
+replace theme reads with `MREFieldsTheme.of(context)` + `Theme.of(context)`,
 delete every import into CashBook (`app_sizes`, `context.colors`, `.tr()`,
 `go_router`, blocs, prefs).
 
@@ -55,7 +56,11 @@ lib/
       mre_fields_theme.dart
     text/
       mre_text_field.dart
-      text_direction.dart
+      text_direction.dart          # pure detect fn + String/Text/widget extensions
+    attachments/
+      mre_image_paste_behavior.dart  # none / callback / attachment strip
+      mre_attachment_strip.dart
+      mre_image_viewer.dart
     phone/
       mre_phone_field.dart
       mre_country_code_picker.dart
@@ -68,20 +73,28 @@ lib/
 - Breaking public API → bump **major** (once past `1.0.0`) or document in
   `CHANGELOG.md` while still `0.x`.
 
+### Naming (non-negotiable)
+
+- Types (classes, enums, mixins, extensions, typedefs): **`MRE` all capitals** —
+  `MRETextField`, `MREPhoneField`, `MREFieldsTheme`, `MREPhoneError`.
+- Everything else: lowercase `mre` — package `mre_fields`, files
+  `mre_text_field.dart`, non-type identifiers `mreFieldsPreviewTheme`.
+- Never `Mre…`. Rule: `.cursor/rules/package-api.mdc`.
+
 ### Extensibility (non-negotiable)
 
 Hosts must be able to **adopt**, **override**, or **use a piece** of this package:
 
 1. **Theme with the host app** — colors/typography/`InputDecoration` from
-   `Theme.of(context)`. Register `MreFieldsTheme` on the same `ThemeData` the
+   `Theme.of(context)`. Register `MREFieldsTheme` on the same `ThemeData` the
    app already builds (extensions). No brand colors inside the package. No
    mutable global `initialize`.
 2. **Override per widget** — constructor params beat theme; theme beats defaults.
    Expose Material pass-through knobs even when our demos leave them null.
 3. **Small units** — pure helpers, suggestion/clear/dial pieces, picker body, and
-   full fields are separate. A host can take phone parse without `MrePhoneField`,
+   full fields are separate. A host can take phone parse without `MREPhoneField`,
    or build their own field from exported pieces.
-4. **No hard cross-feature deps** — `MreTextField` must not require phone/country
+4. **No hard cross-feature deps** — `MRETextField` must not require phone/country
    code to compile or run.
 5. **Responsive / adaptive** — layout from constraints (compact / expanded), not
    `Platform.isX`. Desktop gets dialogs/density; phone gets touch targets and
@@ -98,7 +111,7 @@ MaterialApp(
     colorScheme: hostScheme,           // package reads this
     inputDecorationTheme: hostInputs,  // package reads this
     extensions: const [
-      MreFieldsTheme(
+      MREFieldsTheme(
         // radii, contentPadding, suggestion gaps — field tokens only
       ),
     ],
@@ -111,9 +124,16 @@ Widget constructor params override the theme for that instance.
 
 ### Localization
 
-All user-visible strings are **parameters** (`hintText`, `labelText`,
-`searchHint`, empty-state copy for the country sheet). The package never calls
-`.tr()` and never ships translation maps.
+Hosts translate; the package never does. No `.tr()`, no ARB files, no bundled
+translation maps, no `flutter_localizations` dependency.
+
+- All user-visible text sits in one immutable class, `MREFieldsStrings`
+  (hints, empty states, picker title, validation messages, viewer labels).
+  English defaults; hosts replace any field.
+- Resolution: widget param → `MREFieldsTheme.strings` → English default.
+- Validation returns an error **reason** (`MREPhoneError`); text comes from
+  `MREFieldsStrings` or a host `errorTextBuilder`.
+- Country names: host `countryNameBuilder` / map by ISO code, English fallback.
 
 ### Country picker
 
@@ -123,7 +143,7 @@ CashBook `AdaptiveOverlays`. Host can wrap later if it wants glass.
 ## Code quality
 
 - Clean, small public classes. No god-widgets: split private state helpers.
-- No magic numbers in widgets — name them on `MreFieldsTheme` or as named consts
+- No magic numbers in widgets — name them on `MREFieldsTheme` or as named consts
   on the widget file.
 - No `print`. Log nothing unless the host injects a logger (default: silent).
 - No silent `catch (_) {}` on parse paths — return a clear empty / invalid result.
@@ -150,8 +170,8 @@ flutter test
 ```
 
 - Unit: phone parse/format, BIDI helpers, validators.
-- Widget: `MreTextField` direction flip while typing, suggestions, clear,
-  `MrePhoneField` dial + local.
+- Widget: `MRETextField` direction flip while typing, suggestions, clear,
+  `MREPhoneField` dial + local.
 - Sizes / RTL / text scale / dark: `.cursor/rules/test-field-sizes.mdc`.
 - Full gate notes: `.cursor/rules/full-regression.mdc`.
 - Mirror `lib/` under `test/`.
@@ -173,19 +193,26 @@ flutter test
 
 ## Git commits
 
-Conventional Commits:
+Full rules: [`.cursorrules`](./.cursorrules) (root) and
+`.cursor/rules/commit-messages.mdc`. Short version:
+
+- Staged changes exist → message covers **only** staged changes. Nothing staged
+  → message covers **all** pending changes (including untracked files).
+- Conventional Commits: `type(scope): imperative summary` ≤ 72 chars, blank
+  line, body that explains what and why per logical change with real symbol
+  names from the diff, `BREAKING CHANGE:` when the public API breaks.
+- Always end with the co-author trailer (skill `commit-with-coauthor`):
 
 ```
-feat(text): add live BIDI detection to MreTextField
+feat(text): add live BIDI detection to MRETextField
 
-- port detection from ledger AppTextField
-- drive alignment from detected direction unless overridden
+Direction now follows the typed content instead of the app locale ...
+
+- port detection from ledger AppTextField, using first-strong-character ...
+- drive alignment from detected direction unless textDirection is set
 
 Co-Authored-By: Mohammed El Shora <riyadm2001@gmail.com>
 ```
-
-Title ≤72 chars, imperative, blank line, bullets for what/why. Always end with
-the co-author trailer (see `.cursor/skills/commit-with-coauthor`).
 
 ## Consuming from CashBook later
 
@@ -198,7 +225,7 @@ dependencies:
     path: ../mre_fields
 ```
 
-Then replace `AppTextField` call sites gradually with `MreTextField` (or a thin
+Then replace `AppTextField` call sites gradually with `MRETextField` (or a thin
 CashBook wrapper that forwards `.tr()` hints). Do not move `CustomFieldRegistry`
 into this package.
 
@@ -253,4 +280,57 @@ Do not publish unprompted.
 | Version bump | `.cursor/skills/bump-package-version` |
 | Publish pub.dev | `.cursor/skills/publish-to-pub-dev` |
 | Commit trailer | `.cursor/skills/commit-with-coauthor` |
+| Performance | `.cursor/rules/performance.mdc` |
+| Text direction | `.cursor/rules/text-direction.mdc`, skill `add-text-direction-extensions` |
+| Image paste | `.cursor/rules/image-paste.mdc`, skill `add-image-paste` |
+| Phone / countries | `.cursor/rules/phone-countries.mdc`, skill `add-phone-validation` |
+| Public docs / examples | `.cursor/rules/docs-and-examples.mdc`, skill `write-package-docs` |
+| Third-party skills | `.cursor/skills/THIRD_PARTY.md` |
 | Roadmap | [`ROADMAP.md`](./ROADMAP.md) |
+
+## Reply style
+
+@.claude/reply-style.md
+
+## Always-on rules (imported so every agent loads all of them)
+
+@.cursor/rules/cleanup.mdc
+@.cursor/rules/commit-messages.mdc
+@.cursor/rules/docs-and-examples.mdc
+@.cursor/rules/extensibility.mdc
+@.cursor/rules/flutter-version.mdc
+@.cursor/rules/full-regression.mdc
+@.cursor/rules/image-paste.mdc
+@.cursor/rules/package-api.mdc
+@.cursor/rules/performance.mdc
+@.cursor/rules/phone-countries.mdc
+@.cursor/rules/port-from-ledger.mdc
+@.cursor/rules/project-standards.mdc
+@.cursor/rules/reply-style.mdc
+@.cursor/rules/responsive-adaptive.mdc
+@.cursor/rules/test-field-sizes.mdc
+@.cursor/rules/text-direction.mdc
+@.cursor/rules/theming.mdc
+
+## Skills — check before starting any task
+
+Skills live in `.cursor/skills/` (also visible to Claude Code through
+`.claude/skills`). Load the matching skill **before** writing code or docs.
+Third-party origin and pins: `.cursor/skills/THIRD_PARTY.md`.
+
+| Task | Skills |
+|---|---|
+| New field / port from ledger | `add-field-widget`, `port-field-from-ledger`, `widget-composition`, `async-safety` |
+| Text direction | `add-text-direction-extensions`, `i18n-rtl-l10n` |
+| Image paste | `add-image-paste`, `accessibility-as-code` |
+| Phone / countries | `add-phone-validation`, `forms-and-input`, `i18n-rtl-l10n` |
+| Theme tokens | `design-system-structure` |
+| Layout / sizes | `adaptive-layout`, `flutter-build-responsive-layout`, `flutter-fix-layout-issues` |
+| Performance | `flutter-performance` |
+| Tests | `add-widget-test`, `flutter-add-widget-test`, `dart-add-unit-test`, `testing-strategy`, `widget-golden-and-a11y-testing`, `full-regression-test` |
+| Previews / example | `add-widget-preview`, `flutter-add-widget-preview`, `add-example-app` |
+| Docs | `write-package-docs`, `dart-write-documentation`, `dartdoc-conventions`, `dart-use-doc-examples` |
+| Code style / analysis | `lint-and-style-config`, `dart-run-static-analysis`, `dart3-idioms-and-coding-standards`, `dart-use-pattern-matching` |
+| Structure / deps | `project-structure-and-packages`, `dependency-hygiene`, `dart-resolve-package-conflicts` |
+| Release | `bump-package-version`, `publish-to-pub-dev`, `commit-with-coauthor` |
+| Review | `caveman-review` |

@@ -1,7 +1,7 @@
 ---
 description: Field widgets must be tested at multiple sizes, RTL, text scale, brightness, and desktop widths
 globs: "lib/**/*.dart,test/**/*.dart"
-alwaysApply: false
+alwaysApply: true
 ---
 # Test field widgets at every size
 
@@ -24,8 +24,8 @@ Also: **RTL**, **text scale ~1.3**, **light + dark**. A `RenderFlex overflowed` 
 
 ## Package-specific checks
 
-- `MreTextField`: BIDI; clear; suggestions wrap/scroll; no clip at 1.3 scale.
-- `MrePhoneField`: compact vs expanded dial/local layout; paste `+…` without jump.
+- `MRETextField`: BIDI; clear; suggestions wrap/scroll; no clip at 1.3 scale.
+- `MREPhoneField`: compact vs expanded dial/local layout; paste `+…` without jump.
 - Country UI: sheet on compact, **dialog (max width)** on expanded; long names ellipsize.
 
 ## Widget tests

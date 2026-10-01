@@ -38,6 +38,37 @@ issue_tracker: https://github.com/<org>/mre_fields/issues
 
 `LICENSE` must be present (already). README must describe features + usage.
 
+## Non-code checklist (do before the first publish)
+
+Account and ownership
+- [ ] A Google account signed in at pub.dev; `dart pub publish` opens the browser login once.
+- [ ] Package name free: `mre_fields` returned 404 on pub.dev on 2026-10-01 (re-check right before publishing).
+- [ ] Optional but recommended: a **verified publisher** (a domain you own, verified through Google Search Console) so the package shows a verified badge and is not tied to one personal account. Create it at pub.dev → Publishers, then transfer the package.
+- [ ] A first publish is permanent for that version: a version can be retracted within 7 days, never deleted. Run the dry-run and read the file list first.
+
+Legal and repository
+- [ ] `LICENSE` is a real OSI-approved license (BSD-3-Clause, MIT, or Apache-2.0). A placeholder file fails validation and costs score.
+- [ ] Public GitHub repository; `pubspec.yaml` has `repository:` and `issue_tracker:` (homepage optional). `origin` currently points at github.com/elshoram974/mre_fields.
+- [ ] Push a tag per release (`v0.1.0`). Optional: automated publishing from GitHub Actions (pub.dev package → Admin → Automated publishing, tag pattern `v{{version}}`), which removes the need for a local token.
+
+Package metadata (`pubspec.yaml`)
+- [ ] `description` 60–180 characters, plain wording (now 112).
+- [ ] `topics:` up to 5 (for search), `screenshots:` (png/jpg/webp/gif, ≤ 4 MB each) with captions, `funding:` if wanted.
+- [ ] Declare `platforms:` only if you must restrict; otherwise pub infers them from imports.
+- [ ] First public version `0.1.0` (not `0.0.1`) once `MRETextField` ships; version and CHANGELOG entry match.
+
+Content that earns score (pana, 160 points)
+- [ ] README: what it is, install, quick start, one snippet per feature, screenshots with absolute URLs.
+- [ ] CHANGELOG has an entry for the exact version being published.
+- [ ] `example/` runs and is referenced in the README (pub.dev shows it on the Example tab).
+- [ ] Dartdoc on 100% of public API (`public_member_api_docs` lint on); `dart doc` has no warnings.
+- [ ] `dart analyze` clean; dependencies up to date (`flutter pub outdated`) and supported by the declared SDK range.
+- [ ] Run the scorer locally: `dart pub global activate pana && pana .` — fix anything below full points.
+
+Archive hygiene
+- [ ] `.pubignore` keeps `.cursor/`, `.claude/`, `.agents/`, `AGENTS.md`, `CLAUDE.md`, `ROADMAP.md` out; confirm with `flutter pub publish --dry-run` (only `lib/`, `example/`, `test/`, README, CHANGELOG, LICENSE, pubspec, analysis options).
+- [ ] No secrets, no large assets, no `.widget_preview/`, no build output.
+
 ## Version
 
 Use skill `bump-package-version` if needed. SemVer; while `0.x` breaking is ok if listed under Breaking in CHANGELOG.

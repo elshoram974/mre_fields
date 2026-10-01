@@ -1,7 +1,7 @@
 ---
 name: add-widget-preview
 description: >-
-  Adds Flutter Widget Previewer (@Preview) cards for MreTextField, MrePhoneField,
+  Adds Flutter Widget Previewer (@Preview) cards for MRETextField, MREPhoneField,
   and related UI. Use when the user asks for previews, widget preview, or visual
   sandbox for field widgets.
 ---
@@ -14,7 +14,7 @@ Requires Flutter **3.38+** on PATH (no FVM in this repo).
 
 - Import `package:flutter/widget_previews.dart`.
 - Targets: top-level functions / static methods / public constructors with **no required args** returning `Widget` or `WidgetBuilder`.
-- Put shared harness in `lib/src/previews/preview_harness.dart` (theme + `MreFieldsTheme`).
+- Put shared harness in `lib/src/previews/preview_harness.dart` (theme + `MREFieldsTheme`).
 - Put field previews next to the widget or under `lib/src/previews/` (e.g. `mre_text_field_previews.dart`).
 - No `dart:io` / native plugins in preview code paths.
 - Pass **literal English** strings in previews (package has no `.tr()`).
@@ -22,7 +22,7 @@ Requires Flutter **3.38+** on PATH (no FVM in this repo).
 
 ## Checklist
 
-- [ ] Harness wraps `MaterialApp`/`Theme` with `MreFieldsTheme`
+- [ ] Harness wraps `MaterialApp`/`Theme` with `MREFieldsTheme`
 - [ ] Preview for empty + filled text field
 - [ ] Preview with Arabic text (RTL BIDI)
 - [ ] Preview phone field (once it exists)

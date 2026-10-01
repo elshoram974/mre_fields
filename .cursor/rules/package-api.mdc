@@ -1,7 +1,7 @@
 ---
 description: Public API, naming, barrel exports, SemVer, and composable pass-through params
 globs: "lib/**/*.dart"
-alwaysApply: false
+alwaysApply: true
 ---
 # Package API
 
@@ -9,10 +9,11 @@ See also **extensibility.mdc** (always on).
 
 ## Naming
 
-- Public types: `Mre` prefix — `MreTextField`, `MrePhoneField`, `MreFieldsTheme`, `MreCountryCodePicker`.
-- Reusable pieces: also `Mre*` (`MreSuggestionBar`, …) — not anonymous private-only if hosts need them.
-- Private implementation: leading `_` under `lib/src/`.
-- Files: `mre_text_field.dart`, not `app_text_field.dart`.
+- **Classes, enums, mixins, extensions, typedefs: `MRE` prefix, all capitals** — `MRETextField`, `MREPhoneField`, `MREFieldsTheme`, `MRECountryCodePicker`, `MREPhoneError`.
+- **Everything else is lowercase `mre`**: package (`mre_fields`), files (`mre_text_field.dart`), and non-type identifiers (`mreFieldsPreviewTheme`, `_mreDefaultRadius`). Never `Mre…` (only the first letter capital).
+- Reusable pieces follow the same rule (`MRESuggestionBar`, `MREFieldClearButton`) and are public when hosts may reuse them.
+- Private implementation: leading `_` under `lib/src/` (`_MRETextFieldState`).
+- `camel_case_types` accepts the `MRE` prefix (checked with the repo's `flutter_lints`); do not add an `ignore` for it.
 
 ## Barrel
 
@@ -24,7 +25,7 @@ See also **extensibility.mdc** (always on).
 ## Constructor / theme precedence
 
 1. Explicit widget parameter (if non-null)
-2. `MreFieldsTheme.of(context)`
+2. `MREFieldsTheme.of(context)`
 3. Material `Theme` / sensible const default
 
 Pass through Material knobs hosts may need even if our demos omit them. Document non-obvious params with short dartdoc (why + how to override).

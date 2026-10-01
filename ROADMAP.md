@@ -26,7 +26,7 @@ Already done: package created, agent docs/rules/skills, preview harness placehol
 
 ---
 
-## Step 1 — `MreFieldsTheme` `[ ]`
+## Step 1 — `MREFieldsTheme` `[ ]`
 
 ### Goal
 Host apps plug field tokens into **their existing** `ThemeData`. Colors come from
@@ -34,14 +34,14 @@ the host `colorScheme` / `inputDecorationTheme`; we only add radii/paddings/gaps
 Every later widget must honor: **param → theme → Material default**.
 
 ### Plan
-1. Add `lib/src/theme/mre_fields_theme.dart` as a `ThemeExtension<MreFieldsTheme>`.
-2. Start with a **small** token set only what `MreTextField` will need:
+1. Add `lib/src/theme/mre_fields_theme.dart` as a `ThemeExtension<MREFieldsTheme>`.
+2. Start with a **small** token set only what `MRETextField` will need:
    - `borderRadius` (or `fieldBorderRadius`)
    - `contentPadding`
    - maybe suggestion chip spacing — **only if** step 3 uses it
-3. Implement `copyWith`, `lerp`, and `MreFieldsTheme.of(context)` with a sensible
+3. Implement `copyWith`, `lerp`, and `MREFieldsTheme.of(context)` with a sensible
    **const default** when the extension is missing.
-4. Optional factory `MreFieldsTheme.defaults` / derive from `ColorScheme` for
+4. Optional factory `MREFieldsTheme.defaults` / derive from `ColorScheme` for
    tokens only — must not replace host colors.
 5. Export from `lib/mre_fields.dart`.
 6. Smoke: `of(context)` without extension; with extension returns host values.
@@ -52,7 +52,7 @@ Every later widget must honor: **param → theme → Material default**.
 
 ### Done when
 - Analyze clean; theme resolves with/without host registration; README shows
-  copy-paste with host `colorScheme` + `MreFieldsTheme` together.
+  copy-paste with host `colorScheme` + `MREFieldsTheme` together.
 
 ### Do not
 - Ship a package color palette or mutable `initialize`.
@@ -60,16 +60,21 @@ Every later widget must honor: **param → theme → Material default**.
 
 ---
 
-## Step 2 — Text helpers (BIDI + safe UTF-16) `[ ]`
+## Step 2 — Text direction layer (BIDI + safe UTF-16) `[ ]`
 
 ### Goal
-Pure helpers the field needs, stripped of PDF / CashBook extras.
+Pure helpers the field needs, stripped of PDF / CashBook extras — and the same
+detection reusable outside the field: `String` extensions, a `Text` helper and a
+widget extension (see `.cursor/rules/text-direction.mdc`, skill
+`add-text-direction-extensions`).
 
 ### Plan
 1. Port from ledger `lib/core/utils/extensions/string_extension.dart`:
    - `uiTextDirection` / string `textDirection`
    - `safeDisplayText` (and any private UTF-16 helpers it needs)
 2. Place under `lib/src/text/text_direction.dart` (and split file if `safeDisplayText` is large).
+   Re-implement detection as **first-strong-character with early exit** (ledger scans the whole string via `Bidi`).
+2a. Add `String.textDirection` / `isRtl` / `autoTextAlign`, `MREAutoText` (Text helper) and `Widget.withTextDirection(sample)`.
 3. **Do not** port `pdfReshaped` / arabic_reshaper.
 4. Depend on `intl` only if needed for `Bidi` (add to `pubspec.yaml`).
 5. Unit tests: empty string, Arabic → RTL, English → LTR, unpaired surrogates → U+FFFD.
@@ -84,7 +89,7 @@ Pure helpers the field needs, stripped of PDF / CashBook extras.
 
 ---
 
-## Step 3 — `MreTextField` `[ ]`
+## Step 3 — `MRETextField` `[ ]`
 
 ### Goal
 Port CashBook `AppTextField` behaviour into a host-agnostic widget.
@@ -96,13 +101,13 @@ Port CashBook `AppTextField` behaviour into a host-agnostic widget.
    - select-on-focus
    - suggestion chips row
    - external/internal controller, `fieldKey`, validators, formatters, etc.
-2. Create `lib/src/text/mre_text_field.dart` (`MreTextField`).
+2. Create `lib/src/text/mre_text_field.dart` (`MRETextField`).
 3. Strip: `AppSizes`, `AppDecorations`, `context.colors`, `.tr()`, any CashBook-only imports.
-4. Style from `Theme.of(context).inputDecorationTheme` + `MreFieldsTheme` + optional constructor overrides.
+4. Style from `Theme.of(context).inputDecorationTheme` + `MREFieldsTheme` + optional constructor overrides.
 5. All user-visible strings = constructor params (`hintText`, `labelText`, …).
 6. Port `SafeTextController` only if still required (`lib/src/text/safe_text_controller.dart`).
-7. Export `MreTextField` from barrel.
-8. Replace placeholder in preview files with real `MreTextField` cards (empty, filled English, Arabic, dark).
+7. Export `MRETextField` from barrel.
+8. Replace placeholder in preview files with real `MRETextField` cards (empty, filled English, Arabic, dark).
 9. Widget tests (skill `add-widget-test` + rule `test-field-sizes`):
    - type Arabic → RTL
    - clear button
@@ -111,24 +116,59 @@ Port CashBook `AppTextField` behaviour into a host-agnostic widget.
    - at least one wide / textScale case
 10. `CHANGELOG`; bump toward `0.1.0` when this step is the first usable release.
 
+### Fix while porting (found in review of ledger `AppTextField` and the mtgr `CustomTextFieldWidget`)
+- `setState` on every controller tick and post-frame `setState` for direction → scoped `ValueNotifier` + `ValueListenableBuilder` (rule `performance.mdc`).
+- Listeners added but not removed (mtgr `focusNode`) → symmetric add/remove, own only what we create.
+- `try { … } catch (_) {}` around `Directionality.of` / controller reads → remove; handle lifecycle with `mounted`.
+- `Future.delayed(50ms)` for select-on-focus → single post-frame callback.
+- Hard-coded colors/sizes (`Color(0xFF202532)`, `Colors.red`, `AppSizes`) → `Theme` + `MREFieldsTheme`.
+- Per-flag boolean soup (`isPassword`, `isAmount`, `showCodePicker`) → presets / small composable pieces; phone code picker is **not** part of `MRETextField`.
+- Assets-as-strings for icons (`prefixIcon: String`) → `Widget? prefixIcon`.
+
 ### Done when
 - Analyze + tests green; previews show the real field; no CashBook imports (`rg` gate in port skill).
+- Build-count test proves typing does not rebuild the whole field.
 
 ### Depends on
 - Steps 1 + 2.
 
 ---
 
-## Step 4 — Phone parse + country data `[ ]`
+## Step 3a — Image paste behaviours `[ ]`
 
 ### Goal
-Pure phone dial/local parsing and country dial list — no UI yet.
+Optional paste of images into the text field. Default: nothing changes. Skill `add-image-paste`, rule `image-paste.mdc`.
 
 ### Plan
-1. Port `PhoneNumberHelper` → `lib/src/phone/phone_number.dart` (rename API to `MrePhoneNumber` / top-level functions as fits).
+1. Wire paste entry points (mobile keyboard insertion, desktop shortcut, context menu, web) and verify per platform in the example app; keep the matrix in README platform notes.
+2. `MREPastedImage`, `MREImagePasteBehavior` (abstract) and three implementations:
+   `MRENoImagePaste` (default) · `MREImageCallbackPaste` (callback only, no UI) · `MREImageAttachmentPaste` (thumbnail strip + open / remove / replace + callback).
+3. New `MRETextField(imagePaste: …)` param, default `const MRENoImagePaste()`.
+4. Clipboard reading behind `MREClipboardImageReader`, default implementation in its own library file so text-only users do not pull the plugin. Pick the plugin at implementation time (candidates: `super_clipboard` 0.9.1, last release 2025-06; `pasteboard` 0.5.0, desktop/web) after checking maintenance.
+5. Limits + `onImageRejected`; viewer widget; semantics labels as params.
+6. Tests: default ignores images, callback payload, limits, remove/replace, text paste unaffected, compact/expanded/RTL/textScale.
+7. Previews + example page; `CHANGELOG`.
+
+### Depends on
+- Step 3.
+
+---
+
+## Step 4 — Phone parse, validation + country data `[ ]`
+
+### Goal
+Pure phone parsing, **validation for all countries**, and a country list hosts can narrow (include / exclude / favorites) — no UI yet. Skill `add-phone-validation`, rule `phone-countries.mdc`.
+
+### Decision (made)
+Wrap `phone_numbers_parser` (pure Dart, libphonenumber metadata) behind `MREPhoneNumber`, hidden from the public API so it can be swapped. Localization: validation returns an `MREPhoneError` reason; messages and country names come from `MREFieldsStrings` / builders supplied by the host (see `phone-countries.mdc`).
+
+### Plan
+1. Port `PhoneNumberHelper` → `lib/src/phone/phone_number.dart` (rename API to `MREPhoneNumber` / top-level functions as fits).
 2. Port dial data from `lib/core/constants/countries.dart` → `lib/src/phone/countries.dart` (trim to what the picker needs: name, dial, code/flag if used).
 3. Keep longest-dial-first match; strip trunk `0` after dial extraction.
-4. Unit tests: `+20…`, `00…`, no dial, empty, edge countries with longer codes.
+3a. `MRECountrySelection` (include / exclude / favorites / initial; both include+exclude is an assert). Selection key = ISO code, **not** dial code (`+1`, `+7` are shared).
+3b. `MREPhoneValidators` returning `FormFieldValidator<String>`; error reason enum + `MREFieldsStrings` for localizable messages.
+4. Unit tests: `+20…`, `00…`, no dial, empty, edge countries with longer codes, `+1` ambiguity, excluded-country paste, and a data-driven test over every country.
 5. Export parse API if hosts need it; otherwise export with the phone field in step 6.
 6. `CHANGELOG`.
 
@@ -140,21 +180,21 @@ Pure phone dial/local parsing and country dial list — no UI yet.
 
 ---
 
-## Step 5 — `MreCountryCodePicker` `[ ]`
+## Step 5 — `MRECountryCodePicker` `[ ]`
 
 ### Goal
 Searchable dial-code sheet owned by the package (Material), no CashBook overlays/glass/router.
 
 ### Plan
-2. Read ledger `app_country_code_picker.dart`; keep: search, list, select callback, optional custom builder.
-3. Rewrite presentation:
+1. Read ledger `app_country_code_picker.dart`; keep: search, list, select callback, optional custom builder.
+2. Rewrite presentation:
    - **Compact:** Material bottom sheet
    - **Expanded / desktop:** centered dialog with max width — not a phone sheet on a large monitor
-4. All copy as params: `title`, `searchHint`, empty state, etc.
-5. Use `MreTextField` for search when ready.
-6. Widget tests: filter, select, compact + expanded host size.
-7. Preview both presentations if practical.
-8. Export + `CHANGELOG`.
+3. All copy as params: `title`, `searchHint`, empty state, etc.
+4. Use `MRETextField` for search when ready.
+5. Widget tests: filter, select, compact + expanded host size.
+6. Preview both presentations if practical.
+7. Export + `CHANGELOG`.
 
 ### Done when
 - Picker works phone + tablet-ish size in tests/preview; no ledger UI deps.
@@ -164,21 +204,21 @@ Searchable dial-code sheet owned by the package (Material), no CashBook overlays
 
 ---
 
-## Step 6 — `MrePhoneField` `[ ]`
+## Step 6 — `MREPhoneField` `[ ]`
 
 ### Goal
 One composed field: dial control + local number, using parse helpers + picker.
 
 ### Plan
-1. `lib/src/phone/mre_phone_field.dart` composing `MreTextField` + dial affordance + `MreCountryCodePicker`.
-3. **Compact vs expanded layout** for phone field and picker (see `responsive-adaptive.mdc`) —
+1. `lib/src/phone/mre_phone_field.dart` composing `MRETextField` + dial affordance + `MRECountryCodePicker`.
+2. **Compact vs expanded layout** for phone field and picker (see `responsive-adaptive.mdc`) —
    stack/tight row on narrow; single row / centered dialog on wide.
-4. Constructor: initial dial/local or full E.164 string; `onChanged` with structured value (dial + local ± formatted).
-5. Paste `+…` → parse and update dial/local without layout jump or overflow.
-6. Theme tokens for density/padding if shared; else constructor.
-7. Widget tests: paste, dial change, **compact + expanded** width, textScale 1.3.
-8. Previews: empty, EG dial, compact card + expanded card, dark.
-9. Export + `CHANGELOG`; consider version `0.2.0`.
+3. Constructor: initial dial/local or full E.164 string; `onChanged` with structured value (dial + local ± formatted).
+4. Paste `+…` → parse and update dial/local without layout jump or overflow.
+5. Theme tokens for density/padding if shared; else constructor.
+6. Widget tests: paste, dial change, **compact + expanded** width, textScale 1.3.
+7. Previews: empty, EG dial, compact card + expanded card, dark.
+8. Export + `CHANGELOG`; consider version `0.2.0`.
 
 ### Done when
 - Phone happy path + paste + size test green; documented in README Features.
@@ -200,16 +240,16 @@ CashBook uses the package without a big-bang rewrite.
      path: ../mre_fields
    ```
 2. `flutter pub get` on ledger (FVM there is fine — package itself has no FVM).
-3. Add `MreFieldsTheme` to CashBook `ThemeData.extensions` (map from `AppSizes` once).
+3. Add `MREFieldsTheme` to CashBook `ThemeData.extensions` (map from `AppSizes` once).
 4. Replace call sites gradually:
    - first non-critical screens / new code
-   - then shared wrappers if you want `AppTextField` to forward to `MreTextField` temporarily
-5. Do **not** move `CustomFieldRegistry` into the package; specs keep calling `MreTextField`.
+   - then shared wrappers if you want `AppTextField` to forward to `MRETextField` temporarily
+5. Do **not** move `CustomFieldRegistry` into the package; specs keep calling `MRETextField`.
 6. Run CashBook analyze/tests for touched flows; manual QA on Arabic BIDI + phone entry.
 7. Note integration in both changelogs if useful.
 
 ### Done when
-- At least one real CashBook screen uses `MreTextField` (and phone when ready) in production paths; no duplicate divergent logic left undocumented.
+- At least one real CashBook screen uses `MRETextField` (and phone when ready) in production paths; no duplicate divergent logic left undocumented.
 
 ### Depends on
 - Step 3 minimum; step 6 for phone replacement.
@@ -241,11 +281,12 @@ Package feels shippable: regression green, runnable example, optional pub.dev pu
 ```text
 0 skeleton [x]
     → 1 theme
-    → 2 text helpers
-    → 3 MreTextField (+ tests/previews)
-    → 4 phone parse/data
+    → 2 text direction layer (function + extensions)
+    → 3 MRETextField (+ tests/previews)
+    → 3a image paste behaviours
+    → 4 phone parse / validation / country filters
     → 5 country picker
-    → 6 MrePhoneField
+    → 6 MREPhoneField
     → 7 CashBook path + gradual replace
     → 8 harden / version
 ```
@@ -255,6 +296,11 @@ Package feels shippable: regression green, runnable example, optional pub.dev pu
 | Step | Skill / rule |
 |---|---|
 | 1–6 porting | `port-field-from-ledger`, `add-field-widget` |
+| 2 direction | `add-text-direction-extensions` |
+| 3a images | `add-image-paste` |
+| 4 phone | `add-phone-validation` |
+| Docs / examples | `write-package-docs`, `add-example-app` |
+| Layout / perf | `adaptive-layout`, `flutter-performance`, `widget-composition` |
 | Tests | `add-widget-test`, `full-regression-test`, `test-field-sizes` |
 | Previews | `add-widget-preview` |
 | Version | `bump-package-version` |

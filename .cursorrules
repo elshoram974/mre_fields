@@ -1,20 +1,48 @@
 Git Commit Message Generation Rules
 
-When generating a Git commit message using the Source Control (SCM) AI button, you MUST strictly adhere to the following logic and format. No exceptions are allowed.
+Applies to the Source Control (SCM) AI button, `git commit`, and any commit message written for this repository. Follow every step. No exceptions.
 
-Context & Scope Analysis (CRITICAL):
-1. Target Staged Changes First: analyze ONLY currently staged changes. Ignore unstaged files if staged files exist.
-2. Fallback: if and only if there are NO staged changes, analyze all pending changes.
-3. Base the message strictly on the actual code diff — do not hallucinate features.
+1. What to describe (scope of the message)
 
-Format Structure:
-- A single Conventional Commit title (e.g. feat(text): …, fix(phone): …, chore(release): …).
-- A single mandatory blank line.
-- A detailed bulleted list of technical what + why.
-- End with a blank line and exactly:
-  Co-Authored-By: Mohammed El Shora <riyadm2001@gmail.com>
+- Run the equivalent of `git diff --staged`. If anything is staged, describe ONLY the staged changes. Ignore unstaged and untracked files completely.
+- If nothing is staged, describe ALL pending changes: modified, deleted, renamed, and untracked files (read untracked files; they are part of the change).
+- Base every statement on the actual diff. Never invent features, files, tests, or behaviour. Every identifier you name (class, method, parameter, file, rule) must exist in the diff.
+- Ignore pure noise: generated files, lockfiles, formatting-only churn. Mention them only if they are the whole change.
 
-Constraints:
-- Output ONLY the commit message — no conversational wrapper.
-- Title under 72 characters, imperative mood, present tense.
-- Focus on architectural intent and the problem solved.
+2. Format
+
+<type>(<scope>): <summary>
+
+<body>
+
+<footer>
+Co-Authored-By: Mohammed El Shora <riyadm2001@gmail.com>
+
+- Title: Conventional Commits, lowercase type, imperative present tense ("add", not "added"), no trailing period, 72 characters or fewer.
+- Types: feat, fix, refactor, perf, test, docs, build, ci, chore, style, revert.
+- Scopes (pick the main one; omit if the change is repo-wide): text, phone, picker, attachments, theme, preview, example, docs, rules, deps, release.
+- Exactly one blank line between title, body, and footer. Wrap body lines at 72 characters.
+- Output ONLY the commit message. No code fences, no explanations, no greeting.
+
+3. Body: complete and correct
+
+- Start with one or two sentences saying what problem this solves or why the change exists.
+- Then bullets, one per logical change. Each bullet states WHAT changed and WHY, naming the concrete class/function/file. Group by area when the diff spans several (for example "Text:", "Tests:", "Docs:").
+- Cover everything that matters in the diff: behaviour changes, new public API (names and signatures in plain words), removed or renamed public API, new dependencies and why, tests added or changed, docs/README/CHANGELOG/pubspec version changes, config and rule changes.
+- Public API removed or behaviour dropped: add a bullet beginning "Removed:" saying what hosts must change.
+- Breaking change: add a footer line `BREAKING CHANGE: <what breaks and how to migrate>`.
+- Mixed unrelated concerns: choose the dominant type for the title and cover every concern in the body. Do not hide any part of the diff.
+- Mention how it was verified only if the diff shows it (tests added or updated).
+
+4. Style
+
+- English only. Plain, specific wording. No filler ("various", "some improvements", "minor tweaks").
+- Do not mention AI, assistants, generators, or tools. No emojis.
+- Do not paste code. Do not restate file lists without meaning.
+
+5. Footer (always last)
+
+The final line is exactly:
+Co-Authored-By: Mohammed El Shora <riyadm2001@gmail.com>
+
+Preceded by one blank line (or by `BREAKING CHANGE:` / issue reference lines, with the trailer after them). Write it once; never duplicate it.

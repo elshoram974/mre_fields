@@ -1,7 +1,7 @@
 ---
-description: MreFieldsTheme + host Material Theme — colors from the app, tokens from extension, params override
+description: MREFieldsTheme + host Material Theme — colors from the app, tokens from extension, params override
 globs: "lib/**/*.dart"
-alwaysApply: false
+alwaysApply: true
 ---
 # Theming
 
@@ -10,27 +10,27 @@ See also **extensibility.mdc** (always on).
 ## Rules
 
 - **Colors / type / input chrome:** `Theme.of(context)` — `colorScheme`, `textTheme`, `inputDecorationTheme`. Host “inits” by using their normal `ThemeData`; we inherit it.
-- **Field tokens (radius, padding, gaps):** `MreFieldsTheme` as `ThemeExtension`, registered next to the host theme:
+- **Field tokens (radius, padding, gaps):** `MREFieldsTheme` as `ThemeExtension`, registered next to the host theme:
   ```dart
   theme: ThemeData(
     colorScheme: hostScheme,
     inputDecorationTheme: hostInputs,
     extensions: [
-      MreFieldsTheme(
+      MREFieldsTheme(
         fieldBorderRadius: 12,
         contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
     ],
   ),
   ```
-- Widget constructor params **override** `MreFieldsTheme` for that instance.
+- Widget constructor params **override** `MREFieldsTheme` for that instance.
 - Sensible const defaults when the extension is missing (previews / quick demos).
-- **Do not** add mutable `MreFields.initialize(...)`.
+- **Do not** add mutable `MREFields.initialize(...)`.
 - **Do not** import CashBook `AppSizes` / `AppColorsExtension` / `context.colors`.
 
 ## Optional helpers
 
-- A factory like `MreFieldsTheme.defaults` or `MreFieldsTheme.fromColorScheme` is fine if it only derives package tokens — never replaces the host `ThemeData`.
+- A factory like `MREFieldsTheme.defaults` or `MREFieldsTheme.fromColorScheme` is fine if it only derives package tokens — never replaces the host `ThemeData`.
 
 ## Optional tokens
 

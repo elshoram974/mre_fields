@@ -3,7 +3,7 @@ import 'package:flutter/widget_previews.dart';
 
 import 'preview_harness.dart';
 
-/// Placeholder until [MreTextField] is ported — proves Widget Previewer works.
+/// Placeholder until [MRETextField] is ported — proves Widget Previewer works.
 @Preview(
   name: 'Harness / light',
   group: 'mre_fields',
@@ -14,7 +14,7 @@ Widget previewHarnessLight() {
     const TextField(
       decoration: InputDecoration(
         labelText: 'Preview harness',
-        hintText: 'Replace with MreTextField',
+        hintText: 'Replace with MRETextField',
         border: OutlineInputBorder(),
       ),
     ),
@@ -31,7 +31,7 @@ Widget previewHarnessDark() {
     const TextField(
       decoration: InputDecoration(
         labelText: 'Preview harness',
-        hintText: 'Replace with MreTextField',
+        hintText: 'Replace with MRETextField',
         border: OutlineInputBorder(),
       ),
     ),

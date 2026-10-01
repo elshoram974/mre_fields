@@ -14,15 +14,15 @@ description: >-
 1. Read `CLAUDE.md` (scope + reference table) and `.cursor/rules/port-from-ledger.mdc`.
 2. Confirm the ledger path exists:
    `/Users/mohammedelshora/Desktop/Shora/projects/mrecode/ledger/`
-3. Name the target: `MreTextField` / `MrePhoneField` / helpers only.
+3. Name the target: `MRETextField` / `MREPhoneField` / helpers only.
 
 ## Steps
 
 1. **Read** the ledger source end-to-end (not just the class header).
 2. **List behaviours** to keep (e.g. live BIDI, suggestion row, clear button, select-on-focus, phone parse longest-dial-first).
 3. **List couplings to drop** (`.tr()`, `AppSizes`, `context.colors`, `AdaptiveOverlays`, glass, router, blocs).
-4. **Create** files under `lib/src/...` with `Mre*` names.
-5. **Wire theme** via `MreFieldsTheme` + Material `Theme`.
+4. **Create** files under `lib/src/...` with `MRE*` names.
+5. **Wire theme** via `MREFieldsTheme` + Material `Theme`.
 6. **Replace translated strings** with constructor `String` / `String?` params; document what the host should pass.
 7. **Export** from `lib/mre_fields.dart`.
 8. **Tests**: unit for pure helpers; widget tests for interaction.

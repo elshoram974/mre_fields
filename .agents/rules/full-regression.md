@@ -1,7 +1,7 @@
 ---
 description: Full regression gate before claiming a field feature or release is done
 globs: "*"
-alwaysApply: false
+alwaysApply: true
 ---
 # Full regression (mre_fields)
 

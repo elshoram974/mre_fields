@@ -1,8 +1,8 @@
 ---
 name: add-example-app
 description: >-
-  Creates or updates the example/ Flutter app that demos MreTextField,
-  MrePhoneField, theming overrides, and composable pieces. Use when the user
+  Creates or updates the example/ Flutter app that demos MRETextField,
+  MREPhoneField, theming overrides, and composable pieces. Use when the user
   asks for examples, example app, or a runnable demo.
 ---
 
@@ -30,10 +30,10 @@ dependencies:
 
 ## What to show (minimum)
 
-1. Host `ThemeData` + `MreFieldsTheme` (light/dark toggle).
-2. `MreTextField` — empty, suggestions, Arabic BIDI.
+1. Host `ThemeData` + `MREFieldsTheme` (light/dark toggle).
+2. `MRETextField` — empty, suggestions, Arabic BIDI.
 3. Constructor overrides (custom padding / decoration) vs theme defaults.
-4. When ready: `MrePhoneField` + country picker.
+4. When ready: `MREPhoneField` + country picker.
 5. Optional screen: compose pieces only (suggestion bar / clear) without full field — proves extensibility.
 
 ## Rules

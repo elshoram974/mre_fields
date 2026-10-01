@@ -15,7 +15,7 @@ Form fields must look **intentional** on iPhone, Android, iPad, Windows, and mac
 - Use `MediaQuery.sizeOf` / `MediaQuery.textScalerOf` for window-level density and text scale.
 - Platform checks are OK only for **input behaviour** (e.g. desktop shortcuts, mouse cursor), never as the only way to pick a layout.
 
-Default breakpoints (field-level; tune via `MreFieldsTheme` if needed):
+Default breakpoints (field-level; tune via `MREFieldsTheme` if needed):
 
 | Name | Width | Typical |
 |---|---|---|
@@ -26,18 +26,18 @@ Default breakpoints (field-level; tune via `MreFieldsTheme` if needed):
 ## Density & touch
 
 - **Touch-first hit targets** on compact (comfortable padding, clear/dial ≥ ~40–48 logical px).
-- On expanded/desktop, allow **slightly denser** padding via theme token (`visualDensity` / `MreFieldsTheme` density) — still keep clear/dial clickable with mouse.
+- On expanded/desktop, allow **slightly denser** padding via theme token (`visualDensity` / `MREFieldsTheme` density) — still keep clear/dial clickable with mouse.
 - Honour **`MediaQuery.textScalerOf`** — never assume text scale 1.0; labels and errors must not clip.
 
 ## Per-widget expectations
 
-### `MreTextField`
+### `MRETextField`
 - Full width of parent; no fixed pixel width that breaks desktop forms.
 - Prefix/suffix/clear stay aligned at all scales; use `Expanded`/`Flexible` on the text, not the icons.
 - Suggestion chips: wrap or horizontal scroll — **no overflow** at 1.3 text scale.
 - Desktop: sensible `mouseCursor`, focus outline from theme; Tab moves focus naturally.
 
-### `MrePhoneField`
+### `MREPhoneField`
 - **Compact:** dial control + local number may stack or use a tight row with `Flexible` on local.
 - **Expanded:** dial + local on one row; local takes remaining width.
 - Paste/`+` parse must not cause a layout jump that overflows.
@@ -49,7 +49,7 @@ Default breakpoints (field-level; tune via `MreFieldsTheme` if needed):
 
 ## Theme tokens (preferred over magic numbers)
 
-Put shared spacing/radius/density on `MreFieldsTheme` so hosts can tune desktop vs mobile without forking widgets. Host `ThemeData.visualDensity` should be respected when reading padding.
+Put shared spacing/radius/density on `MREFieldsTheme` so hosts can tune desktop vs mobile without forking widgets. Host `ThemeData.visualDensity` should be respected when reading padding.
 
 ## Previews & tests
 

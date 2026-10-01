@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 /// Shared wrapper for Widget Previewer and local sandbox screens.
 ///
-/// When [MreFieldsTheme] exists, register it on [theme.extensions].
+/// When [MREFieldsTheme] exists, register it on [theme.extensions].
 ThemeData mreFieldsPreviewTheme({Brightness brightness = Brightness.light}) {
   final base = ThemeData(
     colorScheme: ColorScheme.fromSeed(
