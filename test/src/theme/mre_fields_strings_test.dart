@@ -14,6 +14,13 @@ void main() {
       strings.closeViewerTooltip,
       strings.pasteImageLabel,
       strings.attachedImageLabel,
+      strings.phoneEmpty,
+      strings.phoneTooShort,
+      strings.phoneTooLong,
+      strings.phoneInvalid,
+      strings.phoneUnknownCountry,
+      strings.phoneCountryNotAllowed,
+      strings.phoneMissingCountry,
     ];
 
     expect(values, everyElement(isNotEmpty));

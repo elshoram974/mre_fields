@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mre_fields/mre_fields.dart';
 import 'package:mre_fields/src/previews/mre_attachments_previews.dart';
 import 'package:mre_fields/src/previews/mre_auto_text_previews.dart';
+import 'package:mre_fields/src/previews/mre_phone_previews.dart';
 import 'package:mre_fields/src/previews/mre_text_field_previews.dart';
 import 'package:mre_fields/src/previews/preview_harness.dart';
 
@@ -57,6 +58,13 @@ void main() {
     'previewTextFieldStates': (previewTextFieldStates, 'Read only'),
     'previewImagePasteAttachments': (previewImagePasteAttachments, 'Message'),
     'previewImagePasteCallback': (previewImagePasteCallback, 'Message'),
+    'previewPhoneField': (previewPhoneField, 'Phone number'),
+    'previewPhoneFieldError': (
+      previewPhoneFieldError,
+      'The phone number is too short',
+    ),
+    'previewPhoneFieldGulf': (previewPhoneFieldGulf, 'Gulf numbers only'),
+    'previewCountryPicker': (previewCountryPicker, 'Select country'),
   };
 
   for (final MapEntry(key: name, value: (build, expected))

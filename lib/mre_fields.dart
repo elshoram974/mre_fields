@@ -1,5 +1,5 @@
-/// Reusable Flutter form fields: bidirectional text, phone with country code,
-/// and suggestions.
+/// Flutter form fields that follow the language being typed, check phone
+/// numbers for every country, and accept pasted images.
 ///
 /// Fields use the colors and fonts of your `ThemeData`. Add the field-only
 /// values with [MREFieldsTheme]:
@@ -21,6 +21,8 @@
 ///    `MRETextField`, validation, suggestions, controllers.
 ///  * [Image paste](https://github.com/elshoram974/mre_fields/blob/main/doc/attachments.md):
 ///    behaviours, limits, where images come from.
+///  * [Phone](https://github.com/elshoram974/mre_fields/blob/main/doc/phone.md):
+///    `MREPhoneField`, country selection, validation for every country.
 ///  * [Functions](https://github.com/elshoram974/mre_fields/blob/main/doc/functions.md):
 ///    every rule without a widget.
 ///
@@ -32,6 +34,10 @@
 ///    [MREDirectionalWidget], [safeDisplayText].
 ///  * **Fields**: [MRETextField], [MRESuggestionBar], [MREFieldClearButton],
 ///    [MRESafeTextEditingController], [mreFilterSuggestions].
+///  * **Phone**: [MREPhoneField], [MREPhoneController], [MREPhoneNumber],
+///    [MREPhoneError], [MREPhoneValidators], [MRECountrySelection],
+///    [MRECountry], [MRECountries], [showMRECountryPicker],
+///    [MRECountryPickerBody], [MREPhoneInputFormatter].
 ///  * **Attachments**: [MREImagePasteBehavior] with [MRENoImagePaste],
 ///    [MREImageCallbackPaste] and [MREImageAttachmentPaste]; [MREPastedImage],
 ///    [MREAttachmentsController], [MREAttachmentStrip], [MREImageViewer],
@@ -45,6 +51,15 @@ export 'src/attachments/paste/mre_image_paste_behavior.dart';
 export 'src/attachments/paste/mre_image_paste_scope.dart';
 export 'src/attachments/ui/mre_image_viewer.dart';
 export 'src/attachments/model/mre_pasted_image.dart';
+export 'src/phone/field/mre_phone_controller.dart';
+export 'src/phone/field/mre_phone_field.dart';
+export 'src/phone/model/mre_country.dart';
+export 'src/phone/model/mre_country_selection.dart';
+export 'src/phone/model/mre_phone_digits.dart';
+export 'src/phone/model/mre_phone_number.dart';
+export 'src/phone/picker/mre_country_picker.dart';
+export 'src/phone/picker/mre_country_picker_body.dart';
+export 'src/phone/validation/mre_phone_validators.dart';
 export 'src/text/direction/mre_auto_text.dart';
 export 'src/text/field/mre_field_clear_button.dart';
 export 'src/text/field/mre_safe_text_editing_controller.dart';

@@ -29,6 +29,18 @@ const _allowed = <String, Set<String>>{
     'internal',
   },
   'attachments/ui': {'attachments/ui', 'attachments/model', 'theme'},
+  'phone/model': {'phone/model'},
+  'phone/validation': {'phone/validation', 'phone/model', 'theme'},
+  'phone/picker': {'phone/picker', 'phone/model', 'text/field', 'theme'},
+  'phone/field': {
+    'phone/field',
+    'phone/model',
+    'phone/picker',
+    'phone/validation',
+    'text/field',
+    'theme',
+    'internal',
+  },
 };
 
 /// Most lines of code (no blanks, no comments) in one file.

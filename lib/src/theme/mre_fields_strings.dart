@@ -24,6 +24,13 @@ class MREFieldsStrings {
     this.closeViewerTooltip = 'Close',
     this.pasteImageLabel = 'Paste image',
     this.attachedImageLabel = 'Attached image',
+    this.phoneEmpty = 'Enter a phone number',
+    this.phoneTooShort = 'The phone number is too short',
+    this.phoneTooLong = 'The phone number is too long',
+    this.phoneInvalid = 'This is not a valid phone number',
+    this.phoneUnknownCountry = 'Unknown country code',
+    this.phoneCountryNotAllowed = 'Numbers from this country are not accepted',
+    this.phoneMissingCountry = 'Choose a country',
   });
 
   /// Tooltip and semantics label of the clear button.
@@ -53,6 +60,27 @@ class MREFieldsStrings {
   /// Semantics label of an attached image thumbnail.
   final String attachedImageLabel;
 
+  /// Error when no phone number was entered.
+  final String phoneEmpty;
+
+  /// Error when a phone number has too few digits.
+  final String phoneTooShort;
+
+  /// Error when a phone number has too many digits.
+  final String phoneTooLong;
+
+  /// Error when a phone number does not match the country's patterns.
+  final String phoneInvalid;
+
+  /// Error when the dial code belongs to no country.
+  final String phoneUnknownCountry;
+
+  /// Error when the number is from a country the field does not accept.
+  final String phoneCountryNotAllowed;
+
+  /// Error when no country was chosen.
+  final String phoneMissingCountry;
+
   /// Returns a copy with the given values replaced.
   MREFieldsStrings copyWith({
     String? clearTooltip,
@@ -64,6 +92,13 @@ class MREFieldsStrings {
     String? closeViewerTooltip,
     String? pasteImageLabel,
     String? attachedImageLabel,
+    String? phoneEmpty,
+    String? phoneTooShort,
+    String? phoneTooLong,
+    String? phoneInvalid,
+    String? phoneUnknownCountry,
+    String? phoneCountryNotAllowed,
+    String? phoneMissingCountry,
   }) {
     return MREFieldsStrings(
       clearTooltip: clearTooltip ?? this.clearTooltip,
@@ -75,6 +110,14 @@ class MREFieldsStrings {
       closeViewerTooltip: closeViewerTooltip ?? this.closeViewerTooltip,
       pasteImageLabel: pasteImageLabel ?? this.pasteImageLabel,
       attachedImageLabel: attachedImageLabel ?? this.attachedImageLabel,
+      phoneEmpty: phoneEmpty ?? this.phoneEmpty,
+      phoneTooShort: phoneTooShort ?? this.phoneTooShort,
+      phoneTooLong: phoneTooLong ?? this.phoneTooLong,
+      phoneInvalid: phoneInvalid ?? this.phoneInvalid,
+      phoneUnknownCountry: phoneUnknownCountry ?? this.phoneUnknownCountry,
+      phoneCountryNotAllowed:
+          phoneCountryNotAllowed ?? this.phoneCountryNotAllowed,
+      phoneMissingCountry: phoneMissingCountry ?? this.phoneMissingCountry,
     );
   }
 
@@ -89,7 +132,14 @@ class MREFieldsStrings {
         other.replaceImageTooltip == replaceImageTooltip &&
         other.closeViewerTooltip == closeViewerTooltip &&
         other.pasteImageLabel == pasteImageLabel &&
-        other.attachedImageLabel == attachedImageLabel;
+        other.attachedImageLabel == attachedImageLabel &&
+        other.phoneEmpty == phoneEmpty &&
+        other.phoneTooShort == phoneTooShort &&
+        other.phoneTooLong == phoneTooLong &&
+        other.phoneInvalid == phoneInvalid &&
+        other.phoneUnknownCountry == phoneUnknownCountry &&
+        other.phoneCountryNotAllowed == phoneCountryNotAllowed &&
+        other.phoneMissingCountry == phoneMissingCountry;
   }
 
   @override
@@ -103,5 +153,12 @@ class MREFieldsStrings {
     closeViewerTooltip,
     pasteImageLabel,
     attachedImageLabel,
+    phoneEmpty,
+    phoneTooShort,
+    phoneTooLong,
+    phoneInvalid,
+    phoneUnknownCountry,
+    phoneCountryNotAllowed,
+    phoneMissingCountry,
   );
 }
