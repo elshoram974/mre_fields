@@ -1,11 +1,14 @@
 name: mre_fields
-description: >-
-  Form fields for Flutter: a text field and a text widget that follow the
-  language being typed (RTL and LTR), with clear button, suggestions and image
-  paste. Themeable and localizable.
+description: "Form fields for Flutter: text that follows the language typed (RTL and LTR), clear button, suggestions and image paste. Themeable and localizable."
 version: 0.1.0
 repository: https://github.com/elshoram974/mre_fields
 issue_tracker: https://github.com/elshoram974/mre_fields/issues
+screenshots:
+  - description: A text field and a plain text follow the language being typed.
+    path: doc/images/text-direction.gif
+  - description: Pasted images appear under the field, with open, remove and replace.
+    path: doc/images/image-paste.gif
+
 topics:
   - form
   - text-field

@@ -20,4 +20,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `MREAttachmentStrip` (thumbnails with open, remove and replace), `MREImageViewer`, `MREAttachmentsController`, `MREImagePasteScope` for any text field, `MREClipboardImageReader`, and `mreSniffImageMimeType`.
 - New `MREFieldsStrings` texts: `pasteImageLabel` and `attachedImageLabel`.
 - Depends on `pasteboard` to read images from the clipboard, and on `web` for the browser paste event.
+- An example app for every platform (`example/`), with a page for each feature, a light and dark switch, an English and Arabic switch, and a live radius slider.
 - `@MREPreview()` annotation to preview any widget in light, dark, right to left, large text, narrow and wide layouts.

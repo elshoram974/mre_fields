@@ -64,7 +64,10 @@ lib/
     phone/                         # planned: MREPhoneField, picker, parse, countries
     previews/                      # @MREPreview cards; nothing imports them
 test/                              # mirrors lib/src; architecture_test.dart enforces layering
-doc/                               # guides (*.md) and compiled snippets (snippets/*.dart)
+doc/                               # guides (*.md), compiled snippets (snippets/), GIFs (images/)
+example/                           # runnable demo app, all platforms; ?demo=text|paste pages feed the GIFs
+tool/                              # sync_doc_snippets.dart, demo/ (GIF recording)
+.github/workflows/ci.yml           # analyze, test, docs, and example builds on every platform
 ```
 
 Layering, file size and exports are enforced by `test/architecture_test.dart`
@@ -336,7 +339,7 @@ Third-party origin and pins: `.cursor/skills/THIRD_PARTY.md`.
 | Layout / sizes | `adaptive-layout`, `flutter-build-responsive-layout`, `flutter-fix-layout-issues` |
 | Performance | `flutter-performance` |
 | Tests | `add-widget-test`, `flutter-add-widget-test`, `dart-add-unit-test`, `testing-strategy`, `widget-golden-and-a11y-testing`, `full-regression-test` |
-| Previews / example | `add-widget-preview`, `flutter-add-widget-preview`, `add-example-app` |
+| Previews / example | `add-widget-preview`, `flutter-add-widget-preview`, `add-example-app`, `record-demo-gifs` |
 | Docs | `write-package-docs`, `dart-write-documentation`, `dartdoc-conventions`, `dart-use-doc-examples` |
 | Code style / analysis | `lint-and-style-config`, `dart-run-static-analysis`, `dart3-idioms-and-coding-standards`, `dart-use-pattern-matching` |
 | Structure / deps | `project-structure-and-packages`, `dependency-hygiene`, `dart-resolve-package-conflicts` |

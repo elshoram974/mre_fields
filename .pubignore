@@ -2,6 +2,7 @@
 # so the generic entries are repeated here.
 
 # Tooling / contributor files that must not ship in the package archive
+.github/
 .cursor/
 .claude/
 .agents/

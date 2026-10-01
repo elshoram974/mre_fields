@@ -1,11 +1,20 @@
 # mre_fields
 
-Form field widgets for Flutter: text that follows its language, phone numbers
-with country codes, and suggestions. Fields use your `ThemeData`, and every
-value can be changed globally or per field.
+![A text field and a plain text follow the language being typed: left to right for English, right to left for Arabic](https://raw.githubusercontent.com/elshoram974/mre_fields/main/doc/images/text-direction.gif)
+
+Form field widgets for Flutter: text that follows its language, image paste, and
+suggestions. Fields use your `ThemeData`, and every value can be changed
+globally or per field.
 
 > Early release (`0.x`). The public API can change; see
 > [CHANGELOG.md](CHANGELOG.md).
+
+## Try it
+
+```bash
+cd example
+flutter run   # any device: phone, desktop or web
+```
 
 ## Contents
 
@@ -103,6 +112,8 @@ MRETextField(
   ),
 );
 ```
+
+![Pasting three images into a field: they appear under it, each with remove and replace buttons](https://raw.githubusercontent.com/elshoram974/mre_fields/main/doc/images/image-paste.gif)
 
 Images appear under the field. The user can open, remove and replace them.
 `MREImageCallbackPaste` hands each image to your code and shows nothing. Images

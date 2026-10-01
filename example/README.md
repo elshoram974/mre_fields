@@ -1,17 +1,16 @@
-# mre_fields_example
+# mre_fields example
 
-Demo of the mre_fields package.
+A demo of every piece of the package: text direction, the text field, image
+paste and theming.
 
-## Getting Started
+```bash
+flutter run               # pick any device: phone, desktop or web
+flutter run -d chrome
+```
 
-This project is a starting point for a Flutter application.
+The home page has one card per feature. The buttons in the app bar switch light
+and dark, and English and Arabic. The radius slider changes `MREFieldsTheme` for
+the whole app.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+`?demo=text` and `?demo=paste` on the web build show the clean pages recorded
+for the documentation GIFs (`tool/demo/make_gifs.sh` rebuilds them).
