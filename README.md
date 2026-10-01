@@ -3,6 +3,7 @@
 [![pub package](https://img.shields.io/pub/v/mre_fields.svg)](https://pub.dev/packages/mre_fields)
 [![pub points](https://img.shields.io/pub/points/mre_fields)](https://pub.dev/packages/mre_fields/score)
 [![CI](https://github.com/elshoram974/mre_fields/actions/workflows/ci.yml/badge.svg)](https://github.com/elshoram974/mre_fields/actions/workflows/ci.yml)
+[![Flutter 3.38.1+](https://img.shields.io/badge/Flutter-%E2%89%A5%203.38.1-02569B?logo=flutter&logoColor=white)](#platform-support)
 [![License: BSD-3-Clause](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](LICENSE)
 
 Text fields and texts for Flutter that **follow the language being typed**:
@@ -28,7 +29,7 @@ Paste images into a field, suggest values, and theme everything from your own
 
 ```yaml
 dependencies:
-  mre_fields: ^0.1.1
+  mre_fields: ^0.1.2
 ```
 
 ```dart
@@ -132,7 +133,7 @@ Dark mode, breakpoints and translated texts are in [the theme guide](doc/theme.m
 | Web | yes | browser paste event (Ctrl or Cmd + V), selection menu |
 | macOS, Windows, Linux | yes | paste shortcut, selection menu |
 
-Needs Flutter 3.38 or newer. The package also compiles to WebAssembly.
+Needs Flutter 3.38.1 or newer (Dart 3.10). CI runs the tests on 3.38.1, on the latest stable and on beta, and builds the example on every platform. The package also compiles to WebAssembly.
 
 ## Questions
 

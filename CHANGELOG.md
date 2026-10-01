@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-10-01
+
+### Changed
+
+- Works on Flutter 3.38.1 and newer (Dart 3.10). The SDK constraint was `^3.12.0`, which needed Flutter 3.44. All tests pass on 3.38.1 and on the latest stable.
+- `meta` constraint loosened to `^1.15.0`, so it resolves with the version each Flutter pins.
+
 ## [0.1.1] - 2026-10-01
 
 ### Changed

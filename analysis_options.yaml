@@ -5,6 +5,9 @@ linter:
     - public_member_api_docs
 
 analyzer:
+  errors:
+    # Flutter 3.38's analyzer does not know dartdoc's {@example} directive.
+    doc_directive_unknown: ignore
   exclude:
     - build/**
     - android/**
