@@ -73,3 +73,16 @@ bool startsRightToLeft(String text) {
 
   return rtl && fallback == TextDirection.rtl;
 }
+
+/// The four functions in one place, with literal values.
+List<Object?> quickExamples(Uint8List bytes) {
+  const allCities = ['Cairo', 'Giza', 'Luxor']; // #hide
+  // #region quick
+  final direction = detectTextDirection('مرحبا'); // TextDirection.rtl
+  final isRtl = '123 hello'.isRtl; // false
+  final cities = mreFilterSuggestions(allCities, 'ai'); // ['Cairo']
+  final type = mreSniffImageMimeType(bytes); // 'image/png' or null
+  // #endregion quick
+
+  return [direction, isRtl, cities, type];
+}

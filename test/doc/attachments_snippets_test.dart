@@ -48,6 +48,15 @@ void main() {
     expect(behavior.maxBytes, 5 * 1024 * 1024);
   });
 
+  testWidgets('quick: keeps up to four images', (tester) async {
+    await tester.pumpWidget(_host(quickAttachments()));
+
+    final behavior = tester
+        .widget<MRETextField>(find.byType(MRETextField))
+        .imagePaste;
+    expect(behavior.attachments!.maxImages, 4);
+  });
+
   testWidgets('controller: images in your controller show under the field', (
     tester,
   ) async {

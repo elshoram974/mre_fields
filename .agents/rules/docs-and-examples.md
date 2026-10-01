@@ -29,9 +29,17 @@ pub.dev readers see only what ships in the package. Write for a Flutter develope
 - `public_member_api_docs` is enabled: an undocumented public member fails `flutter analyze`.
 - Gate: `dart doc .` must finish with 0 warnings.
 
+## What pub.dev shows
+
+- **Example tab**: the first existing file of `example/example.md`, `example[/lib]/main.dart`, … `example/README.md`. `example/example.md` wins, so write it: a walkthrough with a short sentence and a tested snippet per feature. A bare `main.dart` shows three useless lines.
+- **README tab**: the README with images. Images need absolute URLs (`https://raw.githubusercontent.com/<owner>/<repo>/main/…`).
+- **API reference**: the barrel's library doc is the landing page; keep it a short map with links to the guides.
+- **Scores tab**: run `dart pub global run pana --no-warning .` before every release; the target is 160/160.
+- README and `example/example.md` use `<!-- snippet: topic/region -->` markers. `tool/sync_doc_snippets.dart` fills them and `doc_guides_sync_test.dart` fails on drift.
+
 ## README (package root)
 
-Sections, in order: what it is · install · 30-second quick start · feature list with one runnable snippet each (BIDI field, clear/suggestions, phone + country include/exclude, image paste behaviours, text direction extensions, theming) · customization (theme extension, overrides, using single pieces) · platform notes (paste support matrix) · FAQ · contributing.
+Sections, in order: title with badges and the demo GIF · one-paragraph pitch · why use it (4–5 bullets) · install · quick start (numbered, three steps) · "what you can do" table (need → API → guide) · customization · platform support table · short FAQ · documentation links · contributing · license. Short sentences, no process talk, every snippet synced from `doc/snippets`.
 
 Keep contributor/agent tooling notes out of the README; they live in `CLAUDE.md`, `AGENTS.md`, `.cursor/`.
 

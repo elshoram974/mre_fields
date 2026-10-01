@@ -9,6 +9,21 @@
 /// Every rule is also a plain function or class, so you can use it without any
 /// widget on screen: see the functions guide in the repository (`doc/functions.md`).
 ///
+/// ## Guides
+///
+/// Each guide has runnable examples:
+///
+///  * [Theme](https://github.com/elshoram974/mre_fields/blob/main/doc/theme.md):
+///    one place to set radius, padding and texts, dark mode, translation.
+///  * [Text direction](https://github.com/elshoram974/mre_fields/blob/main/doc/text.md):
+///    how the direction is chosen, `MREAutoText`, extensions.
+///  * [Text field](https://github.com/elshoram974/mre_fields/blob/main/doc/text_field.md):
+///    `MRETextField`, validation, suggestions, controllers.
+///  * [Image paste](https://github.com/elshoram974/mre_fields/blob/main/doc/attachments.md):
+///    behaviours, limits, where images come from.
+///  * [Functions](https://github.com/elshoram974/mre_fields/blob/main/doc/functions.md):
+///    every rule without a widget.
+///
 /// ## Topics
 ///
 ///  * **Theme**: [MREFieldsTheme], [MREFieldsStrings], [MREWindowSize].

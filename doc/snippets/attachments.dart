@@ -39,6 +39,19 @@ Widget behaviorsExample() {
   return Column(children: [textOnly, callback, attachments]);
 }
 
+/// The shortest way to keep pasted images under a field.
+Widget quickAttachments() {
+  // #region quick
+  final field = MRETextField(
+    labelText: 'Message',
+    maxLines: 3,
+    imagePaste: MREImageAttachmentPaste(maxImages: 4),
+  );
+  // #endregion quick
+
+  return field;
+}
+
 /// A field that keeps up to four images under itself.
 Widget attachmentsField() {
   // #region attachments

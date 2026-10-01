@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-10-01
+
+### Changed
+
+- README rewritten: why to use it, install, quick start, a table of what to use for each need, platform support, and questions.
+- The pub.dev Example tab now shows a full walkthrough (`example/example.md`) instead of three lines of `main.dart`.
+- API reference landing page lists the guides.
+- README and example page code is copied from the tested snippets, so it cannot drift.
+
 ## [0.1.0] - 2026-10-01
 
 ### Added

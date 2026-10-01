@@ -38,6 +38,15 @@ void main() {
     expect(isPng(Uint8List.fromList('hello world'.codeUnits)), isFalse);
   });
 
+  test('quick: matches the comments in the example', () {
+    expect(quickExamples(pngBytes), [
+      TextDirection.rtl,
+      false,
+      ['Cairo'],
+      'image/png',
+    ]);
+  });
+
   test('collect: holds the images and notifies', () {
     final controller = collectImages([png(), png(otherPngBytes())]);
     addTearDown(controller.dispose);

@@ -1,15 +1,29 @@
 // Copies the compiled snippets in doc/snippets/<topic>.dart into the code
-// blocks of doc/<topic>.md.
+// blocks of the guides, the README and the example page.
 //
-// Dartdoc does not expand {@example} inside guides, so the guides hold copies.
-// Mark each block with `<!-- snippet: name -->` on the line above it, then run:
+// Dartdoc does not expand {@example} inside markdown files, so those files hold
+// copies. Mark each block with a comment on the line above it:
 //
-//   dart run tool/sync_doc_snippets.dart          rewrite the guides
-//   dart run tool/sync_doc_snippets.dart --check  fail when a guide is stale
+//   <!-- snippet: region -->          region of the guide's own topic file
+//   <!-- snippet: topic/region -->    region of doc/snippets/<topic>.dart
+//
+// Then run:
+//
+//   dart run tool/sync_doc_snippets.dart          rewrite the files
+//   dart run tool/sync_doc_snippets.dart --check  fail when a file is stale
 import 'dart:io';
 
-/// Guides that carry snippet blocks.
-const guideTopics = ['theme', 'text', 'text_field', 'attachments', 'functions'];
+/// Markdown files that carry snippet blocks, with the topic their unqualified
+/// markers use. A null topic means every marker must name its topic.
+const syncedFiles = <String, String?>{
+  'doc/theme.md': 'theme',
+  'doc/text.md': 'text',
+  'doc/text_field.md': 'text_field',
+  'doc/attachments.md': 'attachments',
+  'doc/functions.md': 'functions',
+  'README.md': null,
+  'example/example.md': null,
+};
 
 /// Returns region [name] of [source], formatted like dartdoc's `{@example}`:
 /// shared indentation removed and `#hide` lines dropped.
@@ -36,16 +50,33 @@ String regionOf(String source, String name) {
       .trimRight();
 }
 
-/// Returns [guide] with every marked code block replaced by its region from
-/// [snippets].
-String syncGuide(String snippets, String guide) {
+/// Returns the text of doc/snippets/[topic].dart.
+String snippetSource(String topic) {
+  return File('doc/snippets/$topic.dart').readAsStringSync();
+}
+
+/// Returns [markdown] with every marked code block replaced by its region.
+///
+/// [defaultTopic] resolves markers without a topic. [source] returns the text
+/// of a snippet file, and defaults to reading it from disk.
+String syncMarkdown(
+  String markdown, {
+  required String? defaultTopic,
+  String Function(String topic) source = snippetSource,
+}) {
   final block = RegExp(
-    r'<!-- snippet: (\w+) -->\n```dart\n.*?```',
+    r'<!-- snippet: ([\w]+(?:/[\w]+)?) -->\n```dart\n.*?```',
     dotAll: true,
   );
-  return guide.replaceAllMapped(block, (m) {
-    final code = regionOf(snippets, m[1]!);
-    return '<!-- snippet: ${m[1]} -->\n```dart\n$code\n```';
+  return markdown.replaceAllMapped(block, (m) {
+    final marker = m[1]!;
+    final parts = marker.split('/');
+    final topic = parts.length == 2 ? parts[0] : defaultTopic;
+    if (topic == null) {
+      throw StateError('Marker "$marker" needs a topic: topic/region.');
+    }
+    final code = regionOf(source(topic), parts.last);
+    return '<!-- snippet: $marker -->\n```dart\n$code\n```';
   });
 }
 
@@ -53,21 +84,20 @@ void main(List<String> args) {
   final check = args.contains('--check');
   var stale = false;
 
-  for (final topic in guideTopics) {
-    final snippets = File('doc/snippets/$topic.dart').readAsStringSync();
-    final guideFile = File('doc/$topic.md');
-    final guide = guideFile.readAsStringSync();
-    final synced = syncGuide(snippets, guide);
+  for (final MapEntry(key: path, value: topic) in syncedFiles.entries) {
+    final file = File(path);
+    final text = file.readAsStringSync();
+    final synced = syncMarkdown(text, defaultTopic: topic);
 
-    if (synced == guide) {
+    if (synced == text) {
       continue;
     }
     if (check) {
-      stderr.writeln('doc/$topic.md is out of date.');
+      stderr.writeln('$path is out of date.');
       stale = true;
     } else {
-      guideFile.writeAsStringSync(synced);
-      stdout.writeln('Updated doc/$topic.md');
+      file.writeAsStringSync(synced);
+      stdout.writeln('Updated $path');
     }
   }
 

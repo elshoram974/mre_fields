@@ -1,6 +1,6 @@
 name: mre_fields
 description: "Form fields for Flutter: text that follows the language typed (RTL and LTR), clear button, suggestions and image paste. Themeable and localizable."
-version: 0.1.0
+version: 0.1.1
 repository: https://github.com/elshoram974/mre_fields
 issue_tracker: https://github.com/elshoram974/mre_fields/issues
 screenshots:
