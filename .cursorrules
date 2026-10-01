@@ -2,12 +2,24 @@ Git Commit Message Generation Rules
 
 Applies to the Source Control (SCM) AI button, `git commit`, and any commit message written for this repository. Follow every step. No exceptions.
 
-1. What to describe (scope of the message)
+1. What to describe: STAGED FIRST, decided by one command
 
-- Run the equivalent of `git diff --staged`. If anything is staged, describe ONLY the staged changes. Ignore unstaged and untracked files completely.
-- If nothing is staged, describe ALL pending changes: modified, deleted, renamed, and untracked files (read untracked files; they are part of the change).
-- Base every statement on the actual diff. Never invent features, files, tests, or behaviour. Every identifier you name (class, method, parameter, file, rule) must exist in the diff.
-- Ignore pure noise: generated files, lockfiles, formatting-only churn. Mention them only if they are the whole change.
+Run exactly this first:
+
+    git diff --cached --name-only
+
+A. The output is NOT empty -> STAGED MODE. This is the common case.
+   - Describe ONLY the staged diff: `git diff --cached` (hunks that are staged; a file with both staged and unstaged edits counts only for its staged hunks).
+   - Do NOT run `git diff` without `--cached`, `git status`, `git stash`, or `git add`.
+   - Do NOT read files from the working tree, open editor tabs, or earlier chat messages to learn what changed. They show unstaged work that must not appear.
+   - Unstaged and untracked files do not exist for this message, even when they look related to the staged ones.
+
+B. The output is empty -> ALL MODE.
+   - Describe every pending change: `git diff HEAD` for tracked files, plus each untracked file from `git ls-files --others --exclude-standard` (read their contents; they are part of the change).
+
+Self-check before you answer: in STAGED MODE every file or symbol the message names must appear in `git diff --cached`. Delete any line that does not.
+
+Always: base every statement on the actual diff. Never invent features, files, tests, or behaviour. Ignore pure noise (generated files, lockfiles, formatting-only churn) unless it is the whole change.
 
 2. Format
 

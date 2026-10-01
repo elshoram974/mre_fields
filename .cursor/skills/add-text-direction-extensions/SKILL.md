@@ -13,7 +13,7 @@ Read `.cursor/rules/text-direction.mdc` and `.cursor/rules/performance.mdc` firs
 
 ## Steps
 
-1. **Pure function** in `lib/src/text/text_direction.dart`:
+1. **Pure function** in `lib/src/text/direction/text_direction.dart`:
    `TextDirection detectTextDirection(String text, {TextDirection fallback = TextDirection.ltr})`.
    Walk code units, skip neutrals, return on the first strong character, stop after a scan cap. Do not call `Bidi.detectRtlDirectionality` on the whole string. Add `intl` only if its character tables are reused; otherwise keep dependency-free.
 2. **String extension** (`textDirection`, `isRtl`, `autoTextAlign`) — each a one-liner over the function.

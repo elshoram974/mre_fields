@@ -30,9 +30,9 @@ strip app coupling:
 
 | Ledger path | Becomes in `mre_fields` |
 |---|---|
-| `lib/core/widgets/app_text_field.dart` | `lib/src/text/mre_text_field.dart` |
-| `lib/core/utils/extensions/string_extension.dart` → `uiTextDirection` / `textDirection` / `safeDisplayText` | `lib/src/text/text_direction.dart` (BIDI only — **not** `pdfReshaped`) |
-| `lib/core/utils/helpers/safe_text_controller.dart` | `lib/src/text/safe_text_controller.dart` (if still needed) |
+| `lib/core/widgets/app_text_field.dart` | `lib/src/text/field/mre_text_field.dart` |
+| `lib/core/utils/extensions/string_extension.dart` → `uiTextDirection` / `textDirection` / `safeDisplayText` | `lib/src/text/direction/` (BIDI only — **not** `pdfReshaped`) |
+| `lib/core/utils/helpers/safe_text_controller.dart` | `lib/src/text/field/mre_safe_text_editing_controller.dart` |
 | `lib/core/utils/helpers/phone_number_helper.dart` | `lib/src/phone/phone_number.dart` |
 | `lib/core/constants/countries.dart` (+ dial data) | `lib/src/phone/countries.dart` |
 | `lib/core/widgets/app_country_code_picker.dart` | `lib/src/phone/mre_country_code_picker.dart` — rewrite sheet without `AdaptiveOverlays` / `.tr()` / `AppGlassSurface` |
@@ -50,23 +50,25 @@ delete every import into CashBook (`app_sizes`, `context.colors`, `.tr()`,
 
 ```text
 lib/
-  mre_fields.dart          # barrel — export only the public surface
+  mre_fields.dart                  # barrel: the public surface, nothing else
   src/
-    theme/
-      mre_fields_theme.dart
+    theme/                         # MREFieldsTheme, MREFieldsStrings, MREWindowSize
+    internal/                      # shared helpers, @internal, never exported
     text/
-      mre_text_field.dart
-      text_direction.dart          # pure detect fn + String/Text/widget extensions
+      direction/                   # detect fn, String/Text/Widget extensions, MREAutoText
+      field/                       # MRETextField, suggestion bar, clear button, safe controller
     attachments/
-      mre_image_paste_behavior.dart  # none / callback / attachment strip
-      mre_attachment_strip.dart
-      mre_image_viewer.dart
-    phone/
-      mre_phone_field.dart
-      mre_country_code_picker.dart
-      phone_number.dart
-      countries.dart
+      model/                       # MREPastedImage, MREAttachmentsController
+      paste/                       # behaviours, paste handler, scope, reader, web hook
+      ui/                          # MREAttachmentStrip, MREImageViewer
+    phone/                         # planned: MREPhoneField, picker, parse, countries
+    previews/                      # @MREPreview cards; nothing imports them
+test/                              # mirrors lib/src; architecture_test.dart enforces layering
+doc/                               # guides (*.md) and compiled snippets (snippets/*.dart)
 ```
+
+Layering, file size and exports are enforced by `test/architecture_test.dart`
+(rule `solid-and-structure.mdc`).
 
 - One barrel: `package:mre_fields/mre_fields.dart`.
 - Nothing under `src/` is imported by apps directly (keep `src/` modular for future slim exports).
@@ -294,8 +296,11 @@ Do not publish unprompted.
 
 ## Always-on rules (imported so every agent loads all of them)
 
+@.cursor/rules/clean-code.mdc
+@.cursor/rules/clean-principles-core.mdc
 @.cursor/rules/cleanup.mdc
 @.cursor/rules/commit-messages.mdc
+@.cursor/rules/data-structures.mdc
 @.cursor/rules/docs-and-examples.mdc
 @.cursor/rules/extensibility.mdc
 @.cursor/rules/flutter-version.mdc
@@ -308,6 +313,7 @@ Do not publish unprompted.
 @.cursor/rules/project-standards.mdc
 @.cursor/rules/reply-style.mdc
 @.cursor/rules/responsive-adaptive.mdc
+@.cursor/rules/solid-and-structure.mdc
 @.cursor/rules/test-field-sizes.mdc
 @.cursor/rules/text-direction.mdc
 @.cursor/rules/theming.mdc
@@ -333,4 +339,6 @@ Third-party origin and pins: `.cursor/skills/THIRD_PARTY.md`.
 | Code style / analysis | `lint-and-style-config`, `dart-run-static-analysis`, `dart3-idioms-and-coding-standards`, `dart-use-pattern-matching` |
 | Structure / deps | `project-structure-and-packages`, `dependency-hygiene`, `dart-resolve-package-conflicts` |
 | Release | `bump-package-version`, `publish-to-pub-dev`, `commit-with-coauthor` |
+| Design, refactor, SOLID | `solid-principles`, `clean-code`, `design-patterns`, `dry-kiss-yagni`, `architecture-principles`, `software-design-principles`, `widget-composition` |
+| Testing strategy | `testing-principles`, `testing-strategy` |
 | Review | `caveman-review` |

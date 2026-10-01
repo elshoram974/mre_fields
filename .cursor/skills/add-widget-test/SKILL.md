@@ -12,7 +12,7 @@ description: >-
 
 Mirror `lib/src/`:
 
-- `lib/src/text/mre_text_field.dart` → `test/src/text/mre_text_field_test.dart`
+- `lib/src/text/field/mre_text_field.dart` → `test/src/text/field/mre_text_field_test.dart`
 
 ## Harness
 
