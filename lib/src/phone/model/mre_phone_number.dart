@@ -213,7 +213,7 @@ final class MREPhoneNumber {
 
   /// Every national number length the country has, over all number types.
   static List<int> _lengthsOf(IsoCode iso) {
-    final lengths = metadataLenghtsByIsoCode[iso];
+    final lengths = metadataLengthsByIsoCode[iso];
     if (lengths == null) {
       return const [];
     }

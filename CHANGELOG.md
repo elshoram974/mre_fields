@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.3] - 2026-10-04
+
+### Fixed
+- Update `phone_numbers_parser` to 9.0.28 and use its non-deprecated
+  `metadataLengthsByIsoCode` API, so `flutter analyze` passes in CI.
+- Declare Android, iOS, web, Windows, macOS and Linux support for pub.dev.
+
 ## [0.3.2] - 2026-10-04
 
 ### Added

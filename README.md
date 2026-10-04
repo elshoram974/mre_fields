@@ -33,7 +33,7 @@ images**. Everything uses your own `ThemeData` and can be translated.
 
 ```yaml
 dependencies:
-  mre_fields: ^0.3.2
+  mre_fields: ^0.3.3
 ```
 
 ```dart
