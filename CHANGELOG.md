@@ -1,5 +1,51 @@
 # Changelog
 
+## [0.3.2] - 2026-10-04
+
+### Added
+- Optional `MREImageAttachmentPaste.showCounter` inside the field. Custom
+  attachment builders receive `maxImages` and `isAtLimit`, including when empty.
+
+### Changed
+- Scope `MREPhoneField` country updates to the dial button and reuse
+  `MREPhoneController.number` parsing for unchanged text, country and selection.
+
+## [0.3.1] - 2026-10-04
+
+### Fixed
+- Recognized international dial codes update the selected country during typing,
+  independently of number validity. Shared codes are refined as digits arrive.
+- `onCountryChanged` is emitted only when the selected ISO country changes.
+
+
+## [0.3.0] - 2026-10-04
+
+### Added
+- Ordinary `MRETextField` and `MREPhoneField` inputs paired with explicit
+  `MRETextFormField` and `MREPhoneFormField` form widgets. Phone forms save a
+  structured number and reset both country and digits; phone inputs accept decoration.
+- Unicode 17.0.0 direction data for all writing systems, a reproducible generator
+  and its Unicode license.
+- Custom in-field image presentation through `MREImageAttachmentPaste.builder`.
+
+### Changed
+- Image thumbnails now share the input border and appear above the text.
+
+### Fixed
+- Weak/neutral punctuation and combining marks no longer override text direction.
+- Decode supplementary characters correctly and skip isolated content.
+- Read-only/disabled input blocks suggestions and image mutations while preserving viewing.
+- Pending image replacement follows image identity; stale handlers and stopped web reads are ignored.
+- Preserve the default text selection menu when image paste is disabled.
+
+### Breaking
+- Form-only arguments moved from `MRETextField`/`MREPhoneField` to their
+  `*FormField` counterparts. Migrate existing form uses to those names.
+- Phone form keys now use `FormFieldState<MREPhoneNumber>`.
+- Custom `MREImagePasteScope` builders place `hooks.attachments` themselves;
+  the scope no longer appends a strip below the input.
+
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),

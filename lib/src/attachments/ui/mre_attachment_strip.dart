@@ -21,6 +21,9 @@ const double _thumbnailButtonSize = 40;
 
 /// Inset of the buttons from the thumbnail edge.
 const double _thumbnailButtonInset = 2;
+const double _thumbnailIconSize = 16;
+const double _thumbnailIconPadding = 4;
+const double _thumbnailTargetPadding = 8;
 
 /// Thumbnails of the images in a [MREAttachmentsController].
 ///
@@ -28,7 +31,7 @@ const double _thumbnailButtonInset = 2;
 /// button and, when [onReplace] is set, a replace button. It lays out from the
 /// width it gets and scrolls sideways when the images do not fit.
 ///
-/// [MRETextField] shows it under the field with `MREImageAttachmentPaste`.
+/// [MRETextField] shows it inside the field with `MREImageAttachmentPaste`.
 ///
 /// {@example /doc/snippets/attachments.dart#strip}
 ///
@@ -40,7 +43,11 @@ class MREAttachmentStrip extends StatelessWidget {
     required this.controller,
     this.onRemove,
     this.onReplace,
+    this.editable = true,
   });
+
+  /// Whether remove and replace controls are available. Opening remains enabled.
+  final bool editable;
 
   /// The images to show.
   final MREAttachmentsController controller;
@@ -86,12 +93,16 @@ class MREAttachmentStrip extends StatelessWidget {
                   label: tokens.strings.attachedImageLabel,
                   onOpen: () => MREImageViewer.show(
                     context,
-                    images: controller.images,
+                    images: List.of(controller.images),
                     initialIndex: index,
                     closeTooltip: tokens.strings.closeViewerTooltip,
                   ),
-                  onRemove: () => (onRemove ?? controller.removeAt)(index),
-                  onReplace: onReplace == null ? null : () => onReplace!(index),
+                  onRemove: editable
+                      ? () => (onRemove ?? controller.removeAt)(index)
+                      : null,
+                  onReplace: !editable || onReplace == null
+                      ? null
+                      : () => onReplace!(index),
                 ),
               ),
             );
@@ -122,7 +133,7 @@ class _Thumbnail extends StatelessWidget {
   final String replaceTooltip;
   final String label;
   final VoidCallback onOpen;
-  final VoidCallback onRemove;
+  final VoidCallback? onRemove;
   final VoidCallback? onReplace;
 
   @override
@@ -153,15 +164,16 @@ class _Thumbnail extends StatelessWidget {
               ),
             ),
           ),
-          PositionedDirectional(
-            top: _thumbnailButtonInset,
-            end: _thumbnailButtonInset,
-            child: _ThumbnailButton(
-              icon: Icons.close_rounded,
-              tooltip: removeTooltip,
-              onPressed: onRemove,
+          if (onRemove != null)
+            PositionedDirectional(
+              top: _thumbnailButtonInset,
+              end: _thumbnailButtonInset,
+              child: _ThumbnailButton(
+                icon: Icons.close_rounded,
+                tooltip: removeTooltip,
+                onPressed: onRemove!,
+              ),
             ),
-          ),
           if (onReplace != null)
             PositionedDirectional(
               bottom: _thumbnailButtonInset,
@@ -191,12 +203,26 @@ class _ThumbnailButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton.filledTonal(
-      icon: Icon(icon, size: 18),
+    final scheme = Theme.of(context).colorScheme;
+    return IconButton(
+      icon: DecoratedBox(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: scheme.surfaceContainerHighest,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(_thumbnailIconPadding),
+          child: Icon(
+            icon,
+            size: _thumbnailIconSize,
+            color: scheme.onSurfaceVariant,
+          ),
+        ),
+      ),
       tooltip: tooltip,
       onPressed: onPressed,
-      padding: EdgeInsets.zero,
-      // Without this the tap area grows to 48 px and covers the image.
+      padding: const EdgeInsets.all(_thumbnailTargetPadding),
+      // Keep a 40 px target while the visible control leaves the image clear.
       style: IconButton.styleFrom(
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),

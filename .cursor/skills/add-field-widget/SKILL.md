@@ -36,3 +36,12 @@ MRETextField(
 
 Document the path dependency snippet in README if not already present. Do not
 auto-edit the ledger repo unless the user asks.
+
+## Ordinary and form variants
+
+Keep `MRETextField` / `MREPhoneField` free of FormField registration and form-only
+parameters. Compose them inside `MRETextFormField` / `MREPhoneFormField` for
+validation, onSaved and reset; do not duplicate input behavior. Phone form values
+are structured `MREPhoneNumber`. Test save/reset, host controller ownership,
+controller replacement, localization, decoration overrides and locked input.
+Direction support is Unicode-wide; Arabic/English are illustrative samples.

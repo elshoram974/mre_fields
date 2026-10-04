@@ -1,17 +1,23 @@
-Texts and fields follow the language of their content, not the app locale.
-Arabic reads right to left, English left to right.
+Texts and fields support every Unicode writing system. Arabic and English are
+examples alongside Hebrew, Persian, Urdu, Cyrillic, Greek, Indic, CJK and
+supplementary-plane scripts. Font coverage remains the host application's job.
 
 ## How the direction is chosen
 
-The **first letter that has a direction** decides, so the first word with a
-letter wins. The rest of the text is ignored.
+The first strong Unicode Bidi_Class character (L, R or AL) decides. The data is
+pinned to Unicode 17.0.0, with no language allowlist. This detects direction,
+not the language of a sentence.
 
-- Numbers, symbols, spaces and emoji before it are skipped: `123 مرحبا` and
-  `(#1) مرحبا` are right to left.
-- Mixed text follows its first word: `Hello مرحبا` is left to right.
-- Text with no letter, such as `12345`, keeps the surrounding direction.
-- Only the first 256 code units are read, so long text costs the same as short
-  text.
+- Weak/neutral characters do not decide: `،Hello` is LTR and `。שלום` is RTL.
+- Combining marks and emoji are skipped; isolated content does not decide the
+  outer direction. Some punctuation, such as Arabic `؟`, is strong in Unicode
+  and retains its assigned direction.
+- Mixed text follows its first strong character; an explicit direction wins.
+- Without a strong character, widgets keep ambient direction; pure helpers use
+  their explicit fallback (LTR by default).
+- Only the first 256 UTF-16 code units are read, decoding complete pairs only.
+  Letters beyond the cap are ignored. This is a bounded paragraph-direction
+  heuristic; Flutter handles visual bidirectional layout.
 
 <!-- snippet: detect -->
 ```dart

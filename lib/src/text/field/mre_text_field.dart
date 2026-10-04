@@ -8,17 +8,18 @@ import '../../theme/mre_window_size.dart';
 import '../../internal/mre_owned.dart';
 import 'mre_safe_text_editing_controller.dart';
 import 'mre_text_field_decoration.dart';
+import 'mre_text_composer.dart';
 import 'mre_text_field_flags.dart';
 import 'mre_text_field_suggestions.dart';
 
 /// A text field that follows the language of what the user types.
 ///
-/// The text direction changes while the user types: Arabic reads right to
-/// left, English left to right. Set [textDirection] to lock it. The field also
-/// offers a clear button, select-all on focus, and suggestions.
+/// Direction follows the first strong Unicode character while typing, across
+/// all writing systems. Set [textDirection] to lock it. The field also offers
+/// a clear button, select-all on focus, and suggestions.
 ///
-/// It sits inside a [Form] like a [TextFormField], and takes the colors, fonts
-/// and borders of your `ThemeData`.
+/// It is a standalone [TextField]. Use `MRETextFormField` for validation,
+/// saving and resetting inside a [Form]. Both inherit your `ThemeData`.
 ///
 /// {@example /doc/snippets/text_field.dart#basic}
 ///
@@ -44,7 +45,6 @@ class MRETextField extends StatefulWidget {
   /// Creates a text field.
   const MRETextField({
     super.key,
-    this.fieldKey,
     this.controller,
     this.initialValue,
     this.focusNode,
@@ -65,12 +65,9 @@ class MRETextField extends StatefulWidget {
     this.minLines,
     this.maxLength,
     this.expands = false,
-    this.validator,
-    this.autovalidateMode = AutovalidateMode.onUserInteraction,
     this.onChanged,
     this.onEditingComplete,
     this.onFieldSubmitted,
-    this.onSaved,
     this.onTap,
     this.onTapOutside,
     this.textInputAction,
@@ -97,9 +94,6 @@ class MRETextField extends StatefulWidget {
     this.imagePaste = const MRENoImagePaste(),
   });
 
-  /// Key of the inner [FormField], to validate without a parent [Form].
-  final GlobalKey<FormFieldState<String>>? fieldKey;
-
   /// The text controller. The field creates and disposes its own when null.
   final TextEditingController? controller;
 
@@ -122,7 +116,7 @@ class MRETextField extends StatefulWidget {
   /// Text shown under the field.
   final String? helperText;
 
-  /// Error shown under the field. Wins over [validator] messages.
+  /// Error shown under the field. Form variants use this to display validation.
   final String? errorText;
 
   /// Widget before the input, inside the border.
@@ -163,12 +157,6 @@ class MRETextField extends StatefulWidget {
   /// See [TextField.expands].
   final bool expands;
 
-  /// Checks the text. Return an error message, or null when it is valid.
-  final FormFieldValidator<String>? validator;
-
-  /// When [validator] runs. Defaults to after the user interacts.
-  final AutovalidateMode autovalidateMode;
-
   /// Called on every change, also when the clear button or a suggestion
   /// changes the text.
   final ValueChanged<String>? onChanged;
@@ -178,9 +166,6 @@ class MRETextField extends StatefulWidget {
 
   /// Called when the user submits the field.
   final ValueChanged<String>? onFieldSubmitted;
-
-  /// See [FormField.onSaved].
-  final FormFieldSetter<String>? onSaved;
 
   /// See [TextField.onTap].
   final GestureTapCallback? onTap;
@@ -354,11 +339,13 @@ class _MRETextFieldState extends State<MRETextField> {
   }
 
   void _clear() {
+    if (!widget.enabled || widget.readOnly) return;
     _text.clear();
     widget.onChanged?.call('');
   }
 
   void _pick(String suggestion) {
+    if (!widget.enabled || widget.readOnly) return;
     _setText(suggestion);
     widget.onChanged?.call(suggestion);
     widget.onSuggestionSelected?.call(suggestion);
@@ -374,6 +361,7 @@ class _MRETextFieldState extends State<MRETextField> {
         final size = tokens.windowSizeFor(constraints.maxWidth);
         final field = MREImagePasteScope(
           behavior: widget.imagePaste,
+          enabled: widget.enabled && !widget.readOnly,
           builder: (context, hooks) =>
               ValueListenableBuilder<MRETextFieldFlags>(
                 valueListenable: _flags,
@@ -383,7 +371,7 @@ class _MRETextFieldState extends State<MRETextField> {
         );
 
         final suggestions = widget.suggestions;
-        if (suggestions == null) {
+        if (suggestions == null || !widget.enabled || widget.readOnly) {
           return field;
         }
         return Column(
@@ -413,11 +401,17 @@ class _MRETextFieldState extends State<MRETextField> {
   ) {
     final multiline = widget.maxLines == null || widget.maxLines! > 1;
 
-    return TextFormField(
-      key: widget.fieldKey,
+    final decoration = _decoration(theme, tokens, size, flags);
+    final attachments = hooks.attachments;
+    final field = TextField(
       controller: _text,
       focusNode: _focusNode,
-      decoration: _decoration(theme, tokens, size, flags),
+      decoration: attachments == null
+          ? decoration
+          : InputDecoration.collapsed(
+              hintText: decoration.hintText,
+              hintStyle: decoration.hintStyle,
+            ),
       style: widget.style,
       textAlign: widget.textAlign ?? TextAlign.start,
       textDirection: widget.textDirection ?? flags.direction,
@@ -425,12 +419,9 @@ class _MRETextFieldState extends State<MRETextField> {
       minLines: widget.minLines,
       maxLength: widget.maxLength,
       expands: widget.expands,
-      validator: widget.validator,
-      autovalidateMode: widget.autovalidateMode,
       onChanged: widget.onChanged,
       onEditingComplete: widget.onEditingComplete,
-      onFieldSubmitted: widget.onFieldSubmitted,
-      onSaved: widget.onSaved,
+      onSubmitted: widget.onFieldSubmitted,
       onTap: widget.onTap,
       onTapOutside: widget.onTapOutside,
       textInputAction:
@@ -449,7 +440,19 @@ class _MRETextFieldState extends State<MRETextField> {
       cursorColor: widget.cursorColor,
       mouseCursor: widget.mouseCursor,
       contentInsertionConfiguration: hooks.contentInsertionConfiguration,
-      contextMenuBuilder: hooks.contextMenuBuilder,
+      contextMenuBuilder:
+          hooks.contextMenuBuilder ??
+          (context, state) => AdaptiveTextSelectionToolbar.editableText(
+            editableTextState: state,
+          ),
+    );
+    if (attachments == null) return field;
+    return MRETextComposer(
+      decoration: decoration.copyWith(enabled: widget.enabled),
+      focusNode: _focusNode,
+      attachments: attachments,
+      expands: widget.expands,
+      child: field,
     );
   }
 

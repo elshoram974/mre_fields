@@ -78,6 +78,15 @@ void main() {
     expect(received, isEmpty);
   });
 
+  test('stopping drops a file read already in flight', () async {
+    final received = <MREPastedImage>[];
+    final stop = mreListenForPastedImages(received.add);
+    _firePaste();
+    stop();
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+    expect(received, isEmpty);
+  });
+
   test('stopping removes the listener', () async {
     final received = <MREPastedImage>[];
     final stop = mreListenForPastedImages(received.add);

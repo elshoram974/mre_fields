@@ -1,14 +1,17 @@
 import 'package:flutter/widgets.dart';
 
+import 'mre_bidi_data.dart';
+
 /// Number of UTF-16 code units [detectTextDirection] reads before it gives up
 /// and returns the fallback. Keeps the cost constant for very long text.
 const int mreDirectionScanLimit = 256;
 
-/// Returns the direction of the first strongly directional letter in [text],
+/// Returns the direction of the first strongly directional character in [text],
 /// or null when there is none.
 ///
-/// Letters decide the direction. Digits, spaces, punctuation and emoji are
-/// skipped, so the answer comes from the first word that has a letter. Only
+/// Uses Unicode 17.0.0 Bidi_Class for every writing system, including
+/// supplementary planes. Weak/neutral characters and nonspacing marks
+/// do not decide the direction. This detects direction, not language. Only
 /// the first [mreDirectionScanLimit] code units are read.
 ///
 /// {@category Text}
@@ -17,22 +20,40 @@ TextDirection? detectStrongTextDirection(String text) {
       ? text.length
       : mreDirectionScanLimit;
 
+  var isolateDepth = 0;
   for (var i = 0; i < end; i++) {
-    final unit = text.codeUnitAt(i);
-    if (_isStrongRtl(unit)) {
-      return TextDirection.rtl;
+    var rune = text.codeUnitAt(i);
+    if (rune >= 0xD800 && rune <= 0xDBFF && i + 1 < end) {
+      final low = text.codeUnitAt(i + 1);
+      if (low >= 0xDC00 && low <= 0xDFFF) {
+        rune = 0x10000 + ((rune - 0xD800) << 10) + low - 0xDC00;
+        i++;
+      }
     }
-    if (_isStrongLtr(unit)) {
-      return TextDirection.ltr;
+    // UAX #9 P2: isolated content does not decide the outer direction.
+    if (rune >= 0x2066 && rune <= 0x2068) {
+      isolateDepth++;
+      continue;
+    }
+    if (rune == 0x2069) {
+      if (isolateDepth > 0) isolateDepth--;
+      continue;
+    }
+    if (isolateDepth > 0) continue;
+    switch (mreStrongBidiClass(rune)) {
+      case 1:
+        return TextDirection.ltr;
+      case 2:
+        return TextDirection.rtl;
     }
   }
   return null;
 }
 
-/// Returns the direction of the first strongly directional letter in [text].
+/// Returns the direction of the first strongly directional character in [text].
 ///
-/// The first word that has a letter decides, not the whole text and not a
-/// leading number or symbol. When [text] has no such letter within
+/// Uses the first L, R or AL character outside isolates. Weak and neutral
+/// characters are skipped. When [text] has no strong character within
 /// [mreDirectionScanLimit] code units, [fallback] is returned.
 ///
 /// {@example /doc/snippets/text.dart#detect}
@@ -50,51 +71,18 @@ TextDirection detectTextDirection(
   return detectStrongTextDirection(text) ?? fallback;
 }
 
-// Ranges follow the Closure/intl heuristic, with the Arabic-Indic digits and
-// the emoji planes treated as neutral.
-bool _isStrongRtl(int unit) {
-  return (unit >= 0x0591 &&
-          unit <= 0x06EF &&
-          !(unit >= 0x0660 && unit <= 0x0669)) ||
-      (unit >= 0x06FA && unit <= 0x08FF) ||
-      unit == 0x200F ||
-      unit == 0x202B ||
-      unit == 0x202E ||
-      (unit >= 0xFB1D && unit <= 0xFDFF) ||
-      (unit >= 0xFE70 && unit <= 0xFEFC) ||
-      (unit >= 0xD802 && unit <= 0xD803) ||
-      (unit >= 0xD83A && unit <= 0xD83B);
-}
-
-bool _isStrongLtr(int unit) {
-  return (unit >= 0x41 && unit <= 0x5A) ||
-      (unit >= 0x61 && unit <= 0x7A) ||
-      (unit >= 0xC0 && unit <= 0xD6) ||
-      (unit >= 0xD8 && unit <= 0xF6) ||
-      (unit >= 0xF8 && unit <= 0x2B8) ||
-      (unit >= 0x300 && unit <= 0x590) ||
-      (unit >= 0x900 && unit <= 0x1FFF) ||
-      unit == 0x200E ||
-      (unit >= 0x2C00 && unit <= 0xD801) ||
-      (unit >= 0xD804 && unit <= 0xD839) ||
-      (unit >= 0xD840 && unit <= 0xDBFF) ||
-      (unit >= 0xF900 && unit <= 0xFB1C) ||
-      (unit >= 0xFE00 && unit <= 0xFE6F) ||
-      (unit >= 0xFEFD && unit <= 0xFFFF);
-}
-
 /// Direction checks on [String].
 ///
 /// {@category Text}
 extension MRETextDirection on String {
-  /// The direction of the first strong letter, or [TextDirection.ltr] when
+  /// The direction of the first strong character, or [TextDirection.ltr] when
   /// there is none. Same as [detectTextDirection].
   TextDirection get textDirection => detectTextDirection(this);
 
-  /// Whether the first strong letter reads right to left.
+  /// Whether the first strong character reads right to left.
   bool get isRtl => textDirection == TextDirection.rtl;
 
-  /// The direction of the first strong letter, or [fallback] when there is
+  /// The direction of the first strong character, or [fallback] when there is
   /// none.
   TextDirection directionOr(TextDirection fallback) {
     return detectTextDirection(this, fallback: fallback);

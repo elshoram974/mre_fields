@@ -9,7 +9,7 @@ void saveNumber(String e164) {}
 /// A phone field that reports valid numbers.
 Widget basicPhone() {
   // #region basic
-  final field = MREPhoneField(
+  final field = MREPhoneFormField(
     labelText: 'Phone number',
     onChanged: (number) {
       if (number.isValid) {
@@ -31,7 +31,7 @@ Widget gulfOnly() {
     initial: 'SA',
   );
 
-  final field = MREPhoneField(selection: selection);
+  final field = MREPhoneFormField(selection: selection);
   // #endregion selection
 
   return field;
@@ -40,7 +40,7 @@ Widget gulfOnly() {
 /// Every country except one.
 Widget everyoneButOne() {
   // #region exclude
-  final field = MREPhoneField(
+  final field = MREPhoneFormField(
     selection: const MRECountrySelection(exclude: {'IL'}),
   );
   // #endregion exclude
@@ -132,7 +132,7 @@ Future<MRECountry?> choose(BuildContext context) {
 Widget withPhoneController(MREPhoneController controller) {
   // #region controller
   // Create the controller in initState and dispose it in dispose.
-  final field = MREPhoneField(controller: controller, labelText: 'Phone');
+  final field = MREPhoneFormField(controller: controller, labelText: 'Phone');
 
   controller.setNumber('+966 50 123 4567'); // sets the country and the digits
   final number = controller.number(); // an MREPhoneNumber
@@ -144,7 +144,7 @@ Widget withPhoneController(MREPhoneController controller) {
 /// Arabic country names and messages.
 Widget arabicPhone() {
   // #region translate
-  final field = MREPhoneField(
+  final field = MREPhoneFormField(
     labelText: 'رقم الهاتف',
     countryNameBuilder: (country) =>
         arabicNames[country.isoCode] ?? country.name,
@@ -160,7 +160,7 @@ Widget arabicPhone() {
   );
   // #endregion translate
 
-  return strings.phoneEmpty.isEmpty ? const SizedBox() : field;
+  return strings.phoneEmpty.isEmpty ? SizedBox() : field;
 }
 
 /// Names for the countries a demo shows.
@@ -171,7 +171,7 @@ Widget phoneForm(GlobalKey<FormState> formKey) {
   // #region form
   final form = Form(
     key: formKey,
-    child: const MREPhoneField(labelText: 'Phone number', required: true),
+    child: MREPhoneFormField(labelText: 'Phone number', required: true),
   );
   // #endregion form
 

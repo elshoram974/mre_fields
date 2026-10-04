@@ -12,8 +12,7 @@ import 'mre_paste_image_menu.dart';
 import 'paste_events_stub.dart'
     if (dart.library.js_interop) 'paste_events_web.dart';
 
-/// Space between the field and the attached images.
-const double _stripGap = 8;
+const double _attachmentsSpacing = 12;
 
 /// The text field parameters that carry image paste.
 ///
@@ -27,7 +26,11 @@ class MREImagePasteHooks {
   const MREImagePasteHooks({
     this.contentInsertionConfiguration,
     this.contextMenuBuilder,
+    this.attachments,
   });
+
+  /// Optional attachments, to place inside the host input decoration.
+  final Widget? attachments;
 
   /// No hooks. Used when the behaviour accepts no images.
   static const MREImagePasteHooks none = MREImagePasteHooks();
@@ -46,7 +49,7 @@ typedef MREImagePasteBuilder =
 /// Adds image paste to a text field.
 ///
 /// It handles the paste shortcut and the on-screen keyboard, adds a "paste
-/// image" item to the selection menu, and shows the attached images under the
+/// image" item to the selection menu, and shows the attached images inside the
 /// field when the [behavior] asks for it. A normal text paste is never
 /// replaced: the shortcut pastes text when the clipboard holds text.
 ///
@@ -64,7 +67,11 @@ class MREImagePasteScope extends StatefulWidget {
     super.key,
     required this.behavior,
     required this.builder,
+    this.enabled = true,
   });
+
+  /// Whether user actions may change images. Existing images remain visible.
+  final bool enabled;
 
   /// What to do with pasted images.
   final MREImagePasteBehavior behavior;
@@ -80,6 +87,9 @@ class _MREImagePasteScopeState extends State<MREImagePasteScope> {
   /// The controller the scope keeps when the behaviour gives none.
   MREOwned<MREAttachmentsController>? _own;
 
+  int _generation = 0;
+  bool _hasFocus = false;
+
   /// Stops the web `paste` listener. Null while the field has no focus.
   VoidCallback? _stopPasteEvents;
 
@@ -88,11 +98,18 @@ class _MREImagePasteScopeState extends State<MREImagePasteScope> {
   MREAttachmentsController? get _controller =>
       _behavior.attachments?.controller ?? _own?.value;
 
-  MREImagePasteHandler get _handler => MREImagePasteHandler(
-    behavior: _behavior,
-    controller: _controller,
-    isActive: () => mounted,
-  );
+  MREImagePasteHandler get _handler {
+    final generation = _generation;
+    return MREImagePasteHandler(
+      behavior: _behavior,
+      controller: _controller,
+      isActive: () =>
+          mounted &&
+          widget.enabled &&
+          _behavior.acceptsImages &&
+          generation == _generation,
+    );
+  }
 
   @override
   void initState() {
@@ -103,7 +120,12 @@ class _MREImagePasteScopeState extends State<MREImagePasteScope> {
   @override
   void didUpdateWidget(MREImagePasteScope oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _syncOwnController();
+    if (oldWidget.behavior != widget.behavior ||
+        oldWidget.enabled != widget.enabled) {
+      _generation++;
+      _syncOwnController();
+      _onFocusChange(_hasFocus);
+    }
   }
 
   @override
@@ -130,9 +152,10 @@ class _MREImagePasteScopeState extends State<MREImagePasteScope> {
   /// `paste` event. Listen for it only while the field has focus, so two fields
   /// never both take the same image.
   void _onFocusChange(bool hasFocus) {
+    _hasFocus = hasFocus;
     _stopPasteEvents?.call();
     _stopPasteEvents = null;
-    if (hasFocus) {
+    if (hasFocus && widget.enabled && _behavior.acceptsImages) {
       final handler = _handler;
       _stopPasteEvents = mreListenForPastedImages(
         (image) => handler.accept(
@@ -164,43 +187,78 @@ class _MREImagePasteScopeState extends State<MREImagePasteScope> {
 
     final handler = _handler;
     final strings = MREFieldsTheme.of(context).strings;
-    final field = Actions(
-      actions: {PasteTextIntent: MREPasteImageAction(handler)},
-      child: _focusScope(
-        widget.builder(
-          context,
-          MREImagePasteHooks(
-            contentInsertionConfiguration: ContentInsertionConfiguration(
+    final config = _behavior.attachments;
+    final controller = _controller;
+    final attachments = config == null || controller == null
+        ? null
+        : ListenableBuilder(
+            listenable: controller,
+            builder: (context, _) {
+              if (controller.isEmpty &&
+                  !config.showCounter &&
+                  config.builder == null) {
+                return const SizedBox.shrink();
+              }
+              final presentation = MREAttachmentsPresentation(
+                controller: controller,
+                maxImages: config.maxImages,
+                onRemove: widget.enabled ? handler.remove : null,
+                onReplace: widget.enabled && config.allowReplace
+                    ? handler.replace
+                    : null,
+              );
+              final content =
+                  config.builder?.call(context, presentation) ??
+                  MREAttachmentStrip(
+                    controller: controller,
+                    editable: widget.enabled,
+                    onRemove: presentation.onRemove,
+                    onReplace: presentation.onReplace,
+                  );
+              return Padding(
+                padding: const EdgeInsets.only(bottom: _attachmentsSpacing),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (!controller.isEmpty || config.builder != null) content,
+                    if (config.showCounter)
+                      Align(
+                        alignment: AlignmentDirectional.centerEnd,
+                        child: Text(
+                          '${controller.images.length} / ${config.maxImages}',
+                          textDirection: TextDirection.ltr,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ),
+                  ],
+                ),
+              );
+            },
+          );
+    final hooks = MREImagePasteHooks(
+      attachments: attachments,
+      contentInsertionConfiguration: widget.enabled
+          ? ContentInsertionConfiguration(
               allowedMimeTypes: _behavior.allowedMimeTypes,
               onContentInserted: handler.keyboardContent,
-            ),
-            contextMenuBuilder: (context, state) => MREPasteImageMenu(
+            )
+          : null,
+      contextMenuBuilder: widget.enabled
+          ? (context, state) => MREPasteImageMenu(
               state: state,
               handler: handler,
               label: strings.pasteImageLabel,
-            ),
-          ),
-        ),
-      ),
+            )
+          : null,
     );
-
-    final config = _behavior.attachments;
-    final controller = _controller;
-    if (config == null || controller == null) {
-      return field;
-    }
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        field,
-        const SizedBox(height: _stripGap),
-        MREAttachmentStrip(
-          controller: controller,
-          onRemove: handler.remove,
-          onReplace: config.allowReplace ? handler.replace : null,
-        ),
-      ],
+    return TextFieldTapRegion(
+      child: Actions(
+        actions: {
+          if (widget.enabled) PasteTextIntent: MREPasteImageAction(handler),
+        },
+        child: _focusScope(widget.builder(context, hooks)),
+      ),
     );
   }
 }

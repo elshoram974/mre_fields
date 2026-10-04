@@ -1,6 +1,6 @@
-`MRETextField` is a `TextFormField` that follows the language of what the user
-types. It takes the colors, fonts and borders of your `ThemeData`, and every
-value can be changed for one field.
+`MRETextField` is an ordinary input with Unicode-wide direction, suggestions,
+clear and optional in-field images. `MRETextFormField` composes it with validation,
+saving and reset. Both take the host's theme and the same appearance parameters.
 
 ## Basic field
 
@@ -53,7 +53,7 @@ final field = MRETextField(
 ```dart
 final form = Form(
   key: formKey,
-  child: MRETextField(
+  child: MRETextFormField(
     labelText: 'Name',
     validator: (value) {
       if (value == null || value.trim().isEmpty) {
@@ -132,3 +132,10 @@ final bar = MRESuggestionBar(
   onSelected: (city) => controller.text = city,
 );
 ```
+
+## Form lifecycle
+
+`MRETextFormField` adds `validator`, `onSaved`, `onReset`, `autovalidateMode` and
+`fieldKey`. The ordinary `MRETextField` has no form registration. Both support
+`imagePaste`. Reset restores the text; attachments have their own controller.
+Use `onReset: attachments.clear` if your form should also clear its images.

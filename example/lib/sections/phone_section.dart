@@ -38,13 +38,13 @@ class _PhoneSectionState extends State<PhoneSection> {
     return SectionCard(
       title: 'Phone number',
       subtitle:
-          'Checked for every country. Paste a number with its dial code and the '
+          'Checked for every country. Type or paste a number with its dial code and the '
           'country follows.',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: 16,
         children: [
-          MREPhoneField(
+          MREPhoneFormField(
             controller: _controller,
             labelText: 'Phone number',
             showClearButton: true,
@@ -63,8 +63,8 @@ class _PhoneSectionState extends State<PhoneSection> {
             ],
           ),
           PhoneResult(number: _number),
-          const Divider(),
-          const MREPhoneField(
+          Divider(),
+          MREPhoneFormField(
             labelText: 'Gulf numbers only',
             selection: MRECountrySelection(
               include: {'SA', 'AE', 'KW', 'QA', 'BH', 'OM'},

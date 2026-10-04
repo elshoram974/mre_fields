@@ -21,7 +21,7 @@ void main() {
   testWidgets('basic: reports a valid number as E.164', (tester) async {
     await tester.pumpWidget(_host(basicPhone()));
 
-    expect(find.byType(MREPhoneField), findsOneWidget);
+    expect(find.byType(MREPhoneFormField), findsOneWidget);
     await tester.enterText(find.byType(TextField), '+201012345678');
     await tester.pump();
 

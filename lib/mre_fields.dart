@@ -1,4 +1,4 @@
-/// Flutter form fields that follow the language being typed, check phone
+/// Flutter ordinary and form fields with Unicode-wide direction, checking phone
 /// numbers for every country, and accept pasted images.
 ///
 /// Fields use the colors and fonts of your `ThemeData`. Add the field-only
@@ -32,9 +32,9 @@
 ///  * **Text**: [detectTextDirection], [detectStrongTextDirection],
 ///    [MREAutoText], [MREAutoDirectionText], [MRETextDirection],
 ///    [MREDirectionalWidget], [safeDisplayText].
-///  * **Fields**: [MRETextField], [MRESuggestionBar], [MREFieldClearButton],
+///  * **Fields**: [MRETextField], [MRETextFormField], [MRESuggestionBar], [MREFieldClearButton],
 ///    [MRESafeTextEditingController], [mreFilterSuggestions].
-///  * **Phone**: [MREPhoneField], [MREPhoneController], [MREPhoneNumber],
+///  * **Phone**: [MREPhoneField], [MREPhoneFormField], [MREPhoneController], [MREPhoneNumber],
 ///    [MREPhoneError], [MREPhoneValidators], [MRECountrySelection],
 ///    [MRECountry], [MRECountries], [showMRECountryPicker],
 ///    [MRECountryPickerBody], [MREPhoneInputFormatter].
@@ -72,3 +72,6 @@ export 'src/text/direction/text_direction.dart';
 export 'src/theme/mre_fields_strings.dart';
 export 'src/theme/mre_fields_theme.dart';
 export 'src/theme/mre_window_size.dart';
+
+export 'src/text/field/mre_text_form_field.dart';
+export 'src/phone/field/mre_phone_form_field.dart';

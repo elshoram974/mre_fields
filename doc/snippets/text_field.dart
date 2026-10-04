@@ -48,7 +48,7 @@ Widget nameForm(GlobalKey<FormState> formKey) {
   // #region form
   final form = Form(
     key: formKey,
-    child: MRETextField(
+    child: MRETextFormField(
       labelText: 'Name',
       validator: (value) {
         if (value == null || value.trim().isEmpty) {

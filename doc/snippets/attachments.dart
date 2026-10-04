@@ -13,7 +13,7 @@ void upload(Uint8List bytes) {}
 void showError(MREImageRejection reason) {}
 
 /// The images the last field reported.
-List<MREPastedImage> attached = const [];
+List<MREPastedImage> attached = [];
 
 /// The three behaviours side by side.
 Widget behaviorsExample() {
@@ -29,7 +29,7 @@ Widget behaviorsExample() {
     ),
   );
 
-  // Images appear under the field.
+  // Images appear inside the field.
   const attachments = MRETextField(
     labelText: 'Message',
     imagePaste: MREImageAttachmentPaste(),
@@ -39,20 +39,20 @@ Widget behaviorsExample() {
   return Column(children: [textOnly, callback, attachments]);
 }
 
-/// The shortest way to keep pasted images under a field.
+/// The shortest way to keep pasted images inside a field.
 Widget quickAttachments() {
   // #region quick
   final field = MRETextField(
     labelText: 'Message',
     maxLines: 3,
-    imagePaste: MREImageAttachmentPaste(maxImages: 4),
+    imagePaste: MREImageAttachmentPaste(maxImages: 4, showCounter: true),
   );
   // #endregion quick
 
   return field;
 }
 
-/// A field that keeps up to four images under itself.
+/// A field that keeps up to four images inside its border.
 Widget attachmentsField() {
   // #region attachments
   final field = MRETextField(
@@ -119,7 +119,9 @@ Widget stripAlone(MREAttachmentsController controller) {
 Widget scopeOnPlainField() {
   // #region scope
   final field = MREImagePasteScope(
-    behavior: MREImageAttachmentPaste(),
+    behavior: MREImageCallbackPaste(
+      onImagePasted: (image) => upload(image.bytes),
+    ),
     builder: (context, hooks) => TextField(
       contentInsertionConfiguration: hooks.contentInsertionConfiguration,
       contextMenuBuilder: hooks.contextMenuBuilder,
@@ -127,5 +129,40 @@ Widget scopeOnPlainField() {
   );
   // #endregion scope
 
+  return field;
+}
+
+/// The host controls thumbnail layout and uses the supplied edit actions.
+Widget customAttachments(MREAttachmentsController controller) {
+  // #region custom
+  final field = MRETextField(
+    labelText: 'Message',
+    imagePaste: MREImageAttachmentPaste(
+      controller: controller,
+      builder: (context, presentation) => Wrap(
+        spacing: 8,
+        children: [
+          for (var index = 0; index < presentation.controller.count; index++)
+            InputChip(
+              avatar: Image.memory(
+                presentation.controller.images[index].bytes,
+                width: 24,
+                height: 24,
+                cacheWidth: 96,
+                errorBuilder: (context, error, stack) =>
+                    const Icon(Icons.image_not_supported_outlined),
+              ),
+              label: Text(
+                presentation.controller.images[index].name ?? 'Image',
+              ),
+              onDeleted: presentation.onRemove == null
+                  ? null
+                  : () => presentation.onRemove!(index),
+            ),
+        ],
+      ),
+    ),
+  );
+  // #endregion custom
   return field;
 }

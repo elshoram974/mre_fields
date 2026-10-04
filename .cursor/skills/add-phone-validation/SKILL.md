@@ -27,7 +27,7 @@ lib/src/phone/
 1. **A rule about numbers** goes in `model/` as a pure function or class. Test it with `test/src/phone/model/`, no widgets.
 2. **A new error reason**: add it to `MREPhoneError`, to `MREFieldsStrings` (default English, `copyWith`, `==`, `hashCode`, the uniqueness test), and to `MREPhoneErrorText.phoneError` (the `switch` is exhaustive, so the compiler tells you).
 3. **A new country** appears when `phone_numbers_parser` adds a region. Regenerate `mre_country_names.dart` from `Intl.DisplayNames(['en'], {type: 'region'})` for every `IsoCode`; `mre_country_test.dart` fails if a name is missing.
-4. **Field behaviour**: keep logic in `MREPhoneController`/`MREPhoneNumber`; the widget only wires. Typed-versus-pasted detection compares the text length before and after.
+4. **Field behaviour**: keep logic in `MREPhoneController`/`MREPhoneNumber`; the widget only wires. Recognized dial codes update the country during typing, even for incomplete or invalid numbers. Shared codes remain provisional until enough digits arrive. Typed-versus-pasted detection only controls when the prefix is removed, not whether the country updates.
 5. **Picker**: the body stays reusable (`MRECountryPickerBody`); `showMRECountryPicker` only chooses sheet or dialog.
 6. **Docs**: snippet in `doc/snippets/phone.dart`, guide `doc/phone.md`, test in `test/doc/phone_snippets_test.dart`, preview in `lib/src/previews/mre_phone_previews.dart`, example in `example/lib/sections/phone_section.dart`, GIF scenario `phone` in `tool/demo/record.mjs`.
 

@@ -97,10 +97,12 @@ if (scenario === 'text') {
   await type('501234567', 100);
   frames[frames.length - 1].ms = 1800;
 } else if (scenario === 'paste') {
+  CLIP = { x: 0, y: 0, width: 640, height: 520 };
   const FIELD = [320, 150];
   await snap(1000);
   await click(...FIELD);
   await snap(500);
+  await away();
   await type('Look at these');
   frames[frames.length - 1].ms = 700;
   for (const hue of [190, 28, 285]) {
@@ -108,7 +110,19 @@ if (scenario === 'text') {
     await sleep(900);
     await snap(1100);
   }
-  await snap(900);
+  // Coordinates checked against the rendered composer at 640x520.
+  await click(165, 170);
+  await away();
+  await sleep(600);
+  await snap(1000);
+  await click(608, 28);
+  await away();
+  await sleep(600);
+  await snap(600);
+  await click(423, 134);
+  await away();
+  await sleep(600);
+  await snap(1200);
 }
 writeFileSync(`${outDir}/frames.json`, JSON.stringify(frames));
 console.log(scenario, 'frames', frames.length);

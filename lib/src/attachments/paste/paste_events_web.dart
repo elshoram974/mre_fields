@@ -16,7 +16,9 @@ import '../model/mre_pasted_image.dart';
 ///
 /// Returns a function that stops listening.
 VoidCallback mreListenForPastedImages(ValueChanged<MREPastedImage> onImage) {
+  var active = true;
   void handle(web.Event event) {
+    if (!active) return;
     final data = (event as web.ClipboardEvent).clipboardData;
     if (data == null || data.getData('text/plain').isNotEmpty) {
       return;
@@ -30,6 +32,7 @@ VoidCallback mreListenForPastedImages(ValueChanged<MREPastedImage> onImage) {
       }
       event.preventDefault();
       file.arrayBuffer().toDart.then((buffer) {
+        if (!active) return;
         onImage(
           MREPastedImage(
             bytes: buffer.toDart.asUint8List(),
@@ -43,5 +46,8 @@ VoidCallback mreListenForPastedImages(ValueChanged<MREPastedImage> onImage) {
 
   final listener = handle.toJS;
   web.document.addEventListener('paste', listener);
-  return () => web.document.removeEventListener('paste', listener);
+  return () {
+    active = false;
+    web.document.removeEventListener('paste', listener);
+  };
 }

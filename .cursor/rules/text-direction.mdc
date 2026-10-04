@@ -11,11 +11,22 @@ One detection function powers everything: field, `Text` helper, plain `String`.
 
 | Layer | Public name (proposed) | Notes |
 |---|---|---|
-| Pure function | `detectTextDirection(String, {TextDirection fallback})` | No Flutter widgets. First strong character wins (UAX #9 P2/P3), early exit, scan cap (e.g. 64 chars). |
+| Pure function | `detectTextDirection(String, {TextDirection fallback})` | No Flutter widgets. First strong character wins (UAX #9 P2/P3), early exit, scan cap (256 UTF-16 code units). |
 | String extension | `String.textDirection`, `String.isRtl`, `String.autoTextAlign` | Thin wrappers over the function. |
 | Text helper | `Text.autoDirection(...)` / `MREAutoText(...)` | Sets `textDirection` + `textAlign` from content unless the caller passes them. |
 | Widget extension | `Widget.withTextDirection(String sample)` | Wraps in `Directionality` only when direction differs from ambient. |
 | Field | `MRETextField` | Live direction while typing; locks only when `textDirection` param is set. |
+
+## Scope and Unicode data
+
+Support every Unicode writing system; Arabic and English are examples, never a
+language allowlist. Detect direction, not language. Use pinned Unicode 17.0.0
+Bidi_Class L/R/AL tables, including supplementary code points and @missing
+properties. Regenerate with `tool/generate_bidi_data.py`; retain
+`UNICODE-LICENSE.txt`. Do not hand-maintain broad character/script ranges.
+Skip weak/neutral characters, combining marks and isolated content. Strong
+Unicode punctuation retains its assigned direction. Malformed surrogate halves
+are neutral; never split a pair into a directional character at the scan cap.
 
 ## Behaviour rules
 
@@ -34,3 +45,7 @@ One detection function powers everything: field, `Text` helper, plain `String`.
 ## Tests (pure, no pump needed)
 
 Empty, Arabic, English, Hebrew, Persian/Urdu, digits-only, `"123 مرحبا"`, `"hello مرحبا"`, emoji-first, leading space, very long string (assert it stays under a few ms), unpaired surrogate.
+
+Regression cases: Arabic comma + Latin; CJK punctuation + RTL; combining marks;
+variation selectors and joined emoji; Cyrillic, Greek, Indic, Southeast Asian,
+CJK and RTL scripts; astral L/R scripts; isolate nesting; scan-cap pairs.

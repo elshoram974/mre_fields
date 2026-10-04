@@ -16,6 +16,18 @@ Widget _host(Widget child) {
 }
 
 void main() {
+  testWidgets('custom presentation uses the supplied removal action', (
+    tester,
+  ) async {
+    final controller = MREAttachmentsController(images: [png()]);
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(_host(customAttachments(controller)));
+    expect(find.byType(InputChip), findsOneWidget);
+    await tester.tap(find.byTooltip('Delete'));
+    await tester.pump();
+    expect(controller.isEmpty, isTrue);
+  });
+
   testWidgets('behaviors: three fields, one for each behaviour', (
     tester,
   ) async {
@@ -32,7 +44,7 @@ void main() {
       MREImageAttachmentPaste,
     ]);
     expect(find.byType(Image), findsNothing, reason: 'no image yet');
-    expect(tester.getSize(find.byType(MREAttachmentStrip)).height, 0);
+    expect(find.byType(MREAttachmentStrip), findsNothing);
   });
 
   testWidgets('attachments: limits are the ones in the example', (

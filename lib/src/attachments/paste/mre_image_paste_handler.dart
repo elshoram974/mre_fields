@@ -37,6 +37,7 @@ final class MREImagePasteHandler {
   /// With [replacing] the image takes the place of the one at that index, which
   /// does not count against the limit.
   void accept(MREPastedImage image, {int? replacing}) {
+    if (!isActive()) return;
     final images = controller;
     final held = (images?.count ?? 0) - (replacing == null ? 0 : 1);
     final reason = behavior.check(image, count: held);
@@ -58,6 +59,7 @@ final class MREImagePasteHandler {
 
   /// Removes the image at [index].
   void remove(int index) {
+    if (!isActive()) return;
     final images = controller!;
     images.removeAt(index);
     _notifyChanged(images);
@@ -67,13 +69,20 @@ final class MREImagePasteHandler {
   ///
   /// A platform that cannot be read is reported as
   /// [MREImageRejection.unreadable] and gives null.
-  Future<MREPastedImage?> readClipboardImage() async {
+  Future<MREPastedImage?> readClipboardImage({
+    bool reportFailure = true,
+  }) async {
+    if (!isActive()) return null;
     try {
       return await behavior.reader.read();
     } on PlatformException {
-      behavior.onImageRejected?.call(MREImageRejection.unreadable, null);
+      if (isActive() && reportFailure) {
+        behavior.onImageRejected?.call(MREImageRejection.unreadable, null);
+      }
     } on MissingPluginException {
-      behavior.onImageRejected?.call(MREImageRejection.unreadable, null);
+      if (isActive() && reportFailure) {
+        behavior.onImageRejected?.call(MREImageRejection.unreadable, null);
+      }
     }
     return null;
   }
@@ -84,6 +93,7 @@ final class MREImagePasteHandler {
   /// text and a picture, pastes as text. [pasteText] runs when the clipboard
   /// has text or no image.
   Future<void> pasteShortcut(VoidCallback pasteText) async {
+    if (!isActive()) return;
     final text = await Clipboard.getData(Clipboard.kTextPlain);
     if (!isActive()) {
       return;
@@ -106,22 +116,35 @@ final class MREImagePasteHandler {
 
   /// Replaces the image at [index] with the one on the clipboard.
   Future<void> replace(int index) async {
-    final image = await readClipboardImage();
+    if (!isActive()) return;
+    final images = controller;
+    if (images == null || index < 0 || index >= images.count) return;
+    final original = images.images[index];
+    final image = await readClipboardImage(reportFailure: false);
     if (!isActive()) {
       return;
     }
     if (image == null) {
-      behavior.onImageRejected?.call(MREImageRejection.unreadable, null);
+      if (isActive()) {
+        behavior.onImageRejected?.call(MREImageRejection.unreadable, null);
+      }
       return;
     }
-    accept(image, replacing: index);
+    final currentIndex = images.images.indexWhere(
+      (held) => identical(held, original),
+    );
+    if (currentIndex < 0) return;
+    accept(image, replacing: currentIndex);
   }
 
   /// Handles content an on-screen keyboard inserted.
   void keyboardContent(KeyboardInsertedContent content) {
+    if (!isActive()) return;
     final data = content.data;
     if (data == null || data.isEmpty) {
-      behavior.onImageRejected?.call(MREImageRejection.unreadable, null);
+      if (isActive()) {
+        behavior.onImageRejected?.call(MREImageRejection.unreadable, null);
+      }
       return;
     }
     accept(behavior.imageFromBytes(data, content.mimeType));

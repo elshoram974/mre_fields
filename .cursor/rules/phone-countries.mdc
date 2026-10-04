@@ -33,7 +33,7 @@ alwaysApply: true
 ## Typing and paste
 
 - The field accepts digits and a leading `+` only (`MREPhoneInputFormatter`); Arabic, Persian and full-width digits become ASCII.
-- A text that starts with `+` or `00` is read as international. When it **arrives in one piece** (paste) the country switches at once; when it is **typed**, it waits until the number is valid, because `+1` alone is not a country. After switching, only the national digits stay.
+- Text starting with `+` or `00` is international. Update the country as soon as its dial code is recognized, independently of number validity. Shared codes use the parser's provisional region and refine it as more digits arrive. Keep typed international text until valid; pasted numbers normalize to national digits immediately. Unknown or excluded countries never replace the selected country. Notify `onCountryChanged` only when the ISO country actually changes.
 - Digits are always laid out left to right; alignment follows the app direction.
 - `onChanged` fires only when the text changes, not when the cursor moves.
 
@@ -50,3 +50,6 @@ alwaysApply: true
 ## Tests
 
 Parse cases (`+20`, `0020`, national, Arabic digits, `+1` ambiguity, `+971` vs `+97`), selection (include, exclude, favorites, initial), validators and messages, the all-regions data test, picker (sheet vs dialog, search, favorites, names in your language, no overflow at 320/400/1000, scale 1.3, RTL), field (start, typing, paste, picker, validation, controller, selection change, layout).
+
+Scope country listening to the dial button. Reuse controller parse results for
+unchanged text, country and selection; invalidate for any of those changes.

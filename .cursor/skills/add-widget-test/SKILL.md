@@ -44,4 +44,8 @@ flutter test
 flutter test test/src/text/mre_text_field_test.dart
 ```
 
-Prefer `find.byType` / keys you add for the inner `TextFormField` over brittle text-only finds when labels are host-provided.
+Prefer `find.byType` / keys you add for the inner `TextField` or public form state over brittle text-only finds when labels are host-provided.
+
+Use ordinary fields for input behavior/performance tests and form variants for
+validation/save/reset. Include Unicode-wide direction samples, not just two
+languages, and verify readOnly/enabled on every secondary mutation control.

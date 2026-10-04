@@ -1,6 +1,6 @@
-`MREPhoneField` is a phone number field with a country picker. It checks the
-number for **every country**, finds the country from a pasted number, and
-accepts only the countries you choose.
+`MREPhoneField` is an ordinary phone input. `MREPhoneFormField` adds built-in
+localized validation, structured `onSaved` and country-plus-digits reset.
+Both accept `decoration`, controller, country selection and presentation options.
 
 ## A field
 
@@ -9,7 +9,7 @@ country. `number.e164` is the number to save or send.
 
 <!-- snippet: basic -->
 ```dart
-final field = MREPhoneField(
+final field = MREPhoneFormField(
   labelText: 'Phone number',
   onChanged: (number) {
     if (number.isValid) {
@@ -44,14 +44,14 @@ const selection = MRECountrySelection(
   initial: 'SA',
 );
 
-final field = MREPhoneField(selection: selection);
+final field = MREPhoneFormField(selection: selection);
 ```
 
 Or exclude some:
 
 <!-- snippet: exclude -->
 ```dart
-final field = MREPhoneField(
+final field = MREPhoneFormField(
   selection: const MRECountrySelection(exclude: {'IL'}),
 );
 ```
@@ -118,7 +118,7 @@ messages come from `MREFieldsStrings`, registered once on your theme.
 
 <!-- snippet: translate -->
 ```dart
-final field = MREPhoneField(
+final field = MREPhoneFormField(
   labelText: 'رقم الهاتف',
   countryNameBuilder: (country) =>
       arabicNames[country.isoCode] ?? country.name,
@@ -148,7 +148,7 @@ final message = strings.phoneError(error); // 'The phone number is too short'
 ```dart
 final form = Form(
   key: formKey,
-  child: const MREPhoneField(labelText: 'Phone number', required: true),
+  child: MREPhoneFormField(labelText: 'Phone number', required: true),
 );
 ```
 
@@ -175,7 +175,7 @@ final field = TextFormField(
 <!-- snippet: controller -->
 ```dart
 // Create the controller in initState and dispose it in dispose.
-final field = MREPhoneField(controller: controller, labelText: 'Phone');
+final field = MREPhoneFormField(controller: controller, labelText: 'Phone');
 
 controller.setNumber('+966 50 123 4567'); // sets the country and the digits
 final number = controller.number(); // an MREPhoneNumber
@@ -217,3 +217,20 @@ The rules come from the libphonenumber data through the
 [phone_numbers_parser](https://pub.dev/packages/phone_numbers_parser) package:
 length and pattern for 245 countries and regions. The package hides it behind
 `MREPhoneNumber`, so your code does not depend on it.
+
+## Country detection while typing
+
+Typing `+20` or `0020` immediately selects Egypt, even before the rest of the
+number is valid. Country detection and validation are independent. Shared dial
+codes such as `+1` initially use the parser's provisional region and can change
+as more digits identify the destination (for example, Canada).
+
+Typed international text is retained until valid so the destination can still
+be refined. A pasted number is split immediately. Unknown or excluded countries
+do not replace the current selection. `onCountryChanged` fires only on a real
+country change.
+
+The dial button listens only to country changes. Repeated reads of the same
+controller text, country and country selection reuse the parsed result, including
+form validation reads. Text beginning with `+` or `00` is validated as an
+international number even while its prefix is visible in the editor.

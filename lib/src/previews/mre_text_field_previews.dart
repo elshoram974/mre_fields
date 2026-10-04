@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../text/field/mre_text_field.dart';
+import '../text/field/mre_text_form_field.dart';
 import 'preview_harness.dart';
 
 /// An empty field with a label and a hint.
 @MREPreview()
 Widget previewTextFieldEmpty() {
-  return const MRETextField(
+  return MRETextFormField(
     labelText: 'Name',
     hintText: 'Type in any language',
     showClearButton: true,
@@ -16,7 +16,7 @@ Widget previewTextFieldEmpty() {
 /// English text with the clear button.
 @MREPreview()
 Widget previewTextFieldEnglish() {
-  return const MRETextField(
+  return MRETextFormField(
     labelText: 'Name',
     initialValue: 'Mohamed Ali',
     showClearButton: true,
@@ -26,7 +26,7 @@ Widget previewTextFieldEnglish() {
 /// Arabic text: right to left, with the clear button.
 @MREPreview()
 Widget previewTextFieldArabic() {
-  return const MRETextField(
+  return MRETextFormField(
     labelText: 'الاسم',
     initialValue: 'محمد علي',
     showClearButton: true,
@@ -36,7 +36,7 @@ Widget previewTextFieldArabic() {
 /// A focused field with suggestions under it.
 @MREPreview()
 Widget previewTextFieldSuggestions() {
-  return const MRETextField(
+  return MRETextFormField(
     labelText: 'City',
     initialValue: 'a',
     autofocus: true,
@@ -48,7 +48,7 @@ Widget previewTextFieldSuggestions() {
 /// A field with an error and icons.
 @MREPreview()
 Widget previewTextFieldError() {
-  return const MRETextField(
+  return MRETextFormField(
     labelText: 'Email',
     initialValue: 'not-an-email',
     errorText: 'Enter a valid email',
@@ -60,7 +60,7 @@ Widget previewTextFieldError() {
 /// A multiline field.
 @MREPreview()
 Widget previewTextFieldMultiline() {
-  return const MRETextField(
+  return MRETextFormField(
     labelText: 'Notes',
     hintText: 'Write a note',
     minLines: 3,
@@ -71,16 +71,16 @@ Widget previewTextFieldMultiline() {
 /// A disabled and a read-only field.
 @MREPreview()
 Widget previewTextFieldStates() {
-  return const Column(
+  return Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     spacing: 16,
     children: [
-      MRETextField(
+      MRETextFormField(
         labelText: 'Disabled',
         initialValue: 'Cannot edit',
         enabled: false,
       ),
-      MRETextField(
+      MRETextFormField(
         labelText: 'Read only',
         initialValue: 'Can copy',
         readOnly: true,

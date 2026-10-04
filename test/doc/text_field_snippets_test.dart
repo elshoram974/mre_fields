@@ -33,7 +33,7 @@ void main() {
     tester,
   ) async {
     final theme = ThemeData(
-      extensions: const [MREFieldsTheme(fieldBorderRadius: 16)],
+      extensions: [MREFieldsTheme(fieldBorderRadius: 16)],
     );
     await tester.pumpWidget(
       _host(
@@ -108,10 +108,7 @@ void main() {
     await tester.pump();
 
     final controller = _textField(tester).controller!;
-    expect(
-      controller.selection,
-      const TextSelection(baseOffset: 0, extentOffset: 5),
-    );
+    expect(controller.selection, TextSelection(baseOffset: 0, extentOffset: 5));
   });
 
   testWidgets('controller: uses the controller you pass', (tester) async {

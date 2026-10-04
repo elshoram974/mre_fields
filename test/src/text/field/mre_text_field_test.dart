@@ -575,7 +575,7 @@ void main() {
         tester,
         Form(
           key: formKey,
-          child: MRETextField(
+          child: MRETextFormField(
             validator: (v) => (v ?? '').isEmpty ? 'Required' : null,
           ),
         ),
@@ -593,7 +593,7 @@ void main() {
       final fieldKey = GlobalKey<FormFieldState<String>>();
       await _pump(
         tester,
-        MRETextField(
+        MRETextFormField(
           fieldKey: fieldKey,
           validator: (v) => (v ?? '').isEmpty ? 'Required' : null,
         ),
@@ -605,7 +605,7 @@ void main() {
     testWidgets('validates after the user interacts', (tester) async {
       await _pump(
         tester,
-        MRETextField(
+        MRETextFormField(
           validator: (v) => (v ?? '').length < 3 ? 'Too short' : null,
         ),
       );
@@ -618,7 +618,7 @@ void main() {
     });
 
     testWidgets('errorText is shown', (tester) async {
-      await _pump(tester, const MRETextField(errorText: 'Taken'));
+      await _pump(tester, MRETextFormField(errorText: 'Taken'));
 
       expect(find.text('Taken'), findsOneWidget);
     });
@@ -630,7 +630,7 @@ void main() {
         tester,
         Form(
           key: formKey,
-          child: MRETextField(onSaved: (v) => saved = v),
+          child: MRETextFormField(onSaved: (v) => saved = v),
         ),
       );
 

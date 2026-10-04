@@ -3,7 +3,7 @@ import 'package:mre_fields/mre_fields.dart';
 
 import 'section_card.dart';
 
-/// Pasting images: kept under the field, or handed to the app.
+/// Pasting images: kept inside the field, or handed to the app.
 class ImagePasteSection extends StatefulWidget {
   /// Creates the section.
   const ImagePasteSection({super.key});
@@ -13,6 +13,14 @@ class ImagePasteSection extends StatefulWidget {
 }
 
 class _ImagePasteSectionState extends State<ImagePasteSection> {
+  final _customImages = MREAttachmentsController();
+
+  @override
+  void dispose() {
+    _customImages.dispose();
+    super.dispose();
+  }
+
   String _received = 'Nothing received yet';
 
   void _onImage(MREPastedImage image) {
@@ -36,15 +44,43 @@ class _ImagePasteSectionState extends State<ImagePasteSection> {
         spacing: 16,
         children: [
           MRETextField(
-            labelText: 'Keeps the images under the field',
+            labelText: 'Keeps the images inside the field',
             maxLines: 3,
-            imagePaste: MREImageAttachmentPaste(onImageRejected: _onRejected),
+            imagePaste: MREImageAttachmentPaste(
+              showCounter: true,
+              onImageRejected: _onRejected,
+            ),
           ),
           MRETextField(
             labelText: 'Hands the image to the app',
             imagePaste: MREImageCallbackPaste(
               onImagePasted: _onImage,
               onImageRejected: _onRejected,
+            ),
+          ),
+          MRETextField(
+            labelText: 'Your own image layout',
+            imagePaste: MREImageAttachmentPaste(
+              controller: _customImages,
+              builder: (context, presentation) => Wrap(
+                spacing: 8,
+                children: [
+                  for (
+                    var index = 0;
+                    index < presentation.controller.count;
+                    index++
+                  )
+                    InputChip(
+                      avatar: const Icon(Icons.image_outlined),
+                      label: Text(
+                        presentation.controller.images[index].name ?? 'Image',
+                      ),
+                      onDeleted: presentation.onRemove == null
+                          ? null
+                          : () => presentation.onRemove!(index),
+                    ),
+                ],
+              ),
             ),
           ),
           Text(_received),

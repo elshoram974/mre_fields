@@ -6,23 +6,22 @@
 [![Flutter 3.38.1+](https://img.shields.io/badge/Flutter-%E2%89%A5%203.38.1-02569B?logo=flutter&logoColor=white)](#platform-support)
 [![License: BSD-3-Clause](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](LICENSE)
 
-Form fields for Flutter that handle what people really type: **Arabic and
-English in the same field**, **phone numbers from any country**, and **pasted
+Ordinary and form fields for Flutter with **Unicode-wide text direction**, **phone numbers from any country**, and **pasted
 images**. Everything uses your own `ThemeData` and can be translated.
 
 ![A text field and a plain text follow the language being typed: left to right for English, right to left for Arabic](https://raw.githubusercontent.com/elshoram974/mre_fields/main/doc/images/text-direction.gif)
 
 ## What you get
 
-- **Direction and alignment that follow the language.** Type Arabic and the text
-  starts from the right; type English and it starts from the left. It also works
-  for a plain `Text`, and on widgets you already have.
+- **Direction for every Unicode writing system.** Pinned Unicode 17.0.0 data
+  covers LTR and RTL scripts, including supplementary planes. Arabic and English
+  are examples, not limits. Plain text and existing widgets use the same helpers.
 - **A phone field that checks every country.** 245 countries and regions, a
   searchable country picker, and a clear message for each problem. Paste
   `+20 101 234 5678` and the country switches to Egypt on its own.
 - **Choose which countries are accepted.** Allow only some, drop some, pin
   favorites. The picker, the paste and the validation all follow the same list.
-- **Paste images into a field.** Keep them under the field with open, remove and
+- **Paste images into a field.** Keep them inside the input border with open, remove and
   replace, or hand them to your code.
 - **One theme, one place for texts.** Radius and padding for every field in one
   spot, every text and error message replaceable for translation.
@@ -34,7 +33,7 @@ images**. Everything uses your own `ThemeData` and can be translated.
 
 ```yaml
 dependencies:
-  mre_fields: ^0.2.0
+  mre_fields: ^0.3.2
 ```
 
 ```dart
@@ -75,7 +74,7 @@ final field = MRETextField(
 
 <!-- snippet: phone/basic -->
 ```dart
-final field = MREPhoneField(
+final field = MREPhoneFormField(
   labelText: 'Phone number',
   onChanged: (number) {
     if (number.isValid) {
@@ -94,7 +93,7 @@ final field = MREPhoneField(
 final field = MRETextField(
   labelText: 'Message',
   maxLines: 3,
-  imagePaste: MREImageAttachmentPaste(maxImages: 4),
+  imagePaste: MREImageAttachmentPaste(maxImages: 4, showCounter: true),
 );
 ```
 
@@ -130,7 +129,7 @@ const selection = MRECountrySelection(
   initial: 'SA',
 );
 
-final field = MREPhoneField(selection: selection);
+final field = MREPhoneFormField(selection: selection);
 ```
 
 ### Read a phone number in code
@@ -186,10 +185,11 @@ also compiles to WebAssembly.
 
 ## Questions
 
-**How is the direction chosen?** The first word with a letter decides. Numbers
-and symbols before it are skipped, so `123 مرحبا` is right to left and
-`(#1) Hello` is left to right. A text with no letter keeps the surrounding
-direction.
+**How is the direction chosen?** The first strong Unicode character decides.
+Weak/neutral characters before it are skipped, so `،Hello` is left to right.
+Some punctuation has a strong direction in Unicode. Without a strong character,
+widgets keep ambient direction. Detection reads at most 256 UTF-16 code units;
+see [the direction guide](doc/text.md) for the full contract.
 
 **Which languages count as right to left?** Every right-to-left script:
 Arabic, Hebrew, Persian, Urdu, Pashto, Kurdish (Sorani), Syriac, Thaana, N'Ko
@@ -206,7 +206,7 @@ the phone field and your texts through `MREFieldsStrings`. See
 **What if I want a fixed direction?** Set `textDirection` on the field, for
 example `TextDirection.ltr` for emails and links.
 
-**Does it work inside a `Form`?** Yes. `MRETextField` and `MREPhoneField` take a
+**Does it work inside a `Form`?** Use `MRETextFormField` and `MREPhoneFormField`. They take a
 `validator`, an `onSaved` and a `fieldKey` like `TextFormField`.
 
 **Does image paste need permissions?** Not on the web: the browser gives the
@@ -233,3 +233,22 @@ flutter widget-preview start   # preview any widget with @MREPreview()
 ## License
 
 BSD 3-Clause. See [LICENSE](LICENSE).
+
+## Ordinary fields and forms
+
+Use `MRETextField` and `MREPhoneField` for standalone input. Use
+`MRETextFormField` and `MREPhoneFormField` for `Form.validate`, `Form.save` and
+`Form.reset`. The phone form saves an `MREPhoneNumber` and resets both its country
+and digits. Both phone variants accept `decoration`.
+
+### Migrating from 0.2
+
+Replace old `MRETextField` / `MREPhoneField` uses that need form behavior with
+`MRETextFormField` / `MREPhoneFormField`. Phone form keys now use
+`GlobalKey<FormFieldState<MREPhoneNumber>>`. Image attachments now appear inside
+the field above its text. Custom `MREImagePasteScope` builders must place
+`hooks.attachments` in their own layout. Use `MREImageCallbackPaste` to own the
+entire presentation, or `MREImageAttachmentPaste(builder: ...)` to customize
+in-field attachments.
+
+The direction data is distributed under the [Unicode License](UNICODE-LICENSE.txt).

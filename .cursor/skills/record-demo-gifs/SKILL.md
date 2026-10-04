@@ -33,7 +33,7 @@ The GIFs are recorded from the **real example app on the web**, driven through t
 
 - One idea per GIF, 6 to 12 seconds, loops forever.
 - Text direction: English, Arabic, a number first, a symbol first, mixed text. The caption shows the detected direction.
-- Image paste: type a little text, paste three different images, show the thumbnails with their buttons.
+- Image paste: type a little text, paste three different images, show the thumbnails above the text inside the same field border, open a preview and remove an image.
 - Phone (when it exists): paste `+20…`, watch the country change; exclude a country; show a validation error.
 - Light theme, real labels, no mouse cursor, no tooltip left open (move the mouse away after a click).
 

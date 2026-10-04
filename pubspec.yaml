@@ -1,6 +1,6 @@
 name: mre_fields
 description: "Flutter form fields that follow the language typed (auto RTL/LTR text and alignment), phone numbers validated for every country with a picker, and image paste."
-version: 0.2.0
+version: 0.3.2
 repository: https://github.com/elshoram974/mre_fields
 issue_tracker: https://github.com/elshoram974/mre_fields/issues
 screenshots:
@@ -8,7 +8,7 @@ screenshots:
     path: doc/images/text-direction.gif
   - description: A phone field checks the number for every country, finds the country from a pasted number, and opens a searchable picker.
     path: doc/images/phone-field.gif
-  - description: Pasted images appear under the field, with open, remove and replace.
+  - description: Pasted images appear inside the field, inside the input border, with open, remove and replace.
     path: doc/images/image-paste.gif
 
 topics:

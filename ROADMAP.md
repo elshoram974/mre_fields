@@ -233,7 +233,7 @@ Searchable dial-code sheet owned by the package (Material), no CashBook overlays
 ## Step 6 — `MREPhoneField` `[x]`
 
 ### Result
-`MREPhoneField` and `MREPhoneController`. A pasted `+…` number switches the country; a typed one waits until it is valid. Dial button inside the field, so one layout fits every width.
+`MREPhoneField` and `MREPhoneController`. Recognized `+…`/`00…` codes update the country while typing, independently of validity. Typed text retains its prefix until valid so shared codes can be refined. Dial button inside the field, so one layout fits every width.
 
 ### Goal
 One composed field: dial control + local number, using parse helpers + picker.
@@ -333,3 +333,14 @@ Package feels shippable: regression green, runnable example, optional pub.dev pu
 | Tests | `add-widget-test`, `full-regression-test`, `test-field-sizes` |
 | Previews | `add-widget-preview` |
 | Version | `bump-package-version` |
+
+
+## 0.3 hardening and API separation
+
+- [x] Unicode 17 direction data for all writing systems; replace heuristic ranges.
+- [x] Ordinary fields plus explicit text/phone form fields, typed save/reset.
+- [x] Images within one input border; custom builder and callback-only choices.
+- [x] Read-only/disabled mutation guards and identity-based async replacement.
+- [x] Phone decoration pass-through, migration guidance, updated rules/skills.
+- [x] Regression, real browser composer preview and regenerated image GIF.
+- [ ] Consume in CashBook (Step 7 remains a separate app integration).

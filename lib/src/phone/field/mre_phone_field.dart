@@ -2,21 +2,20 @@ import 'package:flutter/material.dart';
 
 import '../../internal/mre_owned.dart';
 import '../../text/field/mre_text_field.dart';
-import '../../theme/mre_fields_strings.dart';
 import '../../theme/mre_fields_theme.dart';
 import '../model/mre_country.dart';
 import '../model/mre_country_selection.dart';
 import '../model/mre_phone_digits.dart';
 import '../model/mre_phone_number.dart';
+import '../model/mre_phone_initial_country.dart';
 import '../picker/mre_country_picker.dart';
-import '../validation/mre_phone_validators.dart';
 import 'mre_dial_button.dart';
 import 'mre_phone_controller.dart';
 
 /// A phone number field: a country button with the dial code, and the number.
 ///
-/// - Validates the number for every country, with a message for each problem
-///   that you can translate.
+/// - Parses numbers for every country. Use `MREPhoneFormField` for form
+///   validation, saving and resetting.
 /// - Paste `+20 101 234 5678` and the country changes to Egypt and the number
 ///   fills in. Digits in Arabic or Persian are accepted too.
 /// - Accepts only the countries of [selection], and shows its favorites first.
@@ -46,16 +45,13 @@ class MREPhoneField extends StatefulWidget {
     this.hintText,
     this.helperText,
     this.errorText,
+    this.decoration,
     this.onChanged,
     this.onCountryChanged,
-    this.validator,
-    this.required = true,
-    this.autovalidateMode = AutovalidateMode.onUserInteraction,
     this.enabled = true,
     this.readOnly = false,
     this.autofocus = false,
     this.focusNode,
-    this.fieldKey,
     this.textInputAction,
     this.onFieldSubmitted,
     this.style,
@@ -95,20 +91,14 @@ class MREPhoneField extends StatefulWidget {
   /// Error under the field. Wins over validation messages.
   final String? errorText;
 
+  /// The host's decoration, with the country button added as its prefix.
+  final InputDecoration? decoration;
+
   /// Called on every change, also when the country changes.
   final ValueChanged<MREPhoneNumber>? onChanged;
 
-  /// Called when the country changes, by the picker or by a pasted number.
+  /// Called when the country changes through the picker, typing or paste.
   final ValueChanged<MRECountry>? onCountryChanged;
-
-  /// Replaces the built-in validation. Return an error message, or null.
-  final String? Function(MREPhoneNumber number)? validator;
-
-  /// Whether an empty number is an error. Only for the built-in validation.
-  final bool required;
-
-  /// When validation runs. Defaults to after the user interacts.
-  final AutovalidateMode autovalidateMode;
 
   /// Whether the user can change the number and the country.
   final bool enabled;
@@ -121,9 +111,6 @@ class MREPhoneField extends StatefulWidget {
 
   /// The focus node of the number. The field keeps its own when null.
   final FocusNode? focusNode;
-
-  /// Key of the inner form field, to validate without a parent `Form`.
-  final GlobalKey<FormFieldState<String>>? fieldKey;
 
   /// The keyboard action button.
   final TextInputAction? textInputAction;
@@ -167,17 +154,12 @@ class MREPhoneField extends StatefulWidget {
 
 class _MREPhoneFieldState extends State<MREPhoneField> {
   late MREOwned<MREPhoneController> _controller;
-  final _ownFieldKey = GlobalKey<FormFieldState<String>>();
   late List<MRECountry> _countries;
   late List<MRECountry> _favorites;
-  MREFieldsStrings _strings = const MREFieldsStrings();
   String _previousText = '';
   bool _converting = false;
 
   MREPhoneController get _phone => _controller.value;
-
-  GlobalKey<FormFieldState<String>> get _fieldKey =>
-      widget.fieldKey ?? _ownFieldKey;
 
   @override
   void initState() {
@@ -241,17 +223,11 @@ class _MREPhoneFieldState extends State<MREPhoneField> {
   MRECountry? _defaultCountry() {
     final deviceCode =
         WidgetsBinding.instance.platformDispatcher.locale.countryCode;
-    final candidates = [
-      widget.initialCountry,
-      MRECountries.byIsoCode(widget.selection.initial ?? ''),
-      MRECountries.byIsoCode(deviceCode ?? ''),
-    ];
-    for (final candidate in candidates) {
-      if (candidate != null && widget.selection.allows(candidate)) {
-        return candidate;
-      }
-    }
-    return widget.selection.initialCountry;
+    return mreInitialPhoneCountry(
+      selection: widget.selection,
+      preferred: widget.initialCountry,
+      deviceCountryCode: deviceCode,
+    );
   }
 
   MREPhoneNumber _number() => _phone.number(widget.selection);
@@ -273,36 +249,38 @@ class _MREPhoneFieldState extends State<MREPhoneField> {
     widget.onChanged?.call(_number());
   }
 
-  /// A number typed or pasted with its dial code moves the country and leaves
-  /// only the national digits. It waits until the number is complete when typed,
-  /// because `+1` alone does not say whether the country is the United States
-  /// or Canada.
+  /// Country detection is independent of number validity. Keep a typed
+  /// international prefix until the number is valid, so shared dial codes
+  /// can be refined as more digits arrive. Pasted numbers normalize at once.
   void _readInternational(String text, {required bool pasted}) {
-    final number = MREPhoneNumber.parse(
-      text,
-      defaultCountry: _phone.country,
-      selection: widget.selection,
-    );
+    final number = _number();
     final country = number.country;
     final unusable =
         number.error == MREPhoneError.unknownCountry ||
         number.error == MREPhoneError.countryNotAllowed;
-    if (country == null || unusable || !(pasted || number.isValid)) {
+    final digits = text.startsWith('+') ? text.substring(1) : text.substring(2);
+    if (country == null || unusable || !digits.startsWith(country.dialCode)) {
       return;
     }
 
+    final changed = _phone.country != country;
     _converting = true;
     _phone.country = country;
-    _phone.text.value = TextEditingValue(
-      text: number.nationalNumber,
-      selection: TextSelection.collapsed(offset: number.nationalNumber.length),
-    );
-    _previousText = number.nationalNumber;
+    if (pasted || number.isValid) {
+      _phone.text.value = TextEditingValue(
+        text: number.nationalNumber,
+        selection: TextSelection.collapsed(
+          offset: number.nationalNumber.length,
+        ),
+      );
+      _previousText = number.nationalNumber;
+    }
     _converting = false;
-    widget.onCountryChanged?.call(country);
+    if (changed) widget.onCountryChanged?.call(country);
   }
 
   Future<void> _pickCountry() async {
+    if (!widget.enabled || widget.readOnly) return;
     final picked = await showMRECountryPicker(
       context,
       countries: _countries,
@@ -314,74 +292,60 @@ class _MREPhoneFieldState extends State<MREPhoneField> {
       nameBuilder: widget.countryNameBuilder,
       showFlags: widget.showFlags,
     );
-    if (!mounted || picked == null) {
+    if (!mounted ||
+        picked == null ||
+        picked == _phone.country ||
+        !widget.enabled ||
+        widget.readOnly ||
+        !widget.selection.allows(picked)) {
       return;
     }
     _phone.country = picked;
     widget.onCountryChanged?.call(picked);
     widget.onChanged?.call(_number());
-    if (_phone.text.text.isNotEmpty &&
-        widget.autovalidateMode != AutovalidateMode.disabled) {
-      _fieldKey.currentState?.validate();
-    }
-  }
-
-  String? _validate(String? _) {
-    final number = _number();
-    final custom = widget.validator;
-    if (custom != null) {
-      return custom(number);
-    }
-    final error = number.error;
-    if (error == null || (error == MREPhoneError.empty && !widget.required)) {
-      return null;
-    }
-    return _strings.phoneError(error);
   }
 
   @override
   Widget build(BuildContext context) {
-    _strings = MREFieldsTheme.of(context).strings;
+    final strings = MREFieldsTheme.of(context).strings;
     final rtl = Directionality.of(context) == TextDirection.rtl;
 
-    return ListenableBuilder(
-      listenable: _phone,
-      builder: (context, _) {
-        final country = _phone.country;
-        return MRETextField(
-          fieldKey: _fieldKey,
-          controller: _phone.text,
-          focusNode: widget.focusNode,
-          labelText: widget.labelText,
-          hintText: widget.hintText,
-          helperText: widget.helperText,
-          errorText: widget.errorText,
-          prefixIcon: MREDialButton(
+    return MRETextField(
+      controller: _phone.text,
+      focusNode: widget.focusNode,
+      labelText: widget.labelText,
+      hintText: widget.hintText,
+      helperText: widget.helperText,
+      errorText: widget.errorText,
+      decoration: widget.decoration,
+      prefixIcon: ListenableBuilder(
+        listenable: _phone,
+        builder: (context, _) {
+          final country = _phone.country;
+          return MREDialButton(
             country: country,
             name: country == null
-                ? _strings.countryPickerTitle
+                ? strings.countryPickerTitle
                 : widget.countryNameBuilder?.call(country) ?? country.name,
             showFlag: widget.showFlags,
             onPressed: widget.enabled && !widget.readOnly ? _pickCountry : null,
-          ),
-          keyboardType: TextInputType.phone,
-          inputFormatters: const [MREPhoneInputFormatter()],
-          textDirection: TextDirection.ltr,
-          textAlign: rtl ? TextAlign.right : TextAlign.left,
-          autofillHints: widget.autofillHints,
-          textInputAction: widget.textInputAction,
-          onFieldSubmitted: (_) => widget.onFieldSubmitted?.call(_number()),
-          validator: _validate,
-          autovalidateMode: widget.autovalidateMode,
-          enabled: widget.enabled,
-          readOnly: widget.readOnly,
-          autofocus: widget.autofocus,
-          style: widget.style,
-          borderRadius: widget.borderRadius,
-          contentPadding: widget.contentPadding,
-          showClearButton: widget.showClearButton,
-        );
-      },
+          );
+        },
+      ),
+      keyboardType: TextInputType.phone,
+      inputFormatters: const [MREPhoneInputFormatter()],
+      textDirection: TextDirection.ltr,
+      textAlign: rtl ? TextAlign.right : TextAlign.left,
+      autofillHints: widget.autofillHints,
+      textInputAction: widget.textInputAction,
+      onFieldSubmitted: (_) => widget.onFieldSubmitted?.call(_number()),
+      enabled: widget.enabled,
+      readOnly: widget.readOnly,
+      autofocus: widget.autofocus,
+      style: widget.style,
+      borderRadius: widget.borderRadius,
+      contentPadding: widget.contentPadding,
+      showClearButton: widget.showClearButton,
     );
   }
 }

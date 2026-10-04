@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../phone/field/mre_phone_field.dart';
+import '../phone/field/mre_phone_form_field.dart';
 import '../phone/model/mre_country.dart';
 import '../phone/model/mre_country_selection.dart';
 import '../phone/picker/mre_country_picker_body.dart';
@@ -9,7 +9,7 @@ import 'preview_harness.dart';
 /// A phone field with a valid Egyptian number.
 @MREPreview()
 Widget previewPhoneField() {
-  return const MREPhoneField(
+  return MREPhoneFormField(
     labelText: 'Phone number',
     initialValue: '+201012345678',
   );
@@ -18,7 +18,7 @@ Widget previewPhoneField() {
 /// A number that is too short, with its error showing.
 @MREPreview()
 Widget previewPhoneFieldError() {
-  return MREPhoneField(
+  return MREPhoneFormField(
     labelText: 'Phone number',
     initialCountry: MRECountries.byIsoCode('EG'),
     initialValue: '0101',
@@ -29,7 +29,7 @@ Widget previewPhoneFieldError() {
 /// A field that accepts the Gulf countries only.
 @MREPreview()
 Widget previewPhoneFieldGulf() {
-  return const MREPhoneField(
+  return MREPhoneFormField(
     labelText: 'Phone number',
     helperText: 'Gulf numbers only',
     selection: MRECountrySelection(

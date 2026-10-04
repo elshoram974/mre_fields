@@ -25,8 +25,8 @@ class _PhoneDemoState extends State<PhoneDemo> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: 16,
         children: [
-          MREPhoneField(
-            labelText: 'MREPhoneField',
+          MREPhoneFormField(
+            labelText: 'MREPhoneFormField',
             initialCountry: MRECountries.byIsoCode('EG'),
             showClearButton: true,
             required: false,

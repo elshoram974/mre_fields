@@ -27,6 +27,10 @@ class MREPhoneController extends ChangeNotifier {
   final TextEditingController text;
 
   MRECountry? _country;
+  String? _cachedText;
+  MRECountry? _cachedCountry;
+  MRECountrySelection? _cachedSelection;
+  MREPhoneNumber? _cachedNumber;
 
   /// The chosen country, or null before one is chosen.
   MRECountry? get country => _country;
@@ -44,18 +48,24 @@ class MREPhoneController extends ChangeNotifier {
     MRECountrySelection selection = const MRECountrySelection(),
   ]) {
     final digits = text.text;
-    if (digits.startsWith('+') || digits.startsWith('00')) {
-      return MREPhoneNumber.parse(
-        digits,
-        defaultCountry: _country,
-        selection: selection,
-      );
+    if (_cachedText == digits &&
+        _cachedCountry == _country &&
+        _cachedSelection == selection) {
+      return _cachedNumber!;
     }
     final chosen = _country;
-    if (chosen == null) {
-      return MREPhoneNumber.parse(digits, selection: selection);
-    }
-    return MREPhoneNumber.national(chosen, digits, selection: selection);
+    final result =
+        digits.startsWith('+') || digits.startsWith('00') || chosen == null
+        ? MREPhoneNumber.parse(
+            digits,
+            defaultCountry: chosen,
+            selection: selection,
+          )
+        : MREPhoneNumber.national(chosen, digits, selection: selection);
+    _cachedText = digits;
+    _cachedCountry = chosen;
+    _cachedSelection = selection;
+    return _cachedNumber = result;
   }
 
   /// Sets the number from [input]. A number with a dial code such as

@@ -108,7 +108,7 @@ final field = MRETextField(
 ```dart
 final form = Form(
   key: formKey,
-  child: MRETextField(
+  child: MRETextFormField(
     labelText: 'Name',
     validator: (value) {
       if (value == null || value.trim().isEmpty) {
@@ -142,7 +142,7 @@ its dial code is pasted, and opens a searchable picker.
 
 <!-- snippet: phone/basic -->
 ```dart
-final field = MREPhoneField(
+final field = MREPhoneFormField(
   labelText: 'Phone number',
   onChanged: (number) {
     if (number.isValid) {
@@ -162,7 +162,7 @@ const selection = MRECountrySelection(
   initial: 'SA',
 );
 
-final field = MREPhoneField(selection: selection);
+final field = MREPhoneFormField(selection: selection);
 ```
 
 Read a number in code, with no widget:
@@ -181,7 +181,7 @@ Translate the picker and the error messages:
 
 <!-- snippet: phone/translate -->
 ```dart
-final field = MREPhoneField(
+final field = MREPhoneFormField(
   labelText: 'رقم الهاتف',
   countryNameBuilder: (country) =>
       arabicNames[country.isoCode] ?? country.name,
@@ -217,7 +217,7 @@ final callback = MRETextField(
   ),
 );
 
-// Images appear under the field.
+// Images appear inside the field.
 const attachments = MRETextField(
   labelText: 'Message',
   imagePaste: MREImageAttachmentPaste(),

@@ -22,7 +22,7 @@ MRETextField(
 | `MREImagePasteBehavior` (abstract) | — | Limits (`maxImages`, `maxBytes`, `allowedMimeTypes`), `onImagePasted`, `onImageRejected`, `reader`. Hosts may extend it. |
 | `MRENoImagePaste` (default) | none | `acceptsImages` is false: no hooks, no widgets, no cost. |
 | `MREImageCallbackPaste` | none | Calls `onImagePasted(MREPastedImage)`; host decides everything. |
-| `MREImageAttachmentPaste` | thumbnail strip under the field | Keeps the images; open, remove, replace; `onImagesChanged`; optional host `MREAttachmentsController`. |
+| `MREImageAttachmentPaste` | thumbnails inside the input border, above the text | Keeps the images; open, remove, replace; `onImagesChanged`; optional host `MREAttachmentsController`; custom `builder`. |
 
 Pieces hosts can use alone: `MREImagePasteScope` (paste hooks for any text field), `MREAttachmentStrip`, `MREImageViewer`, `MREAttachmentsController`, `MREPasteboardImageReader`, `mreSniffImageMimeType`.
 
@@ -62,3 +62,17 @@ The default reader uses the `pasteboard` plugin (Android, iOS, macOS, Windows, L
 - Swallow decode errors silently — `Image.memory` shows a broken-image icon.
 - Keep full-size bytes in `State` after the host took ownership (callback behaviour holds none).
 - Call the clipboard to decide whether to show a menu item more than once per menu open.
+
+## Composer and lifecycle contract
+
+The ordinary and form text fields share the same composer and behavior objects.
+`MREImagePasteHooks.attachments` exposes the presentation to custom scope users;
+they place it in their own layout. Attachment behavior accepts a builder with
+controller and guarded edit actions. Callback-only behavior stores nothing.
+Disabled/read-only fields keep viewing available but expose no edit actions.
+Check activity before accepting and after waits; invalidate handlers when behavior
+or controller changes. Replace by image identity, never a stale positional index.
+A web listener that is stopped must drop pending file reads as well.
+
+Optional `showCounter` displays count / maxImages, including zero. Custom builders
+receive maxImages and isAtLimit and must handle empty controllers.

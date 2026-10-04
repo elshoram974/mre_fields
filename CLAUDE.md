@@ -23,6 +23,28 @@ This file is the source of truth for agents and humans. Cursor rules under
 
 Host apps own branding, copy, and navigation. This package owns **input behaviour**.
 
+### Language and field contracts
+
+- Support all Unicode writing systems, not an Arabic/English allowlist. Those
+  languages are examples. Direction follows Unicode 17.0.0 Bidi_Class (L/R/AL),
+  including supplementary code points, with the documented 256 UTF-16-unit cap.
+  This is direction detection, not language identification or font provisioning.
+- Keep the pinned table, generator and Unicode license together. Never replace
+  Unicode properties with broad script ranges. Weak/neutral punctuation and
+  combining marks must not override the first strong character; isolated content
+  does not determine outer direction. Some punctuation is itself strong in Unicode.
+- `MRETextField` and `MREPhoneField` are ordinary inputs. `MRETextFormField` and
+  `MREPhoneFormField` compose them and own validation/save/reset. Phone form values
+  are `MREPhoneNumber`, and reset restores both country and digits.
+- Image paste is opt-in through `imagePaste: MREImagePasteBehavior`. Attachment
+  behavior defaults to thumbnails above the text **inside the same input border**.
+  Hosts may supply `MREImageAttachmentPaste.builder`, or use callback-only behavior
+  to display images anywhere. Never force external/below-field thumbnails.
+- All user mutation paths respect enabled/readOnly, including suggestions,
+  clipboard, keyboard content, remove and replace. View/copy remain available.
+  Async paste must not mutate disposed, replaced or newly locked controllers.
+
+
 ## Reference implementation (port source)
 
 Do **not** invent the field from scratch. Port behaviour from CashBook, then

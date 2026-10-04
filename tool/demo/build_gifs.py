@@ -7,6 +7,7 @@ and a palette of 96 colors keeps each GIF well under 1 MB.
 """
 import json
 import os
+import sys
 
 from PIL import Image
 
@@ -49,6 +50,6 @@ def build(scenario: str, out: str) -> None:
 
 
 if __name__ == "__main__":
-    build("text", "doc/images/text-direction.gif")
-    build("paste", "doc/images/image-paste.gif")
-    build("phone", "doc/images/phone-field.gif")
+    outputs = {"text": "text-direction", "paste": "image-paste", "phone": "phone-field"}
+    for scenario in sys.argv[1:] or outputs:
+        build(scenario, f"doc/images/{outputs[scenario]}.gif")

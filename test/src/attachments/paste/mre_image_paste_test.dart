@@ -64,7 +64,7 @@ void main() {
       expect(find.byType(MREAttachmentStrip), findsNothing);
       final field = tester.widget<TextField>(find.byType(TextField));
       expect(field.contentInsertionConfiguration, isNull);
-      expect(field.contextMenuBuilder, isNull);
+      expect(field.contextMenuBuilder, isNotNull);
     });
   });
 

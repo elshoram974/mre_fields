@@ -38,3 +38,11 @@ At `1.x+`: major bump for removed/renamed public API.
 ## Do not add to the public surface
 
 Contact pickers, book custom-field registry, PDF helpers, glass chrome, app routing, localization engines — those stay in the host app.
+
+## Ordinary inputs versus form fields
+
+`MRETextField` / `MREPhoneField` are standalone inputs. Their `*FormField`
+companions compose them and add typed validation/save/reset. Phone form field
+keys use `FormFieldState<MREPhoneNumber>`. Keep this distinction explicit in
+examples and migration notes. Both text variants use Unicode-wide direction
+and the same extensible image-paste behaviors.

@@ -40,7 +40,7 @@ class _FieldSectionState extends State<FieldSection> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           spacing: 16,
           children: [
-            MRETextField(
+            MRETextFormField(
               labelText: 'Name (required)',
               showClearButton: true,
               validator: _requiredName,
@@ -50,10 +50,7 @@ class _FieldSectionState extends State<FieldSection> {
               keyboardType: TextInputType.emailAddress,
               textDirection: TextDirection.ltr,
             ),
-            const MRETextField(
-              labelText: 'City (suggestions)',
-              suggestions: _cities,
-            ),
+            const MRETextField(labelText: 'City (suggestions)', suggestions: _cities),
             const MRETextField(
               labelText: 'Title (selects on focus)',
               initialValue: 'Draft',

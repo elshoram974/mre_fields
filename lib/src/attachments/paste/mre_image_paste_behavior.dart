@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter/foundation.dart';
 
 import '../model/mre_attachments_controller.dart';
@@ -22,7 +23,7 @@ const List<String> mreDefaultImageMimeTypes = [
 /// How a field keeps and shows the images it accepts.
 ///
 /// A behaviour that returns one from [MREImagePasteBehavior.attachments] gets
-/// thumbnails under the field. One that returns null keeps no images.
+/// thumbnails inside the field. One that returns null keeps no images.
 ///
 /// {@category Attachments}
 @immutable
@@ -31,15 +32,24 @@ final class MREAttachmentsConfig {
   const MREAttachmentsConfig({
     this.controller,
     this.maxImages = mreDefaultMaxImages,
+    this.showCounter = false,
     this.allowReplace = true,
     this.onChanged,
+    this.builder,
   });
+
+  /// Optional presentation. Receives guarded edit actions and the controller.
+  /// The result appears inside the field above its text input.
+  final MREAttachmentsBuilder? builder;
 
   /// Holds the images. The field keeps its own when null.
   final MREAttachmentsController? controller;
 
   /// The most images the field holds.
   final int maxImages;
+
+  /// Shows the current image count and limit inside the field.
+  final bool showCounter;
 
   /// Whether each thumbnail has a replace button.
   final bool allowReplace;
@@ -56,7 +66,7 @@ final class MREAttachmentsConfig {
 ///  * [MRENoImagePaste]: nothing. This is the default.
 ///  * [MREImageCallbackPaste]: calls your function with the image and shows
 ///    nothing.
-///  * [MREImageAttachmentPaste]: shows the images under the field, where the
+///  * [MREImageAttachmentPaste]: shows the images inside the field, where the
 ///    user can open, remove and replace them.
 ///
 /// {@example /doc/snippets/attachments.dart#behaviors}
@@ -155,7 +165,7 @@ class MREImageCallbackPaste extends MREImagePasteBehavior {
   bool get acceptsImages => true;
 }
 
-/// Shows pasted images under the field.
+/// Shows pasted images inside the field.
 ///
 /// The user can open an image full screen, remove it, and replace it with the
 /// image on the clipboard. [onImagePasted] and [onImagesChanged] tell your code
@@ -167,8 +177,10 @@ class MREImageAttachmentPaste extends MREImagePasteBehavior {
   const MREImageAttachmentPaste({
     this.controller,
     this.onImagesChanged,
+    this.builder,
     this.allowReplace = true,
     this.maxImages = mreDefaultMaxImages,
+    this.showCounter = false,
     super.maxBytes,
     super.allowedMimeTypes,
     super.onImagePasted,
@@ -183,11 +195,20 @@ class MREImageAttachmentPaste extends MREImagePasteBehavior {
   /// replaced.
   final ValueChanged<List<MREPastedImage>>? onImagesChanged;
 
+  /// Replaces the built-in thumbnails, including when the collection is empty.
+  /// Return an empty widget to hide the presentation at zero images.
+  /// Use callback-only paste to render
+  /// images outside the field instead.
+  final MREAttachmentsBuilder? builder;
+
   /// Whether each thumbnail has a replace button.
   final bool allowReplace;
 
   /// The most images the field holds.
   final int maxImages;
+
+  /// Shows the current image count and limit inside the field.
+  final bool showCounter;
 
   @override
   bool get acceptsImages => true;
@@ -196,7 +217,47 @@ class MREImageAttachmentPaste extends MREImagePasteBehavior {
   MREAttachmentsConfig get attachments => MREAttachmentsConfig(
     controller: controller,
     maxImages: maxImages,
+    showCounter: showCounter,
     allowReplace: allowReplace,
     onChanged: onImagesChanged,
+    builder: builder,
   );
+}
+
+/// Builds a custom presentation of the images inside a field.
+///
+/// Edit callbacks are null while the field is disabled or read-only.
+/// {@category Attachments}
+typedef MREAttachmentsBuilder =
+    Widget Function(
+      BuildContext context,
+      MREAttachmentsPresentation presentation,
+    );
+
+/// Images and permitted actions given to an attachments builder.
+/// {@category Attachments}
+@immutable
+class MREAttachmentsPresentation {
+  /// Creates presentation data.
+  const MREAttachmentsPresentation({
+    required this.controller,
+    this.maxImages = mreDefaultMaxImages,
+    this.onRemove,
+    this.onReplace,
+  });
+
+  /// Maximum number of images accepted by this field.
+  final int maxImages;
+
+  /// Whether the current images have reached the configured limit.
+  bool get isAtLimit => controller.count >= maxImages;
+
+  /// The images to display. Ownership stays with the field or host.
+  final MREAttachmentsController controller;
+
+  /// Removes an image; null when editing is unavailable.
+  final ValueChanged<int>? onRemove;
+
+  /// Replaces an image from the clipboard; null when unavailable.
+  final ValueChanged<int>? onReplace;
 }
