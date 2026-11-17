@@ -36,9 +36,10 @@ dependencies:
   flutter:
     sdk: flutter
   meta: ^1.15.0
-  pasteboard: ^0.5.0
-  phone_numbers_parser: ^9.0.28
-  web: ^1.1.1
+  # 0.6.x needs Flutter 3.44+, so keep 0.5.x allowed for the 3.38.1 minimum.
+  pasteboard: ">=0.5.0 <0.7.0"
+  phone_numbers_parser: ^9.0.29
+  web: ^1.1.2
 
 dev_dependencies:
   flutter_test:
