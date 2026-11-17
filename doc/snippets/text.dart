@@ -1,6 +1,6 @@
 // Snippets embedded in the API docs and the text guide. They are analyzed and
 // run in test/doc/text_snippets_test.dart, so each example is correct.
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:mre_fields/mre_fields.dart';
 
 /// Shows texts in two languages, each in its own direction.

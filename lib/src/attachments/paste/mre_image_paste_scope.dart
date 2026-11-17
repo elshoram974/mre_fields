@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../internal/mre_owned.dart';
 import '../../theme/mre_fields_theme.dart';
@@ -43,8 +43,10 @@ class MREImagePasteHooks {
 }
 
 /// Builds the field inside an [MREImagePasteScope].
-typedef MREImagePasteBuilder =
-    Widget Function(BuildContext context, MREImagePasteHooks hooks);
+typedef MREImagePasteBuilder = Widget Function(
+  BuildContext context,
+  MREImagePasteHooks hooks,
+);
 
 /// Adds image paste to a text field.
 ///

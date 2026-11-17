@@ -27,17 +27,17 @@ platforms:
   linux:
 
 environment:
-  # No FVM. 3.38.1 is the first stable Flutter with Dart 3.10.0 and the oldest
-  # one the test suite runs on (CI job "Minimum Flutter").
-  sdk: ^3.10.0
-  flutter: ">=3.38.1"
+  # No FVM. 3.47.0 is the first Flutter with the standalone material_ui package
+  # (Dart 3.13.0) and the oldest one the test suite runs on (CI job "Minimum Flutter").
+  sdk: ^3.13.0
+  flutter: ">=3.47.0"
 
 dependencies:
   flutter:
     sdk: flutter
+  material_ui: ^1.11.1
   meta: ^1.15.0
-  # 0.6.x needs Flutter 3.44+, so keep 0.5.x allowed for the 3.38.1 minimum.
-  pasteboard: ">=0.5.0 <0.7.0"
+  pasteboard: ^0.6.1
   phone_numbers_parser: ^9.0.29
   web: ^1.1.2
 

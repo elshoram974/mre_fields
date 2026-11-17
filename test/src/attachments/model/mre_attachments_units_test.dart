@@ -187,9 +187,9 @@ void main() {
         expect(behavior.attachments.allowReplace, isTrue);
         expect(behavior.attachments.controller, isNull);
         expect(
-          const MREImageAttachmentPaste(
-            allowReplace: false,
-          ).attachments.allowReplace,
+          const MREImageAttachmentPaste(allowReplace: false)
+              .attachments
+              .allowReplace,
           isFalse,
         );
       },

@@ -18,10 +18,9 @@ import '../model/mre_phone_number.dart';
 ///
 /// {@category Phone}
 class MREPhoneController extends ChangeNotifier {
-  /// Creates a controller, optionally with a [country] and [nationalNumber].
-  MREPhoneController({MRECountry? country, String? nationalNumber})
-    : _country = country,
-      text = MRESafeTextEditingController(text: nationalNumber);
+  /// Creates a controller, optionally with a [_country] and [nationalNumber].
+  MREPhoneController({this._country, String? nationalNumber})
+    : text = MRESafeTextEditingController(text: nationalNumber);
 
   /// The digits the user typed next to the country.
   final TextEditingController text;

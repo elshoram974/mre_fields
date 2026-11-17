@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../attachments/ui/mre_attachment_strip.dart';
 import '../attachments/model/mre_attachments_controller.dart';

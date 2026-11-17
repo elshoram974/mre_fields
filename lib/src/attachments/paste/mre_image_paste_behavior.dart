@@ -228,11 +228,10 @@ class MREImageAttachmentPaste extends MREImagePasteBehavior {
 ///
 /// Edit callbacks are null while the field is disabled or read-only.
 /// {@category Attachments}
-typedef MREAttachmentsBuilder =
-    Widget Function(
-      BuildContext context,
-      MREAttachmentsPresentation presentation,
-    );
+typedef MREAttachmentsBuilder = Widget Function(
+  BuildContext context,
+  MREAttachmentsPresentation presentation,
+);
 
 /// Images and permitted actions given to an attachments builder.
 /// {@category Attachments}

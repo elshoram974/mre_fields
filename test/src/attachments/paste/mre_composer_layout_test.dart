@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mre_fields/mre_fields.dart';
 
@@ -84,9 +84,8 @@ void main() {
         MaterialApp(
           theme: ThemeData.dark(),
           builder: (context, child) => MediaQuery(
-            data: MediaQuery.of(
-              context,
-            ).copyWith(textScaler: const TextScaler.linear(1.3)),
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: const TextScaler.linear(1.3)),
             child: Directionality(
               textDirection: TextDirection.rtl,
               child: child!,

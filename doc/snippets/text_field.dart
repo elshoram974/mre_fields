@@ -1,7 +1,7 @@
 // Snippets embedded in the API docs and the text field guide. They are
 // analyzed and run in test/doc/text_field_snippets_test.dart, so each example
 // is correct.
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:mre_fields/mre_fields.dart';
 
 /// A field that follows the language the user types.

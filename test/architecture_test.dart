@@ -51,11 +51,12 @@ final _directive = RegExp(
   multiLine: true,
 );
 
-List<File> _libFiles() => Directory('lib/src')
-    .listSync(recursive: true)
-    .whereType<File>()
-    .where((f) => f.path.endsWith('.dart'))
-    .toList();
+List<File> _libFiles() =>
+    Directory('lib/src')
+        .listSync(recursive: true)
+        .whereType<File>()
+        .where((f) => f.path.endsWith('.dart'))
+        .toList();
 
 /// The folder under lib/src that holds [path], such as `text/field`.
 String _folderOf(String path) {

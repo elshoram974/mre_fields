@@ -38,22 +38,19 @@ web.ClipboardEvent _firePaste({String? text, bool withImage = true}) {
 }
 
 void main() {
-  test(
-    'an image in the paste event reaches the listener and the browser default is stopped',
-    () async {
-      final received = Completer<MREPastedImage>();
-      final stop = mreListenForPastedImages(received.complete);
-      addTearDown(stop);
+  test('an image in the paste event reaches the listener and the browser default is stopped', () async {
+    final received = Completer<MREPastedImage>();
+    final stop = mreListenForPastedImages(received.complete);
+    addTearDown(stop);
 
-      final event = _firePaste();
+    final event = _firePaste();
 
-      final image = await received.future.timeout(const Duration(seconds: 5));
-      expect(image.mimeType, 'image/png');
-      expect(image.name, 'pasted.png');
-      expect(image.bytes, pngBytes);
-      expect(event.defaultPrevented, isTrue);
-    },
-  );
+    final image = await received.future.timeout(const Duration(seconds: 5));
+    expect(image.mimeType, 'image/png');
+    expect(image.name, 'pasted.png');
+    expect(image.bytes, pngBytes);
+    expect(event.defaultPrevented, isTrue);
+  });
 
   test('text on the clipboard wins: the event is left alone', () async {
     final received = <MREPastedImage>[];

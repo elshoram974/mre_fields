@@ -1,6 +1,6 @@
 // Snippets embedded in the API docs and the phone guide. They are analyzed and
 // run in test/doc/phone_snippets_test.dart, so each example is correct.
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:mre_fields/mre_fields.dart';
 
 /// Stand-in for saving the number.

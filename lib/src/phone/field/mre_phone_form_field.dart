@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/scheduler.dart';
 
 import '../../internal/mre_owned.dart';
@@ -125,16 +125,15 @@ class MREPhoneFormField extends FormField<MREPhoneNumber> {
     required this.initialCountry,
     required this.selection,
     required this.onChanged,
-    required String? initialText,
-    required void Function(MREFieldsStrings) updateStrings,
+    required this._initialText,
+    required this._updateStrings,
     required super.enabled,
     required super.validator,
     required super.onSaved,
     required super.onReset,
     required super.autovalidateMode,
     required super.builder,
-  }) : _initialText = initialText,
-       _updateStrings = updateStrings;
+  });
 
   /// The host's controller, never disposed by the field.
   final MREPhoneController? controller;

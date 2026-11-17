@@ -51,8 +51,8 @@ final class MREPhoneNumber {
     this.country,
     this.nationalNumber = '',
     this.error,
-    PhoneNumber? parsed,
-  }) : _parsed = parsed;
+    this._parsed,
+  });
 
   /// The country, or null when none could be found.
   final MRECountry? country;

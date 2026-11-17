@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../theme/mre_fields_theme.dart';
 import '../../theme/mre_window_size.dart';
@@ -37,9 +37,8 @@ Future<MRECountry?> showMRECountryPicker(
   String Function(MRECountry country)? nameBuilder,
   bool showFlags = true,
 }) {
-  final size = MREFieldsTheme.of(
-    context,
-  ).windowSizeFor(MediaQuery.sizeOf(context).width);
+  final size = MREFieldsTheme.of(context)
+      .windowSizeFor(MediaQuery.sizeOf(context).width);
 
   MRECountryPickerBody body(
     BuildContext context, {

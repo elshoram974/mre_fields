@@ -1,7 +1,6 @@
 // Snippets embedded in the API docs and the theme guide. They are analyzed
 // and run in test/doc/theme_snippets_test.dart, so each example is correct.
-import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:mre_fields/mre_fields.dart';
 
 /// Registers the field tokens once for the whole app.
@@ -95,9 +94,8 @@ MREFieldsStrings stringsFor(Locale locale) {
 /// Swaps the strings whenever the app locale changes.
 Widget localizedFields(BuildContext context, Widget child) {
   final theme = Theme.of(context);
-  final fields = MREFieldsTheme.of(
-    context,
-  ).copyWith(strings: stringsFor(Localizations.localeOf(context)));
+  final fields = MREFieldsTheme.of(context)
+      .copyWith(strings: stringsFor(Localizations.localeOf(context)));
 
   return Theme(
     data: theme.copyWith(

@@ -262,9 +262,8 @@ MREFieldsStrings stringsFor(Locale locale) {
 /// Swaps the strings whenever the app locale changes.
 Widget localizedFields(BuildContext context, Widget child) {
   final theme = Theme.of(context);
-  final fields = MREFieldsTheme.of(
-    context,
-  ).copyWith(strings: stringsFor(Localizations.localeOf(context)));
+  final fields = MREFieldsTheme.of(context)
+      .copyWith(strings: stringsFor(Localizations.localeOf(context)));
 
   return Theme(
     data: theme.copyWith(

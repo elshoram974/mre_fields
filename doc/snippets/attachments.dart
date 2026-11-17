@@ -3,7 +3,7 @@
 // is correct.
 import 'dart:typed_data';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:mre_fields/mre_fields.dart';
 
 /// Stand-in for sending the image to a server.

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:mre_fields/mre_fields.dart';
 
 import 'section_card.dart';
@@ -50,7 +50,10 @@ class _FieldSectionState extends State<FieldSection> {
               keyboardType: TextInputType.emailAddress,
               textDirection: TextDirection.ltr,
             ),
-            const MRETextField(labelText: 'City (suggestions)', suggestions: _cities),
+            const MRETextField(
+              labelText: 'City (suggestions)',
+              suggestions: _cities,
+            ),
             const MRETextField(
               labelText: 'Title (selects on focus)',
               initialValue: 'Draft',

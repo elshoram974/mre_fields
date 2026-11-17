@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:meta/meta.dart';
 
 /// One Material input surface containing attachments followed by editable text.
