@@ -1,6 +1,6 @@
 name: mre_fields
 description: "Flutter form fields that follow the language typed (auto RTL/LTR text and alignment), phone numbers validated for every country with a picker, and image paste."
-version: 0.3.3
+version: 0.4.0
 repository: https://github.com/elshoram974/mre_fields
 issue_tracker: https://github.com/elshoram974/mre_fields/issues
 screenshots:

@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.4.0] - 2026-11-17
+
+### Breaking
+- Move to the standalone `material_ui` package. `MREFieldsTheme` now extends
+  `material_ui`'s `ThemeExtension`, so apps must replace
+  `package:flutter/material.dart` with `package:material_ui/material_ui.dart`
+  (run `dart fix --apply --code=migrate_design_widgets`). Without it,
+  `ThemeData(extensions: [MREFieldsTheme()])` reports "The element type
+  'MREFieldsTheme' can't be assigned to the list type 'ThemeExtension<dynamic>'".
+- Raise the minimum to Flutter 3.47.0 and Dart 3.13.0, which `material_ui` needs.
+
+### Changed
+- Update `pasteboard` to 0.6.1, `phone_numbers_parser` to 9.0.29 and `web` to 1.1.2.
+- Use private named parameters (`this._field`) where Dart 3.13 lints for them.
+- CI "Minimum Flutter" job now runs on 3.47.0.
+
 ## [0.3.3] - 2026-10-04
 
 ### Fixed
